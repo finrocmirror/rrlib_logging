@@ -1,0 +1,16 @@
+<targets>
+
+  <rrlib name="logging">
+    <sources>
+      *.cpp
+      definitions.h
+    </sources>
+  </rrlib>
+
+  <finrocprogram name="rrlib_logging_test_messages" libs="rrlib_logging">
+    <sources>
+      test/*.cpp
+    </sources>
+  </finrocprogram>
+
+</targets>
