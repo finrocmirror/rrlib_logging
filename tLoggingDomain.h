@@ -75,7 +75,6 @@ namespace logging
 //----------------------------------------------------------------------
 // Class declaration
 //----------------------------------------------------------------------
-
 //! Short description of tLoggingDomain
 /*! A more detailed description of tLoggingDomain, which
  *  Tobias Foehst hasn't done yet!
@@ -126,15 +125,15 @@ class tLoggingDomain
    * and the full qualified domain name.
    * If the file already exists, it will be truncated.
    *
-   * \returns Whether the file stream could be opened or not.
+   * \returns Whether the file stream could be opened or not
    */
   const bool OpenFileOutputStream() const;
 
-  /*! Set the output stream to be used in this domain
+  /*! Get the output stream to be used in this domain
    *
    * A domain can stream its input either to stdout, stderr or to a file.
    *
-   * \param id   The id of the stream to use in this domain
+   * \returns A reference to the stream that should be used for messages
    */
   std::ostream &GetOutputStream() const;
 

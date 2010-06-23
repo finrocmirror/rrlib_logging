@@ -34,7 +34,7 @@
  */
 //----------------------------------------------------------------------
 #ifndef _rrlib_logging_test_debugging_h_
-#define _rrlib_loggin_test_debugging_h_
+#define _rrlib_logging_test_debugging_h_
 
 //----------------------------------------------------------------------
 // External includes with <>

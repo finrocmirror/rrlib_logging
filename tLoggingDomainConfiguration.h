@@ -81,19 +81,27 @@ enum eLogStream
   eMS_STDOUT,
   eMS_STDERR,
   eMS_FILE,
+  eMS_COMBINED_FILE,
   eMS_DIMENSION
 };
 
 #ifdef _RRLIB_LOGGING_LESS_OUTPUT_
 const eLogLevel cDEFAULT_MIN_LOG_LEVEL = eML_HIGH;
+const bool cDEFAULT_PRINT_TIME = false;
+const bool cDEFAULT_PRINT_NAME = false;
+const bool cDEFAULT_PRINT_LEVEL = false;
+const bool cDEFAULT_PRINT_LOCATION = false;
 #else
 const eLogLevel cDEFAULT_MIN_LOG_LEVEL = eML_MEDIUM;
+const bool cDEFAULT_PRINT_TIME = false;
+const bool cDEFAULT_PRINT_NAME = false;
+const bool cDEFAULT_PRINT_LEVEL = false;
+const bool cDEFAULT_PRINT_LOCATION = true;
 #endif
 
 //----------------------------------------------------------------------
 // Class declaration
 //----------------------------------------------------------------------
-
 //! Short description of tLoggingDomainConfiguration
 /*! A more detailed description of tLoggingDomainConfiguration, which
  *  Tobias Foehst hasn't done yet!
@@ -116,10 +124,10 @@ struct tLoggingDomainConfiguration
       : name(name),
       configure_sub_tree(false),
       enabled(false),
-      print_time(false),
-      print_name(false),
-      print_level(false),
-      print_location(false),
+      print_time(cDEFAULT_PRINT_TIME),
+      print_name(cDEFAULT_PRINT_NAME),
+      print_level(cDEFAULT_PRINT_LEVEL),
+      print_location(cDEFAULT_PRINT_LOCATION),
       min_message_level(cDEFAULT_MIN_LOG_LEVEL),
       stream_id(eMS_STDOUT)
   {}

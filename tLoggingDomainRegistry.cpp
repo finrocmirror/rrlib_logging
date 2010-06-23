@@ -69,6 +69,9 @@ const char *cDEFAULT_DOMAIN_NAME = "global";
 // Implementation
 //----------------------------------------------------------------------
 
+//----------------------------------------------------------------------
+// class tLoggingDomainRegistry constructors
+//----------------------------------------------------------------------
 tLoggingDomainRegistry::tLoggingDomainRegistry()
 {
   this->domain_configurations.push_back(tLoggingDomainConfigurationSharedPointer(new tLoggingDomainConfiguration(cDEFAULT_DOMAIN_NAME)));
@@ -76,12 +79,18 @@ tLoggingDomainRegistry::tLoggingDomainRegistry()
   this->domains.push_back(std::tr1::shared_ptr<tLoggingDomain>(new tLoggingDomain(this->domain_configurations.back())));
 }
 
+//----------------------------------------------------------------------
+// class tLoggingDomainRegistry GetInstance
+//----------------------------------------------------------------------
 tLoggingDomainRegistry &tLoggingDomainRegistry::GetInstance()
 {
   static tLoggingDomainRegistry instance;
   return instance;
 }
 
+//----------------------------------------------------------------------
+// class tLoggingDomainRegistry GetSubDomain
+//----------------------------------------------------------------------
 tLoggingDomainSharedPointer tLoggingDomainRegistry::GetSubDomain(const std::string &name, tLoggingDomainSharedPointer parent)
 {
   assert(name.length() > 0);
@@ -96,16 +105,9 @@ tLoggingDomainSharedPointer tLoggingDomainRegistry::GetSubDomain(const std::stri
   return this->domains[i];
 }
 
-//void tMessageDomainRegistry::ListDomains() const
-//{
-//  std::cout << "Registered message domains:" << std::endl;
-//  for (std::vector<std::tr1::shared_ptr<tMessageDomain> >::const_iterator it = this->domains.begin(); it != this->domains.end(); ++it)
-//  {
-//    std::cout << "  " << (*it)->GetName() << std::endl;
-//  }
-//  std::cout << std::endl;
-//}
-
+//----------------------------------------------------------------------
+// class tLoggingDomainRegistry GetMaxDomainNameLength
+//----------------------------------------------------------------------
 size_t tLoggingDomainRegistry::GetMaxDomainNameLength() const
 {
   size_t result = 0;
@@ -116,48 +118,78 @@ size_t tLoggingDomainRegistry::GetMaxDomainNameLength() const
   return result;
 }
 
+//----------------------------------------------------------------------
+// class tLoggingDomainRegistry SetDomainConfiguresSubTree
+//----------------------------------------------------------------------
 void tLoggingDomainRegistry::SetDomainConfiguresSubTree(const std::string &name, bool value)
 {
   tLoggingDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
   configuration->configure_sub_tree = value;
   this->PropagateDomainConfigurationToChildren(name);
 }
+
+//----------------------------------------------------------------------
+// class tLoggingDomainRegistry SetDomainIsEnabled
+//----------------------------------------------------------------------
 void tLoggingDomainRegistry::SetDomainIsEnabled(const std::string &name, bool value)
 {
   tLoggingDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
   configuration->enabled = value;
   this->PropagateDomainConfigurationToChildren(name);
 }
+//----------------------------------------------------------------------
+// class tLoggingDomainRegistry SetDomainPrintsTime
+//----------------------------------------------------------------------
 void tLoggingDomainRegistry::SetDomainPrintsTime(const std::string &name, bool value)
 {
   tLoggingDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
   configuration->print_time = value;
   this->PropagateDomainConfigurationToChildren(name);
 }
+
+//----------------------------------------------------------------------
+// class tLoggingDomainRegistry SetDomainPrintsName
+//----------------------------------------------------------------------
 void tLoggingDomainRegistry::SetDomainPrintsName(const std::string &name, bool value)
 {
   tLoggingDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
   configuration->print_name = value;
   this->PropagateDomainConfigurationToChildren(name);
 }
+
+//----------------------------------------------------------------------
+// class tLoggingDomainRegistry SetDomainPrintsLevel
+//----------------------------------------------------------------------
 void tLoggingDomainRegistry::SetDomainPrintsLevel(const std::string &name, bool value)
 {
   tLoggingDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
   configuration->print_level = value;
   this->PropagateDomainConfigurationToChildren(name);
 }
+
+//----------------------------------------------------------------------
+// class tLoggingDomainRegistry SetDomainPrintsLocation
+//----------------------------------------------------------------------
 void tLoggingDomainRegistry::SetDomainPrintsLocation(const std::string &name, bool value)
 {
   tLoggingDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
   configuration->print_location = value;
   this->PropagateDomainConfigurationToChildren(name);
 }
+
+//----------------------------------------------------------------------
+// class tLoggingDomainRegistry SetDomainMinMessageLevel
+//----------------------------------------------------------------------
 void tLoggingDomainRegistry::SetDomainMinMessageLevel(const std::string &name, eLogLevel value)
 {
   tLoggingDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
   configuration->min_message_level = value;
   this->PropagateDomainConfigurationToChildren(name);
 }
+
+//----------------------------------------------------------------------
+// class tLoggingDomainRegistry SetDomainStreamID
+//----------------------------------------------------------------------
 void tLoggingDomainRegistry::SetDomainStreamID(const std::string &name, eLogStream value)
 {
   tLoggingDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
@@ -165,14 +197,15 @@ void tLoggingDomainRegistry::SetDomainStreamID(const std::string &name, eLogStre
   this->PropagateDomainConfigurationToChildren(name);
 }
 
-
-
-
+//----------------------------------------------------------------------
+// class tLoggingDomainRegistry GetDomainIndexByName
+//----------------------------------------------------------------------
 const size_t tLoggingDomainRegistry::GetDomainIndexByName(const std::string &name) const
 {
+  std::string full_name(name[0] == '.' ? cDEFAULT_DOMAIN_NAME + name : name);
   for (size_t i = 0; i < this->domains.size(); ++i)
   {
-    if (this->domains[i]->GetName() == name)
+    if (this->domains[i]->GetName() == full_name)
     {
       return i;
     }
@@ -180,19 +213,26 @@ const size_t tLoggingDomainRegistry::GetDomainIndexByName(const std::string &nam
   return this->domains.size();
 }
 
+//----------------------------------------------------------------------
+// class tLoggingDomainRegistry GetConfigurationByName
+//----------------------------------------------------------------------
 tLoggingDomainConfigurationSharedPointer tLoggingDomainRegistry::GetConfigurationByName(const std::string &name)
 {
+  std::string full_name(name[0] == '.' ? cDEFAULT_DOMAIN_NAME + name : name);
   for (std::vector<tLoggingDomainConfigurationSharedPointer>::iterator it = this->domain_configurations.begin(); it != this->domain_configurations.end(); ++it)
   {
-    if ((*it)->name == name)
+    if ((*it)->name == full_name)
     {
       return *it;
     }
   }
-  this->domain_configurations.push_back(tLoggingDomainConfigurationSharedPointer(new tLoggingDomainConfiguration(name)));
+  this->domain_configurations.push_back(tLoggingDomainConfigurationSharedPointer(new tLoggingDomainConfiguration(full_name)));
   return this->domain_configurations.back();
 }
 
+//----------------------------------------------------------------------
+// class tLoggingDomainRegistry PropagateDomainConfigurationToChildren
+//----------------------------------------------------------------------
 void tLoggingDomainRegistry::PropagateDomainConfigurationToChildren(const std::string &name)
 {
   size_t i = this->GetDomainIndexByName(name);

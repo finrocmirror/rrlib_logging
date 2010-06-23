@@ -66,10 +66,12 @@ using namespace rrlib::logging;
 // Implementation
 //----------------------------------------------------------------------
 
+//----------------------------------------------------------------------
+// class tLoggingDomain constructors
+//----------------------------------------------------------------------
 tLoggingDomain::tLoggingDomain(tLoggingDomainConfigurationSharedPointer configuration)
     : parent(0),
     configuration(configuration),
-//    stream(&std::cout),
     null_stream("/dev/null")
 {
   assert(this->null_stream.is_open());
@@ -78,7 +80,6 @@ tLoggingDomain::tLoggingDomain(tLoggingDomainConfigurationSharedPointer configur
 tLoggingDomain::tLoggingDomain(tLoggingDomainConfigurationSharedPointer configuration, tLoggingDomain &parent)
     : parent(&parent),
     configuration(configuration),
-//    stream(&std::cout),
     null_stream("/dev/null")
 {
   assert(this->null_stream.is_open());
@@ -86,6 +87,9 @@ tLoggingDomain::tLoggingDomain(tLoggingDomainConfigurationSharedPointer configur
   this->ConfigureSubTree();
 }
 
+//----------------------------------------------------------------------
+// class tLoggingDomain destructor
+//----------------------------------------------------------------------
 tLoggingDomain::~tLoggingDomain()
 {
   this->null_stream.close();
@@ -96,6 +100,9 @@ tLoggingDomain::~tLoggingDomain()
   }
 }
 
+//----------------------------------------------------------------------
+// class tLoggingDomain ConfigureSubTree
+//----------------------------------------------------------------------
 void tLoggingDomain::ConfigureSubTree()
 {
   if (this->parent && this->parent->configuration->configure_sub_tree)
@@ -108,6 +115,9 @@ void tLoggingDomain::ConfigureSubTree()
   }
 }
 
+//----------------------------------------------------------------------
+// class tLoggingDomain GetOutputStream
+//----------------------------------------------------------------------
 std::ostream &tLoggingDomain::GetOutputStream() const
 {
   switch (this->configuration->stream_id)
@@ -119,22 +129,28 @@ std::ostream &tLoggingDomain::GetOutputStream() const
   case eMS_STDERR:
     return std::cerr;
   case eMS_FILE:
-    if (!this->file_stream.is_open())
+    return this->OpenFileOutputStream() ? this->file_stream : std::cerr;
+  case eMS_COMBINED_FILE:
+    if (this->parent && this->parent->configuration->configure_sub_tree)
     {
-      if (!this->OpenFileOutputStream())
-      {
-        return std::cerr;
-      }
+      return this->parent->GetOutputStream();
     }
-    return this->file_stream;
+    return this->OpenFileOutputStream() ? this->file_stream : std::cerr;
   default:
     std::cerr << "RRlib Messages: Stream ID " << this->configuration->stream_id << " not supported. Using eMS_STDERR instead." << std::endl;
     return std::cerr;
   }
 }
 
+//----------------------------------------------------------------------
+// class tLoggingDomain OpenFileOutputStream
+//----------------------------------------------------------------------
 const bool tLoggingDomain::OpenFileOutputStream() const
 {
+  if (this->file_stream.is_open())
+  {
+    return true;
+  }
   const std::string &file_name_prefix(tLoggingDomainRegistry::GetInstance().GetOutputFileNamePrefix());
   if (file_name_prefix.length() == 0)
   {
@@ -142,7 +158,7 @@ const bool tLoggingDomain::OpenFileOutputStream() const
               << "                  Consider calling tMessageDomainRegistry::GetInstance().SetOutputFileNamePrefix(basename(argv[0])) for example." << std::endl;
     return false;
   }
-  std::string file_name(file_name_prefix + this->GetName() + ".log");
+  std::string file_name(file_name_prefix + "." + this->GetName() + ".log");
   this->file_stream.open(file_name.c_str(), std::ios::out | std::ios::trunc);
   if (!this->file_stream.is_open())
   {
@@ -152,6 +168,9 @@ const bool tLoggingDomain::OpenFileOutputStream() const
   return true;
 }
 
+//----------------------------------------------------------------------
+// class tLoggingDomain GetTimeString
+//----------------------------------------------------------------------
 const std::string tLoggingDomain::GetTimeString() const
 {
   char time_string_buffer[32];
@@ -161,6 +180,9 @@ const std::string tLoggingDomain::GetTimeString() const
   return time_string_buffer;
 }
 
+//----------------------------------------------------------------------
+// class tLoggingDomain GetNameString
+//----------------------------------------------------------------------
 const std::string tLoggingDomain::GetNameString() const
 {
   char name_string_buffer[128];
@@ -168,6 +190,9 @@ const std::string tLoggingDomain::GetNameString() const
   return name_string_buffer;
 }
 
+//----------------------------------------------------------------------
+// class tLoggingDomain GetLevelString
+//----------------------------------------------------------------------
 const std::string tLoggingDomain::GetLevelString(eLogLevel level) const
 {
   switch (level)
@@ -185,6 +210,9 @@ const std::string tLoggingDomain::GetLevelString(eLogLevel level) const
   }
 }
 
+//----------------------------------------------------------------------
+// class tLoggingDomain GetLocationString
+//----------------------------------------------------------------------
 const std::string tLoggingDomain::GetLocationString(const char *file, unsigned int line) const
 {
   char location_string_buffer[128];
@@ -192,6 +220,9 @@ const std::string tLoggingDomain::GetLocationString(const char *file, unsigned i
   return location_string_buffer;
 }
 
+//----------------------------------------------------------------------
+// class tLoggingDomain GetColoredOutputString
+//----------------------------------------------------------------------
 const std::string tLoggingDomain::GetColoredOutputString(eLogLevel level) const
 {
   switch (level)

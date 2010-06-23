@@ -70,7 +70,7 @@
 
 
 
-#ifdef _RRLIB_MESSAGES_LESS_OUTPUT_
+#ifdef _RRLIB_LOGGING_LESS_OUTPUT_
 
 // Macro to get a stream for messages using operator <<
 #define RRLIB_LOG_STREAM(level, args...) \

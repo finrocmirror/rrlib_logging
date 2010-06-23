@@ -92,22 +92,23 @@ struct Test
 
 int main(int argc, char **argv)
 {
-  rrlib::logging::tLoggingDomainRegistry::GetInstance().SetOutputFileNamePrefix(basename(argv[0]));
+  tLoggingDomainRegistry::GetInstance().SetOutputFileNamePrefix(basename(argv[0]));
 
-  rrlib::logging::tLoggingDomainRegistry::GetInstance().EnableDomain("global", true);
+  tLoggingDomainRegistry::GetInstance().EnableDomain("global", true);
+  tLoggingDomainRegistry::GetInstance().SetDomainPrintsName("global", true);
+  tLoggingDomainRegistry::GetInstance().SetDomainPrintsTime("global", true);
+  tLoggingDomainRegistry::GetInstance().SetDomainPrintsLevel("global", true);
+  tLoggingDomainRegistry::GetInstance().SetDomainPrintsLocation("global", true);
+  tLoggingDomainRegistry::GetInstance().SetDomainMinMessageLevel("global", eML_VERBOSE);
+//  tLoggingDomainRegistry::GetInstance().SetDomainStreamID("global", eMS_FILE);
 
-  rrlib::logging::tLoggingDomainRegistry::GetInstance().SetDomainPrintsName("global", true);
-  rrlib::logging::tLoggingDomainRegistry::GetInstance().SetDomainPrintsTime("global", true);
-  rrlib::logging::tLoggingDomainRegistry::GetInstance().SetDomainPrintsLevel("global", true);
-  rrlib::logging::tLoggingDomainRegistry::GetInstance().SetDomainPrintsLocation("", true);
-  rrlib::logging::tLoggingDomainRegistry::GetInstance().SetDomainMinMessageLevel("global", rrlib::logging::eML_VERBOSE);
-//  rrlib::logging::tLoggingDomainRegistry::GetInstance().SetDomainStreamID("global", rrlib::logging::eMS_FILE);
-
-//  rrlib::logging::tLoggingDomainRegistry::GetInstance().EnableDomain("global.local");
-//  rrlib::logging::tLoggingDomainRegistry::GetInstance().EnableDomain("global.local.class");
-//  rrlib::logging::tLoggingDomainRegistry::GetInstance().EnableDomain("global.example", true);
-//  rrlib::logging::tLoggingDomainRegistry::GetInstance().EnableDomain("global.libA");
-//  rrlib::logging::tLoggingDomainRegistry::GetInstance().EnableDomain("global.libB");
+//  tLoggingDomainRegistry::GetInstance().EnableDomain(".local");
+//  tLoggingDomainRegistry::GetInstance().EnableDomain(".local.class");
+//  tLoggingDomainRegistry::GetInstance().EnableDomain(".example", true);
+//  tLoggingDomainRegistry::GetInstance().SetDomainMinMessageLevel(".example", eML_VERBOSE);
+//  tLoggingDomainRegistry::GetInstance().SetDomainStreamID(".example", eMS_COMBINED_FILE);
+//  tLoggingDomainRegistry::GetInstance().EnableDomain("global.libA");
+//  tLoggingDomainRegistry::GetInstance().EnableDomain("global.libB");
 
   CREATE_SCOPED_LOGGING_DOMAIN("example");
 

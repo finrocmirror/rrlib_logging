@@ -73,7 +73,6 @@ typedef std::tr1::shared_ptr<const tLoggingDomain> tLoggingDomainSharedPointer;
 //----------------------------------------------------------------------
 // Class declaration
 //----------------------------------------------------------------------
-
 //! Short description of tLoggingDomainRegistry
 /*! A more detailed description of tLoggingDomainRegistry, which
  *  Tobias Foehst hasn't done yet!
