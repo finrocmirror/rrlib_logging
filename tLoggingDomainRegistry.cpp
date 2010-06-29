@@ -37,10 +37,12 @@
 #include "tLoggingDomainRegistry.h"
 
 //----------------------------------------------------------------------
-// External includes with <>
+// External includes (system with <>, local with "")
 //----------------------------------------------------------------------
-#include <algorithm>
-#include <iterator>
+#ifdef _RRLIB_XML2_WRAPPER_PRESENT_
+#include <iostream>
+#include "rrlib/xml2_wrapper/tXMLDocument.h"
+#endif
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -55,6 +57,10 @@
 // Namespace usage
 //----------------------------------------------------------------------
 using namespace rrlib::logging;
+
+#ifdef _RRLIB_XML2_WRAPPER_PRESENT_
+using namespace rrlib::xml2;
+#endif
 
 //----------------------------------------------------------------------
 // Forward declarations
@@ -188,12 +194,12 @@ void tLoggingDomainRegistry::SetDomainMinMessageLevel(const std::string &name, e
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomainRegistry SetDomainStreamID
+// class tLoggingDomainRegistry SetDomainStreamMask
 //----------------------------------------------------------------------
-void tLoggingDomainRegistry::SetDomainStreamID(const std::string &name, eLogStream value)
+void tLoggingDomainRegistry::SetDomainStreamMask(const std::string &name, eLogStreamMask mask)
 {
   tLoggingDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
-  configuration->stream_id = value;
+  configuration->stream_mask = mask;
   this->PropagateDomainConfigurationToChildren(name);
 }
 
@@ -244,3 +250,148 @@ void tLoggingDomainRegistry::PropagateDomainConfigurationToChildren(const std::s
     }
   }
 }
+
+#ifdef _RRLIB_XML2_WRAPPER_PRESENT_
+
+//----------------------------------------------------------------------
+// class tLoggingDomainRegistry ConfigureFromFile
+//----------------------------------------------------------------------
+bool tLoggingDomainRegistry::ConfigureFromFile(const std::string &file_name)
+{
+  try
+  {
+    tXMLDocument document(file_name);
+    return this->ConfigureFromXMLNode(document.GetRootElement());
+  }
+  catch (const tXML2WrapperException &e)
+  {
+    std::cerr << "RRLib Logging: tLoggingDomainRegistry::ConfigureFromFile >> " << e.what() << std::endl;
+    return false;
+  }
+}
+
+//----------------------------------------------------------------------
+// class tLoggingDomainRegistry ConfigureFromXMLNode
+//----------------------------------------------------------------------
+bool tLoggingDomainRegistry::ConfigureFromXMLNode(const tXMLNode &node)
+{
+  if (node.GetName() != "rrlib_logging")
+  {
+    std::cerr << "RRLib Logging: tLoggingDomainRegistry::ConfigureFromXMLNode >> Unexpected content (Not a rrlib_logging tree)" << std::endl;
+    return false;
+  }
+
+  try
+  {
+    for (std::vector<tXMLNode>::const_iterator it = node.GetChildren().begin(); it != node.GetChildren().end(); ++it)
+    {
+      if (it->GetName() == "domain")
+      {
+        if (!this->AddConfigurationFromXMLNode(*it))
+        {
+          return false;
+        }
+      }
+    }
+  }
+  catch (const tXML2WrapperException &e)
+  {
+    std::cerr << "RRLib Logging: tLoggingDomainRegistry::ConfigureFromXMLNode >> " << e.what() << std::endl;
+    return false;
+  }
+
+  return true;
+}
+
+//----------------------------------------------------------------------
+// class tLoggingDomainRegistry AddConfigurationFromXMLNode
+//----------------------------------------------------------------------
+bool tLoggingDomainRegistry::AddConfigurationFromXMLNode(const tXMLNode &node, const std::string &parent_name)
+{
+  static const char *level_names_init[eLL_DIMENSION] = { "verbose", "low", "medium", "high", "always" };
+  static const std::vector<std::string> level_names(level_names_init, level_names_init + eLL_DIMENSION);
+  // FIXME: with c++0x this can be static const std::vector<std::string> level_names = { "verbose", "low", "medium", "high", "always" };
+
+  static const char *stream_names_init[eLS_DIMENSION] = { "stdout", "stderr", "file", "combined_file" };
+  static const std::vector<std::string> stream_names(stream_names_init, stream_names_init + eLS_DIMENSION);
+  // FIXME: with c++0x this can be static const std::vector<std::string> stream_names = { "stdout", "stderr", "file", "combined_file" };
+
+  assert(node.GetName() == "domain");
+
+  const std::string name((parent_name.length() ? parent_name + "." : "") + node.GetStringAttribute("name"));
+
+  if (node.HasAttribute("configures_sub_tree"))
+  {
+    this->SetDomainConfiguresSubTree(name, node.GetBoolAttribute("configures_sub_tree"));
+  }
+
+  if (node.HasAttribute("enabled"))
+  {
+    this->SetDomainIsEnabled(name, node.GetBoolAttribute("enabled"));
+  }
+
+  if (node.HasAttribute("print_time"))
+  {
+    this->SetDomainPrintsTime(name, node.GetBoolAttribute("print_time"));
+  }
+
+  if (node.HasAttribute("print_name"))
+  {
+    this->SetDomainPrintsName(name, node.GetBoolAttribute("print_name"));
+  }
+
+  if (node.HasAttribute("print_level"))
+  {
+    this->SetDomainPrintsLevel(name, node.GetBoolAttribute("print_level"));
+  }
+
+  if (node.HasAttribute("print_location"))
+  {
+    this->SetDomainPrintsLocation(name, node.GetBoolAttribute("print_location"));
+  }
+
+  if (node.HasAttribute("min_level"))
+  {
+    this->SetDomainMinMessageLevel(name, node.GetEnumAttribute<eLogLevel>("min_level", level_names));
+  }
+
+  bool stream_configured = false;
+  if (node.HasAttribute("stream"))
+  {
+    stream_configured = true;
+    this->SetDomainStreamMask(name, static_cast<eLogStreamMask>(1 << node.GetEnumAttribute<eLogStream >("stream", stream_names)));
+  }
+
+  eLogStreamMask stream_mask = static_cast<eLogStreamMask>(0);
+  for (std::vector<tXMLNode>::const_iterator it = node.GetChildren().begin(); it != node.GetChildren().end(); ++it)
+  {
+    if (it->GetName() == "stream")
+    {
+      if (stream_configured)
+      {
+        std::cerr << "RRLib Logging: tLoggingDomainRegistry::AddConfigurationFromXMLNode >> Stream already configured in domain element!" << std::endl;
+        return false;
+      }
+      stream_mask |= static_cast<eLogStreamMask>(1 << it->GetEnumAttribute<eLogStream>("output", stream_names));
+    }
+  }
+  if (stream_mask != 0)
+  {
+    this->SetDomainStreamMask(name, stream_mask);
+  }
+
+  for (std::vector<tXMLNode>::const_iterator it = node.GetChildren().begin(); it != node.GetChildren().end(); ++it)
+  {
+    if (it->GetName() == "domain")
+    {
+      if (!this->AddConfigurationFromXMLNode(*it, name))
+      {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+#endif

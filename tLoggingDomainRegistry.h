@@ -47,6 +47,9 @@
 #include <string>
 #include <tr1/memory>
 
+#ifdef _RRLIB_XML2_WRAPPER_PRESENT_
+#include "rrlib/xml2_wrapper/tXMLNode.h"
+#endif
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
@@ -84,7 +87,7 @@ class tLoggingDomainRegistry
   std::vector<std::tr1::shared_ptr<tLoggingDomain> > domains;
   std::vector<tLoggingDomainConfigurationSharedPointer> domain_configurations;
 
-  /*! Ctor of tMessageDomainRegistry
+  /*! Ctor of tLoggingDomainRegistry
    *
    * Private default ctor for singleton pattern
    */
@@ -121,6 +124,21 @@ class tLoggingDomainRegistry
    * \param name   The name of the updated domain
    */
   void PropagateDomainConfigurationToChildren(const std::string &name);
+
+#ifdef _RRLIB_XML2_WRAPPER_PRESENT_
+  /*! Add a domain configuration from a given XML node
+   *
+   * This method configures a logging domain using the values specified in
+   * the given XML node. It also implements recursive configuration in case
+   * of nested nodes.
+   *
+   * \param node    The XML node that contains the configuration
+   * \parent_name   For recursive calls the current domain name is build from parent_name and domain_name
+   *
+   * \returns Whether the domain was successfully configured or not
+   */
+  bool AddConfigurationFromXMLNode(const xml2::tXMLNode &node, const std::string &parent_name = "");
+#endif
 
 //----------------------------------------------------------------------
 // Public methods
@@ -168,7 +186,7 @@ public:
    * file with their name. Additionally, this name must have a prefix
    * to distinguish between programs, processes or runs.
    *
-   * \example The method could be called with basename(argv[0]) in main
+   * The method could be called with basename(argv[0]) in main, for example.
    *
    * \param file_name_prefix   The string the should be used as prefix
    */
@@ -299,10 +317,38 @@ public:
    * If set to true every configuration update to the given domain
    * will be propagated to its subtree.
    *
-   * \param name    The full qualified name of the domain
-   * \param value   The new value of the setting
+   * \param name   The full qualified name of the domain
+   * \param mask   The new value of the setting
    */
-  void SetDomainStreamID(const std::string &name, eLogStream value);
+  void SetDomainStreamMask(const std::string &name, eLogStreamMask mask);
+
+#ifdef _RRLIB_XML2_WRAPPER_PRESENT_
+  /*! Read domain configuration from a given XML file
+   *
+   * The overall configuration of the logging domains tends to be
+   * too complicated for a classical command line option interface.
+   * Therefore, it is possible to specify the configuration in form
+   * of an XML file following the DTD -//RRLIB//logging
+   *
+   * \param file_name   The XML file to be read
+   *
+   * \returns Whether the configuration could be read and applied or not
+   */
+  bool ConfigureFromFile(const std::string &file_name);
+
+  /*! Read domain configuration from a given XML node
+   *
+   * Instead of reading and parsing an XML file dedicated to configure
+   * logging domains this method can be used after externally parsing
+   * a document that contains an rrlib_logging node following the DTD
+   * -//RRLIB//logging
+   *
+   * \param node   The XML node containing the configuration
+   *
+   * \returns Whether the configuration could be applied or not
+   */
+  bool ConfigureFromXMLNode(const xml2::tXMLNode &node);
+#endif
 
 };
 

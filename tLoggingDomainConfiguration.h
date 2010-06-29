@@ -67,32 +67,60 @@ namespace logging
 //----------------------------------------------------------------------
 enum eLogLevel
 {
-  eML_VERBOSE,
-  eML_LOW,
-  eML_MEDIUM,
-  eML_HIGH,
-  eML_ALWAYS,
-  eML_DIMENSION
+  eLL_VERBOSE,
+  eLL_LOW,
+  eLL_MEDIUM,
+  eLL_HIGH,
+  eLL_ALWAYS,
+  eLL_DIMENSION
 };
 
 enum eLogStream
 {
-  eMS_NULL,
-  eMS_STDOUT,
-  eMS_STDERR,
-  eMS_FILE,
-  eMS_COMBINED_FILE,
-  eMS_DIMENSION
+//  eLS_NULL,
+  eLS_STDOUT,
+  eLS_STDERR,
+  eLS_FILE,
+  eLS_COMBINED_FILE,
+  eLS_DIMENSION
 };
 
+enum eLogStreamMask
+{
+//  eLSM_NULL = 1 << eLS_NULL,
+  eLSM_STDOUT = 1 << eLS_STDOUT,
+  eLSM_STDERR = 1 << eLS_STDERR,
+  eLSM_FILE = 1 << eLS_FILE,
+  eLSM_COMBINED_FILE = 1 << eLS_COMBINED_FILE,
+  eLSM_DIMENSION = 1 << eLS_DIMENSION
+};
+
+inline const eLogStreamMask operator & (eLogStreamMask a, eLogStreamMask b)
+{
+  return static_cast<eLogStreamMask>(static_cast<int>(a) & static_cast<int>(b));
+}
+inline const eLogStreamMask operator | (eLogStreamMask a, eLogStreamMask b)
+{
+  return static_cast<eLogStreamMask>(static_cast<int>(a) | static_cast<int>(b));
+}
+inline const eLogStreamMask operator ~(eLogStreamMask a)
+{
+  return static_cast<eLogStreamMask>(~static_cast<int>(a));
+}
+inline eLogStreamMask &operator |= (eLogStreamMask &a, const eLogStreamMask &b)
+{
+  a = a | b;
+  return a;
+}
+
 #ifdef _RRLIB_LOGGING_LESS_OUTPUT_
-const eLogLevel cDEFAULT_MIN_LOG_LEVEL = eML_HIGH;
+const eLogLevel cDEFAULT_MIN_LOG_LEVEL = eLL_HIGH;
 const bool cDEFAULT_PRINT_TIME = false;
 const bool cDEFAULT_PRINT_NAME = false;
 const bool cDEFAULT_PRINT_LEVEL = false;
 const bool cDEFAULT_PRINT_LOCATION = false;
 #else
-const eLogLevel cDEFAULT_MIN_LOG_LEVEL = eML_MEDIUM;
+const eLogLevel cDEFAULT_MIN_LOG_LEVEL = eLL_MEDIUM;
 const bool cDEFAULT_PRINT_TIME = false;
 const bool cDEFAULT_PRINT_NAME = false;
 const bool cDEFAULT_PRINT_LEVEL = false;
@@ -107,8 +135,11 @@ const bool cDEFAULT_PRINT_LOCATION = true;
  *  Tobias Foehst hasn't done yet!
  *
  */
-struct tLoggingDomainConfiguration
+class tLoggingDomainConfiguration
 {
+  friend class tLoggingDomainRegistry;
+  friend class tLoggingDomain;
+
   std::string name;
   bool configure_sub_tree;
 
@@ -118,7 +149,7 @@ struct tLoggingDomainConfiguration
   bool print_level;
   bool print_location;
   eLogLevel min_message_level;
-  eLogStream stream_id;
+  eLogStreamMask stream_mask;
 
   explicit tLoggingDomainConfiguration(const std::string &name)
       : name(name),
@@ -129,7 +160,7 @@ struct tLoggingDomainConfiguration
       print_level(cDEFAULT_PRINT_LEVEL),
       print_location(cDEFAULT_PRINT_LOCATION),
       min_message_level(cDEFAULT_MIN_LOG_LEVEL),
-      stream_id(eMS_STDOUT)
+      stream_mask(eLSM_STDOUT)
   {}
 
   tLoggingDomainConfiguration(const tLoggingDomainConfiguration &other)
@@ -140,7 +171,7 @@ struct tLoggingDomainConfiguration
       print_level(other.print_level),
       print_location(other.print_location),
       min_message_level(other.min_message_level),
-      stream_id(other.stream_id)
+      stream_mask(other.stream_mask)
   {}
 
   tLoggingDomainConfiguration &operator = (const tLoggingDomainConfiguration other)
@@ -152,7 +183,7 @@ struct tLoggingDomainConfiguration
     this->print_level = other.print_level;
     this->print_location = other.print_location;
     this->min_message_level = other.min_message_level;
-    this->stream_id = other.stream_id;
+    this->stream_mask = other.stream_mask;
     return *this;
   }
 };

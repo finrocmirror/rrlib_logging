@@ -72,17 +72,14 @@ using namespace rrlib::logging;
 tLoggingDomain::tLoggingDomain(tLoggingDomainConfigurationSharedPointer configuration)
     : parent(0),
     configuration(configuration),
-    null_stream("/dev/null")
-{
-  assert(this->null_stream.is_open());
-}
+    stream(&this->stream_buffer)
+{}
 
 tLoggingDomain::tLoggingDomain(tLoggingDomainConfigurationSharedPointer configuration, tLoggingDomain &parent)
     : parent(&parent),
     configuration(configuration),
-    null_stream("/dev/null")
+    stream(&this->stream_buffer)
 {
-  assert(this->null_stream.is_open());
   this->parent->children.push_back(this);
   this->ConfigureSubTree();
 }
@@ -92,8 +89,6 @@ tLoggingDomain::tLoggingDomain(tLoggingDomainConfigurationSharedPointer configur
 //----------------------------------------------------------------------
 tLoggingDomain::~tLoggingDomain()
 {
-  this->null_stream.close();
-
   if (this->file_stream.is_open())
   {
     this->file_stream.close();
@@ -116,29 +111,28 @@ void tLoggingDomain::ConfigureSubTree()
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomain GetOutputStream
+// class tLoggingDomain SetupOutputStream
 //----------------------------------------------------------------------
-std::ostream &tLoggingDomain::GetOutputStream() const
+void tLoggingDomain::SetupOutputStream(eLogStreamMask mask) const
 {
-  switch (this->configuration->stream_id)
+  this->stream_buffer.Clear();
+  if (mask & static_cast<int>(eLSM_STDOUT))
   {
-  case eMS_NULL:
-    return this->null_stream;
-  case eMS_STDOUT:
-    return std::cout;
-  case eMS_STDERR:
-    return std::cerr;
-  case eMS_FILE:
-    return this->OpenFileOutputStream() ? this->file_stream : std::cerr;
-  case eMS_COMBINED_FILE:
-    if (this->parent && this->parent->configuration->configure_sub_tree)
-    {
-      return this->parent->GetOutputStream();
-    }
-    return this->OpenFileOutputStream() ? this->file_stream : std::cerr;
-  default:
-    std::cerr << "RRlib Messages: Stream ID " << this->configuration->stream_id << " not supported. Using eMS_STDERR instead." << std::endl;
-    return std::cerr;
+    this->stream_buffer.AddStream(std::cout);
+  }
+  if (mask & eLSM_STDERR)
+  {
+    this->stream_buffer.AddStream(std::cerr);
+  }
+  if (mask & eLSM_FILE)
+  {
+    this->stream_buffer.AddStream(this->OpenFileOutputStream() ? this->file_stream : std::cerr);
+  }
+  if (mask & eLSM_COMBINED_FILE)
+  {
+    const tLoggingDomain *domain = this;
+    for (; domain->parent && domain->parent->configuration->configure_sub_tree; domain = domain->parent);
+    this->stream_buffer.AddStream(domain->OpenFileOutputStream() ? domain->file_stream : std::cerr);
   }
 }
 
@@ -154,15 +148,15 @@ const bool tLoggingDomain::OpenFileOutputStream() const
   const std::string &file_name_prefix(tLoggingDomainRegistry::GetInstance().GetOutputFileNamePrefix());
   if (file_name_prefix.length() == 0)
   {
-    std::cerr << "RRLib Messages >> Prefix for file names not set. Can not use eMS_FILE." << std::endl
-              << "                  Consider calling tMessageDomainRegistry::GetInstance().SetOutputFileNamePrefix(basename(argv[0])) for example." << std::endl;
+    std::cerr << "RRLib Logging >> Prefix for file names not set. Can not use eMS_FILE." << std::endl
+              << "                 Consider calling tMessageDomainRegistry::GetInstance().SetOutputFileNamePrefix(basename(argv[0])) for example." << std::endl;
     return false;
   }
   std::string file_name(file_name_prefix + "." + this->GetName() + ".log");
   this->file_stream.open(file_name.c_str(), std::ios::out | std::ios::trunc);
   if (!this->file_stream.is_open())
   {
-    std::cerr << "RRLib Messages >> Could not open file `" << file_name << "'!" << std::endl;
+    std::cerr << "RRLib Logging >> Could not open file `" << file_name << "'!" << std::endl;
     return false;
   }
   return true;
@@ -197,13 +191,13 @@ const std::string tLoggingDomain::GetLevelString(eLogLevel level) const
 {
   switch (level)
   {
-  case eML_VERBOSE:
+  case eLL_VERBOSE:
     return "[verbose] ";
-  case eML_LOW:
+  case eLL_LOW:
     return "[low]     ";
-  case eML_MEDIUM:
+  case eLL_MEDIUM:
     return "[medium]  ";
-  case eML_HIGH:
+  case eLL_HIGH:
     return "[high]    ";
   default:
     return "          ";
@@ -227,13 +221,13 @@ const std::string tLoggingDomain::GetColoredOutputString(eLogLevel level) const
 {
   switch (level)
   {
-  case eML_VERBOSE:
+  case eLL_VERBOSE:
     return "\033[;2;32m";
-  case eML_LOW:
+  case eLL_LOW:
     return "\033[;2;33m";
-  case eML_MEDIUM:
+  case eLL_MEDIUM:
     return "\033[;1;34m";
-  case eML_HIGH:
+  case eLL_HIGH:
     return "\033[;1;31m";
   default:
     return "\033[;0m";

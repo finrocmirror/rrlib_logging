@@ -83,7 +83,7 @@ struct Test
 
   static void function()
   {
-    RRLIB_LOG_STREAM(eML_HIGH, my_domain) << "local class test" << std::endl;
+    RRLIB_LOG_STREAM(eLL_HIGH, my_domain) << "local class test" << std::endl;
   }
 };
 
@@ -92,21 +92,32 @@ struct Test
 
 int main(int argc, char **argv)
 {
+  if (!tLoggingDomainRegistry::GetInstance().ConfigureFromFile("logging_config.xml"))
+  {
+    std::cout << "Loading configuration failed!" << std::endl;
+    return EXIT_FAILURE;
+  }
+
   tLoggingDomainRegistry::GetInstance().SetOutputFileNamePrefix(basename(argv[0]));
 
-  tLoggingDomainRegistry::GetInstance().EnableDomain("global", true);
-  tLoggingDomainRegistry::GetInstance().SetDomainPrintsName("global", true);
-  tLoggingDomainRegistry::GetInstance().SetDomainPrintsTime("global", true);
-  tLoggingDomainRegistry::GetInstance().SetDomainPrintsLevel("global", true);
-  tLoggingDomainRegistry::GetInstance().SetDomainPrintsLocation("global", true);
-  tLoggingDomainRegistry::GetInstance().SetDomainMinMessageLevel("global", eML_VERBOSE);
-//  tLoggingDomainRegistry::GetInstance().SetDomainStreamID("global", eMS_FILE);
+
+//  std::cout << tLoggingDomainRegistry::GetInstance() << std::endl;
+
+//  tLoggingDomainRegistry::GetInstance().EnableDomain("global", true);
+//  tLoggingDomainRegistry::GetInstance().SetDomainPrintsName("global", true);
+//  tLoggingDomainRegistry::GetInstance().SetDomainPrintsTime("global", true);
+//  tLoggingDomainRegistry::GetInstance().SetDomainPrintsLevel("global", true);
+//  tLoggingDomainRegistry::GetInstance().SetDomainPrintsLocation("global", true);
+//  tLoggingDomainRegistry::GetInstance().SetDomainMinMessageLevel("global", eLL_VERBOSE);
+//  tLoggingDomainRegistry::GetInstance().SetDomainStreamID("global", eLS_FILE);
+
+//  tLoggingDomainRegistry::GetInstance().SetDomainStreamMask("global", eLSM_STDOUT | eLSM_FILE | eLSM_COMBINED_FILE);
 
 //  tLoggingDomainRegistry::GetInstance().EnableDomain(".local");
 //  tLoggingDomainRegistry::GetInstance().EnableDomain(".local.class");
 //  tLoggingDomainRegistry::GetInstance().EnableDomain(".example", true);
-//  tLoggingDomainRegistry::GetInstance().SetDomainMinMessageLevel(".example", eML_VERBOSE);
-//  tLoggingDomainRegistry::GetInstance().SetDomainStreamID(".example", eMS_COMBINED_FILE);
+//  tLoggingDomainRegistry::GetInstance().SetDomainMinMessageLevel(".example", eLL_VERBOSE);
+//  tLoggingDomainRegistry::GetInstance().SetDomainStreamID(".example", eLS_COMBINED_FILE);
 //  tLoggingDomainRegistry::GetInstance().EnableDomain("global.libA");
 //  tLoggingDomainRegistry::GetInstance().EnableDomain("global.libB");
 
@@ -114,9 +125,9 @@ int main(int argc, char **argv)
 
   CREATE_NAMED_LOGGING_DOMAIN(my_domain, "example_2");
 
-  RRLIB_LOG_STREAM(eML_MEDIUM) << "foo" << std::endl;
-  RRLIB_LOG_STREAM(eML_HIGH, my_domain) << "foo2" << std::endl;
-  RRLIB_LOG_MESSAGE(eML_LOW, ScopedLoggingDomain, "%s\n", "FOO");
+  RRLIB_LOG_STREAM(eLL_MEDIUM) << "foo" << std::endl;
+  RRLIB_LOG_STREAM(eLL_HIGH, my_domain) << "foo2" << std::endl;
+  RRLIB_LOG_MESSAGE(eLL_LOW, ScopedLoggingDomain, "%s\n", "FOO");
 
   libA::Test();
   libB::Test();

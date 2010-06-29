@@ -78,7 +78,7 @@
    
 // Macro for messages using printf syntax
 #define RRLIB_LOG_MESSAGE(level, domain, args...) \
-  if (level  >= ::rrlib::logging::eML_HIGH) \
+  if (level  >= ::rrlib::logging::eLL_HIGH) \
   { \
     RRLIB_LOG_MESSAGE_CALL(level, domain, args) \
   } \

@@ -55,6 +55,7 @@
 // Internal includes with ""
 //----------------------------------------------------------------------
 #include "tLoggingDomainConfiguration.h"
+#include "tLoggingStreamBuffer.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -89,8 +90,8 @@ class tLoggingDomain
 
   tLoggingDomainConfigurationSharedPointer configuration;
 
-//  std::ostream *stream;
-  mutable std::ofstream null_stream;
+  mutable tLoggingStreamBuffer stream_buffer;
+  mutable std::ostream stream;
   mutable std::ofstream file_stream;
 
   /*! The ctor of a top level domain
@@ -129,13 +130,13 @@ class tLoggingDomain
    */
   const bool OpenFileOutputStream() const;
 
-  /*! Get the output stream to be used in this domain
+  /*! Setup the output stream to be used in this domain
    *
-   * A domain can stream its input either to stdout, stderr or to a file.
+   * A domain can stream its input to stdout, stderr, an own file and/or its parent's file.
    *
-   * \returns A reference to the stream that should be used for messages
+   *\param mask   The bitmask that selects the output streams to use
    */
-  std::ostream &GetOutputStream() const;
+  void SetupOutputStream(eLogStreamMask mask) const;
 
   /*! Get the current time as string for internal use in messages
    *
@@ -282,6 +283,18 @@ public:
     return this->configuration->min_message_level;
   }
 
+  /*! Get the mask representing which streams are used for message output
+   *
+   * For message output several streams can be used. This bitmask configures
+   * which of them are enabled.
+   *
+   * \returns The bitmask that contains the enabled message streams
+   */
+  inline const eLogStreamMask GetStreamMask() const
+  {
+    return this->configuration->stream_mask;
+  }
+
   /*! Get a message stream from this domain
    *
    * This method is the streaming interface to this logging domain.
@@ -303,42 +316,43 @@ public:
    */
   inline std::ostream &GetMessageStream(const char *description, const char *function, const char *file, unsigned int line, eLogLevel level) const
   {
+    this->stream_buffer.Clear();
     if (level < this->GetMinMessageLevel() || !this->IsEnabled())
     {
-      return this->null_stream;
+      return this->stream;
     }
-    std::ostream &stream(this->GetOutputStream());
+    this->SetupOutputStream(this->configuration->stream_mask);
 
     if (this->GetPrintTime())
     {
-      stream << this->GetTimeString();
+      this->stream << this->GetTimeString();
     }
-    if (stream != this->file_stream)
-    {
-      stream << this->GetColoredOutputString(level);
-    }
+    this->SetupOutputStream(this->configuration->stream_mask & ~(eLSM_FILE | eLSM_COMBINED_FILE));
+    this->stream << this->GetColoredOutputString(level);
+    this->SetupOutputStream(this->configuration->stream_mask);
+
 #ifndef _RRLIB_LOGGING_LESS_OUTPUT_
     if (this->GetPrintName())
     {
-      stream << this->GetNameString();
+      this->stream << this->GetNameString();
     }
     if (this->GetPrintLevel())
     {
-      stream << this->GetLevelString(level);
+      this->stream << this->GetLevelString(level);
     }
 #endif
-    stream << description << "::" << function << " ";
+    this->stream << description << "::" << function << " ";
 #ifndef _RRLIB_LOGGING_LESS_OUTPUT_
     if (this->GetPrintLocation())
     {
-      stream << this->GetLocationString(file, line);
+      this->stream << this->GetLocationString(file, line);
     }
 #endif
-    stream << ">> ";
-    if (stream != this->file_stream)
-    {
-      stream << "\033[;0m";
-    }
+    this->stream << ">> ";
+    this->SetupOutputStream(this->configuration->stream_mask & ~(eLSM_FILE | eLSM_COMBINED_FILE));
+    this->stream << "\033[;0m";
+    this->SetupOutputStream(this->configuration->stream_mask);
+
     return stream;
   }
 
