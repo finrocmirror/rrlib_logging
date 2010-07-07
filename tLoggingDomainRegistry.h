@@ -25,11 +25,18 @@
  *
  * \date    2010-06-16
  *
- * \brief
+ * \brief Contains tLoggingDomainRegistry
  *
- * \b
+ * \b tLoggingDomainRegistry
  *
- * A few words for tLoggingDomainRegistry.h
+ * tLoggingDomainRegistry is a central management facility for logging
+ * domains and their configuration.
+ * In RRLib logging messages can be send via several logging domains.
+ * These have to be created and maintained using a single instance of
+ * tLoggingDomainRegistry. Thus, this class implements the singleton
+ * pattern and contains a list of logging domains and configurations
+ * that either were created along with active domains or were configured
+ * by the user from a file or calling the appropriate methods.
  *
  */
 //----------------------------------------------------------------------
@@ -71,14 +78,19 @@ namespace logging
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
+//! Shared pointer to instances of tLoggingDomain for user space
 typedef std::tr1::shared_ptr<const tLoggingDomain> tLoggingDomainSharedPointer;
 
 //----------------------------------------------------------------------
 // Class declaration
 //----------------------------------------------------------------------
-//! Short description of tLoggingDomainRegistry
-/*! A more detailed description of tLoggingDomainRegistry, which
- *  Tobias Foehst hasn't done yet!
+//! The central management facility for logging domains and their configuration
+/*! In RRLib logging messages can be send via several logging domains.
+ *  These have to be created and maintained using a single instance of
+ *  this class. Thus, this class implements the singleton pattern and
+ *  contains a list of active logging domains and configurations that
+ *  either were created along with active domains or were configured by
+ *  the user from a file or calling the appropriate methods.
  *
  */
 class tLoggingDomainRegistry

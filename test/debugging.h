@@ -45,10 +45,10 @@
 //----------------------------------------------------------------------
 #include "rrlib/logging/definitions.h"
 
-#define DEBUGMSG(args...)   RRLIB_LOG_MESSAGE(::rrlib::logging::eLL_VERBOSE, ScopedLoggingDomain, args)
-#define INFOMSG(args...)    RRLIB_LOG_MESSAGE(::rrlib::logging::eLL_LOW, ScopedLoggingDomain, args)
-#define WARNINGMSG(args...) RRLIB_LOG_MESSAGE(::rrlib::logging::eLL_MEDIUM, ScopedLoggingDomain, args)
-#define ERRORMSG(args...)   RRLIB_LOG_MESSAGE(::rrlib::logging::eLL_HIGH, ScopedLoggingDomain, args)
-#define USERMSG(args...)    RRLIB_LOG_MESSAGE(::rrlib::logging::eLL_ALWAYS, ScopedLoggingDomain, args)
+#define DEBUGMSG(args...)   RRLIB_LOG_MESSAGE(rrlib::logging::eLL_VERBOSE, ScopedLoggingDomain, args)
+#define INFOMSG(args...)    RRLIB_LOG_MESSAGE(rrlib::logging::eLL_LOW, ScopedLoggingDomain, args)
+#define WARNINGMSG(args...) RRLIB_LOG_MESSAGE(rrlib::logging::eLL_MEDIUM, ScopedLoggingDomain, args)
+#define ERRORMSG(args...)   RRLIB_LOG_MESSAGE(rrlib::logging::eLL_HIGH, ScopedLoggingDomain, args)
+#define USERMSG(args...)    RRLIB_LOG_MESSAGE(rrlib::logging::eLL_ALWAYS, ScopedLoggingDomain, args)
 
 #endif

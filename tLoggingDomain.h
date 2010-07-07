@@ -25,11 +25,15 @@
  *
  * \date    2010-06-16
  *
- * \brief
+ * \brief Contains tLoggingDomain
  *
- * \b
+ * \b tLoggingDomain
  *
- * A few words for tLoggingDomain.h
+ * The RRLib logging system is structured into hierarchical domains that
+ * can be created and configured via tLoggingDomainRegistry. That given,
+ * in the program implementation instances of the class tLoggingDomain
+ * wrap the stream that can be access either in C++ iostream style via
+ * operator << or in good old-fashioned C style using printf formatting.
  *
  */
 //----------------------------------------------------------------------
@@ -76,9 +80,12 @@ namespace logging
 //----------------------------------------------------------------------
 // Class declaration
 //----------------------------------------------------------------------
-//! Short description of tLoggingDomain
-/*! A more detailed description of tLoggingDomain, which
- *  Tobias Foehst hasn't done yet!
+//! This class implements messaging via a specific logging domain
+/*! The RRLib logging system is structured into hierarchical domains that
+ *  can be created and configured via tLoggingDomainRegistry. That given,
+ *  in the program implementation instances of this class wrap the stream
+ *  that can be access either in C++ iostream style via operator << or
+ *  in the good old-fashioned C style using printf formatting.
  *
  */
 class tLoggingDomain
@@ -187,9 +194,9 @@ class tLoggingDomain
    *
    * \param level   The according log level
    *
-   * \returns The string containg the control sequence
+   * \returns The string containing the control sequence
    */
-  const std::string GetColoredOutputString(eLogLevel level) const;
+  const std::string GetControlStringForColoredOutput(eLogLevel level) const;
 
 //----------------------------------------------------------------------
 // Public methods
@@ -328,7 +335,7 @@ public:
       this->stream << this->GetTimeString();
     }
     this->SetupOutputStream(this->configuration->stream_mask & ~(eLSM_FILE | eLSM_COMBINED_FILE));
-    this->stream << this->GetColoredOutputString(level);
+    this->stream << this->GetControlStringForColoredOutput(level);
     this->SetupOutputStream(this->configuration->stream_mask);
 
 #ifndef _RRLIB_LOGGING_LESS_OUTPUT_
@@ -390,6 +397,7 @@ public:
 
     this->GetMessageStream(description, function, file, line, level) << formatted_string_buffer;
   }
+
 };
 
 //----------------------------------------------------------------------

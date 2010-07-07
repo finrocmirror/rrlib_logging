@@ -9,7 +9,7 @@ CREATE_SCOPED_LOGGING_DOMAIN("libB");
 
 void Test()
 {
-  RRLIB_LOG_STREAM(::rrlib::logging::eLL_ALWAYS) << "Test in libB" << std::endl;
+  RRLIB_LOG_STREAM(rrlib::logging::eLL_ALWAYS) << "Test in libB" << std::endl;
 }
 }
 

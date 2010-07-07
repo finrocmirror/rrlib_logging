@@ -25,11 +25,20 @@
  *
  * \date    2010-06-23
  *
- * \brief
+ * \brief Contains tLoggingStreamBuffer
  *
- * \b
+ * \b tLoggingStreamBuffer
  *
- * A few words for tLoggingStreamBuffer.h
+ * tLoggingStreamBuffer is an implementation for std::ostreams with
+ * multiple sinks. Using a std::ostream for output internally uses a
+ * std::streambuf for the low level operations necessary to print the
+ * stream input to a file or terminal. By specializing std::streambuf in
+ * this class it is possible to collect the streambuffers of several
+ * ostreams and supply all these streams with own input,  like tee in
+ * UNIX shells.
+ *
+ * Having an empty buffer vector also implements a null stream that does
+ * not open /dev/null to swallow all input.
  *
  */
 //----------------------------------------------------------------------
@@ -70,9 +79,14 @@ namespace logging
 //----------------------------------------------------------------------
 // Class declaration
 //----------------------------------------------------------------------
-//! Short description of tLoggingStreamBuffer
-/*! A more detailed description of tLoggingSteamBuffer, which
- *  Tobias Foehst hasn't done yet!
+//! A streambuffer implementation for std::ostreams with multiple sinks
+/*! Using a std::ostream for output internally uses a std::streambuf for
+ *  the low level operations necessary to print the stream input to a
+ *  file or terminal. By specializing std::streambuf in this class it is
+ *  possible to collect the streambuffers of several ostreams and supply
+ *  all these streams with own input, like tee in UNIX shells.
+ *  Having an empty buffer vector also implements a null stream that does
+ *  not open /dev/null to swallow all input.
  *
  */
 class tLoggingStreamBuffer : public std::streambuf

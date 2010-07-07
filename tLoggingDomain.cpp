@@ -152,7 +152,7 @@ const bool tLoggingDomain::OpenFileOutputStream() const
               << "                 Consider calling tMessageDomainRegistry::GetInstance().SetOutputFileNamePrefix(basename(argv[0])) for example." << std::endl;
     return false;
   }
-  std::string file_name(file_name_prefix + "." + this->GetName() + ".log");
+  std::string file_name(file_name_prefix + this->GetName() + ".log");
   this->file_stream.open(file_name.c_str(), std::ios::out | std::ios::trunc);
   if (!this->file_stream.is_open())
   {
@@ -217,7 +217,7 @@ const std::string tLoggingDomain::GetLocationString(const char *file, unsigned i
 //----------------------------------------------------------------------
 // class tLoggingDomain GetColoredOutputString
 //----------------------------------------------------------------------
-const std::string tLoggingDomain::GetColoredOutputString(eLogLevel level) const
+const std::string tLoggingDomain::GetControlStringForColoredOutput(eLogLevel level) const
 {
   switch (level)
   {

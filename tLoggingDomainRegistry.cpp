@@ -261,7 +261,7 @@ bool tLoggingDomainRegistry::ConfigureFromFile(const std::string &file_name)
   try
   {
     tXMLDocument document(file_name);
-    return this->ConfigureFromXMLNode(document.GetRootElement());
+    return this->ConfigureFromXMLNode(document.GetRootNode());
   }
   catch (const tXML2WrapperException &e)
   {
@@ -277,7 +277,7 @@ bool tLoggingDomainRegistry::ConfigureFromXMLNode(const tXMLNode &node)
 {
   if (node.GetName() != "rrlib_logging")
   {
-    std::cerr << "RRLib Logging: tLoggingDomainRegistry::ConfigureFromXMLNode >> Unexpected content (Not a rrlib_logging tree)" << std::endl;
+    std::cerr << "RRLib Logging: tLoggingDomainRegistry::ConfigureFromXMLNode >> Unexpected content (Not an rrlib_logging tree)" << std::endl;
     return false;
   }
 

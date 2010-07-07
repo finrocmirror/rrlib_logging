@@ -121,13 +121,13 @@ int main(int argc, char **argv)
 //  tLoggingDomainRegistry::GetInstance().EnableDomain("global.libA");
 //  tLoggingDomainRegistry::GetInstance().EnableDomain("global.libB");
 
-  CREATE_SCOPED_LOGGING_DOMAIN("example");
+  CREATE_SCOPED_LOGGING_DOMAIN("main");
 
-  CREATE_NAMED_LOGGING_DOMAIN(my_domain, "example_2");
+  CREATE_NAMED_LOGGING_DOMAIN(my_domain, "main_named");
 
   RRLIB_LOG_STREAM(eLL_MEDIUM) << "foo" << std::endl;
   RRLIB_LOG_STREAM(eLL_HIGH, my_domain) << "foo2" << std::endl;
-  RRLIB_LOG_MESSAGE(eLL_LOW, ScopedLoggingDomain, "%s\n", "FOO");
+  RRLIB_LOG_MESSAGE(eLL_LOW, my_domain, "%s\n", "FOO");
 
   libA::Test();
   libB::Test();
