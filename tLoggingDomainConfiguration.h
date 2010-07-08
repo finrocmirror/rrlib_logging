@@ -177,7 +177,7 @@ const bool cDEFAULT_PRINT_NAME = false;              //!< Default print name set
 const bool cDEFAULT_PRINT_LEVEL = false;             //!< Default print level setting for reduced output mode
 const bool cDEFAULT_PRINT_LOCATION = false;          //!< Default print location setting for reduced output mode
 #else
-const eLogLevel cDEFAULT_MIN_LOG_LEVEL = eLL_MEDIUM; //!< Default min log level for reduced output mode
+const eLogLevel cDEFAULT_MIN_LOG_LEVEL = eLL_MEDIUM; //!< Default min log level for normal output mode
 const bool cDEFAULT_PRINT_TIME = false;              //!< Default print time setting for normal output mode
 const bool cDEFAULT_PRINT_NAME = false;              //!< Default print name setting for normal output mode
 const bool cDEFAULT_PRINT_LEVEL = false;             //!< Default print level setting for normal output mode

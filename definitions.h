@@ -119,6 +119,18 @@
 
 /*! Macro for creation of a new scoped logging domain
  *
+ *  Typical use of logging domains is the creation of a domain for
+ *  a specific scope. That means, that the domain is valid between
+ *  the enclosing curly brackets. It exists in the domain hierarchy
+ *  below the last defined domain of a higher scope.
+ *  Using the same name in different scopes at the same level
+ *  results in reopening the same domain and combining the log
+ *  messages.
+ *
+ *  The scoped logging domain is the default for following occurences
+ *  of RRLIB_LOG_STREAM and can be used in RRLIB_LOG_MESSAGE using
+ *  the symbol ScopedLoggingDomain.
+ *
  * \param name   The local part of the name in the domain tree.
  */
 #define CREATE_SCOPED_LOGGING_DOMAIN(name) \
@@ -136,7 +148,20 @@
     } \
   }; \
    
-/*! Macro for creation of a new scoped logging domain
+/*! Macro for creation of a new named logging domain
+ *
+ *  A named logging domain is the same like a scoped logging
+ *  domain, but can exist in parallel on the same scope. It then
+ *  has a symbolic name that can be specified in RRLIB_LOG_STREAM
+ *  or RRLIB_LOG_MESSAGE. Thus, it is possible to defined more
+ *  specific domains for one scope for purposes like writing data to
+ *  a file or being more selective in message processing.
+ *
+ *  In the domain hierarchy the named logging domain exists below the
+ *  last created ScopedLoggingDomain. That means that first creating
+ *  a named domain and then creating the scoped domain places both at
+ *  the same level whereas changing the order places the named domain
+ *  below the current ScopedLoggingDomain.
  *
  * \param class-name    The symbolic that can be used in following code to use the new domain
  * \param domain-name   The local part of the name in the domain tree.

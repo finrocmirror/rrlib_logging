@@ -69,7 +69,6 @@ using namespace rrlib::xml2;
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
-const char *cDEFAULT_DOMAIN_NAME = "global";
 
 //----------------------------------------------------------------------
 // Implementation
@@ -80,7 +79,7 @@ const char *cDEFAULT_DOMAIN_NAME = "global";
 //----------------------------------------------------------------------
 tLoggingDomainRegistry::tLoggingDomainRegistry()
 {
-  this->domain_configurations.push_back(tLoggingDomainConfigurationSharedPointer(new tLoggingDomainConfiguration(cDEFAULT_DOMAIN_NAME)));
+  this->domain_configurations.push_back(tLoggingDomainConfigurationSharedPointer(new tLoggingDomainConfiguration(".")));
   this->domain_configurations.back()->enabled = true;
   this->domains.push_back(std::tr1::shared_ptr<tLoggingDomain>(new tLoggingDomain(this->domain_configurations.back())));
 }
@@ -100,7 +99,7 @@ tLoggingDomainRegistry &tLoggingDomainRegistry::GetInstance()
 tLoggingDomainSharedPointer tLoggingDomainRegistry::GetSubDomain(const std::string &name, tLoggingDomainSharedPointer parent)
 {
   assert(name.length() > 0);
-  const std::string full_qualified_domain_name(parent->GetName() + "." + name);
+  const std::string full_qualified_domain_name(parent->GetName() + (parent->parent ? "." : "") + name);
   size_t i = this->GetDomainIndexByName(full_qualified_domain_name);
   if (i == this->domains.size())
   {
@@ -208,10 +207,11 @@ void tLoggingDomainRegistry::SetDomainStreamMask(const std::string &name, eLogSt
 //----------------------------------------------------------------------
 const size_t tLoggingDomainRegistry::GetDomainIndexByName(const std::string &name) const
 {
-  std::string full_name(name[0] == '.' ? cDEFAULT_DOMAIN_NAME + name : name);
+//  std::string full_name(name[0] == '.' ? cDEFAULT_DOMAIN_NAME + name : name);
   for (size_t i = 0; i < this->domains.size(); ++i)
   {
-    if (this->domains[i]->GetName() == full_name)
+//    if (this->domains[i]->GetName() == full_name)
+    if (this->domains[i]->GetName() == name)
     {
       return i;
     }
@@ -224,15 +224,17 @@ const size_t tLoggingDomainRegistry::GetDomainIndexByName(const std::string &nam
 //----------------------------------------------------------------------
 tLoggingDomainConfigurationSharedPointer tLoggingDomainRegistry::GetConfigurationByName(const std::string &name)
 {
-  std::string full_name(name[0] == '.' ? cDEFAULT_DOMAIN_NAME + name : name);
+//  std::string full_name(name[0] == '.' ? cDEFAULT_DOMAIN_NAME + name : name);
   for (std::vector<tLoggingDomainConfigurationSharedPointer>::iterator it = this->domain_configurations.begin(); it != this->domain_configurations.end(); ++it)
   {
-    if ((*it)->name == full_name)
+//    if ((*it)->name == full_name)
+    if ((*it)->name == name)
     {
       return *it;
     }
   }
-  this->domain_configurations.push_back(tLoggingDomainConfigurationSharedPointer(new tLoggingDomainConfiguration(full_name)));
+//  this->domain_configurations.push_back(tLoggingDomainConfigurationSharedPointer(new tLoggingDomainConfiguration(full_name)));
+  this->domain_configurations.push_back(tLoggingDomainConfigurationSharedPointer(new tLoggingDomainConfiguration(name)));
   return this->domain_configurations.back();
 }
 
@@ -318,7 +320,9 @@ bool tLoggingDomainRegistry::AddConfigurationFromXMLNode(const tXMLNode &node, c
 
   assert(node.GetName() == "domain");
 
-  const std::string name((parent_name.length() ? parent_name + "." : "") + node.GetStringAttribute("name"));
+  const std::string prefix((parent_name == "." ? "" : parent_name) + ".");
+  const std::string node_name(node.GetStringAttribute("name"));
+  const std::string name(prefix + (!parent_name.length() && node_name == "global" ? "" : node_name));
 
   if (node.HasAttribute("configures_sub_tree"))
   {
