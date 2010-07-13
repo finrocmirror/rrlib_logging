@@ -55,13 +55,13 @@
 #include <tr1/memory>
 
 #ifdef _RRLIB_XML2_WRAPPER_PRESENT_
-#include "rrlib/xml2_wrapper/tXMLNode.h"
+#include "xml2_wrapper/tXMLNode.h"
 #endif
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "tLoggingDomain.h"
-#include "tLoggingDomainConfiguration.h"
+#include "logging/tLoggingDomain.h"
+#include "logging/tLoggingDomainConfiguration.h"
 
 //----------------------------------------------------------------------
 // Debugging

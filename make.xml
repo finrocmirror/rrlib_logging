@@ -1,6 +1,6 @@
 <targets>
 
-  <rrlib name="logging" optionallibs="rrlib_xml2_wrapper">
+  <rrlib name="logging" libs="boost_thread" optionallibs="rrlib_xml2_wrapper">
     <sources>
       *.cpp
     </sources>

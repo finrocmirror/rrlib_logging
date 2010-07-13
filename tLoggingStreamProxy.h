@@ -1,0 +1,184 @@
+//
+// You received this file as part of RRLib
+// Robotics Research Library
+//
+// Copyright (C) AG Robotersysteme TU Kaiserslautern
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+//
+//----------------------------------------------------------------------
+/*!\file    tLoggingStreamProxy.h
+ *
+ * \author  Tobias Foehst
+ *
+ * \date    2010-07-06
+ *
+ * \brief Contains tLoggingStreamProxy
+ *
+ * \b tLoggingStreamProxy
+ *
+ * This proxy class for std::ostream allows synchronized streaming.
+ * Streaming typically has the problem that one can not easily determine
+ * the time all output for one message is processed. Thus, locking the
+ * stream for synchronized output is not directly possible.
+ *
+ * By returning a proxy for each output stream the logging domain creates
+ * creates a temporary object that lives as long as consecutive streaming
+ * operations are performed. Afterwards, the proxy will be desctructed
+ * immediately. Hence, the correct times for acquiring and releasing the
+ * lock are defined.
+ *
+ * Assigning the proxy object to a local variable allows locking over
+ * multiple lines of code if this is really necessary. However, creation
+ * on the heap is not supported to avoid dangling locks.
+ *
+ */
+//----------------------------------------------------------------------
+#ifndef _rrlib_logging_include_guard_
+#error Invalid include directive. Try #include "rrlib/logging/definitions.h" instead.
+#endif
+
+#ifndef rrlib_logging_tLoggingStreamProxy_h_
+#define rrlib_logging_tLoggingStreamProxy_h_
+
+//----------------------------------------------------------------------
+// External includes with <>
+//----------------------------------------------------------------------
+#include <iostream>
+#include <boost/thread/recursive_mutex.hpp>
+
+//----------------------------------------------------------------------
+// Internal includes with ""
+//----------------------------------------------------------------------
+
+//----------------------------------------------------------------------
+// Debugging
+//----------------------------------------------------------------------
+
+//----------------------------------------------------------------------
+// Namespace declaration
+//----------------------------------------------------------------------
+namespace rrlib
+{
+namespace logging
+{
+
+//----------------------------------------------------------------------
+// Forward declarations / typedefs / enums
+//----------------------------------------------------------------------
+
+//----------------------------------------------------------------------
+// Class declaration
+//----------------------------------------------------------------------
+//! A proxy class for std::ostream that allows synchronized streaming
+/*! Using streaming has the problem that one can not easily determine
+ *  the time all output for one message is processed. Thus, locking the
+ *  stream for synchronized output is not directly possible.
+ *
+ *  By returning a proxy for each output stream the logging domain creates
+ *  creates a temporary object that lives as long as consecutive streaming
+ *  operations are performed. Afterwards, the proxy will be desctructed
+ *  immediately. Hence, the correct times for acquiring and releasing the
+ *  lock are defined.
+ *
+ *  Assigning the proxy object to a local variable allows locking over
+ *  multiple lines of code if this is really necessary. However, creation
+ *  on the heap is not supported to avoid dangling locks.
+ *
+ */
+class tLoggingStreamProxy
+{
+  std::ostream &stream;
+
+  static boost::recursive_mutex &GetMutex()
+  {
+    static boost::recursive_mutex mutex;
+    return mutex;
+  }
+
+  // Prohibit assignment to non-const references
+  tLoggingStreamProxy &operator = (const tLoggingStreamProxy &other);
+
+  // Prohibit creation on heap
+  void *operator new(size_t size);
+
+//----------------------------------------------------------------------
+// Public methods
+//----------------------------------------------------------------------
+public:
+
+  /*! The ctor of tLoggingStreamProxy
+   *
+   * Acquires a lock for the output.
+   * This methods blocks until the lock can be acquired.
+   *
+   * \param stream   The std::ostream that is used via this proxy
+   */
+  explicit tLoggingStreamProxy(std::ostream &stream)
+      : stream(stream)
+  {
+    GetMutex().lock();
+  }
+
+  /*! The dtor of tLoggingStreamProxy
+   *
+   * Releases the lock
+   */
+  ~tLoggingStreamProxy()
+  {
+    GetMutex().unlock();
+  }
+
+  /*! Streaming operator (forwarder)
+   *
+   * This method forwards the streaming operation to the wrapped
+   * stream object
+   *
+   * \param value   The object to put into the stream
+   *
+   * \returns A reference to the altered stream (in this case the proxy)
+   */
+  template <typename T>
+  inline tLoggingStreamProxy &operator << (const T &value)
+  {
+    this->stream << value;
+    return *this;
+  }
+
+  /*! Streaming operator for functions (forwarder)
+   *
+   * This method enables manipulators like std::endl, etc. for
+   * this proxy class by calling their functions on the wrapped
+   * stream
+   *
+   * \param manipulator   The function pointer for the manipulation
+   *
+   * \returns A reference to the altered stream (in this case the proxy)
+   */
+  inline tLoggingStreamProxy &operator << (std::ostream &(&manipulator)(std::ostream &))
+  {
+    manipulator(this->stream);
+    return *this;
+  }
+
+};
+
+//----------------------------------------------------------------------
+// End of namespace declaration
+//----------------------------------------------------------------------
+}
+}
+
+#endif

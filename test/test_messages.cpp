@@ -48,13 +48,13 @@ extern "C"
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "rrlib/logging/test/libA/libA.h"
-#include "rrlib/logging/test/libB/libB.h"
+#include "logging/test/libA/libA.h"
+#include "logging/test/libB/libB.h"
 
 //----------------------------------------------------------------------
 // Debugging
 //----------------------------------------------------------------------
-#include "rrlib/logging/test/debugging.h"
+#include "logging/test/debugging.h"
 
 //----------------------------------------------------------------------
 // Namespace usage
@@ -139,6 +139,8 @@ int main(int argc, char **argv)
   WARNINGMSG("blablabla Warning\n");
   ERRORMSG("blablabla Error\n");
   USERMSG("blablabla User\n");
+
+
 
   return EXIT_SUCCESS;
 }

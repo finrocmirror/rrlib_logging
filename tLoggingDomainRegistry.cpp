@@ -41,13 +41,13 @@
 //----------------------------------------------------------------------
 #ifdef _RRLIB_XML2_WRAPPER_PRESENT_
 #include <iostream>
-#include "rrlib/xml2_wrapper/tXMLDocument.h"
+#include "xml2_wrapper/tXMLDocument.h"
 #endif
 
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "tLoggingDomain.h"
+#include "logging/tLoggingDomain.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -207,10 +207,8 @@ void tLoggingDomainRegistry::SetDomainStreamMask(const std::string &name, eLogSt
 //----------------------------------------------------------------------
 const size_t tLoggingDomainRegistry::GetDomainIndexByName(const std::string &name) const
 {
-//  std::string full_name(name[0] == '.' ? cDEFAULT_DOMAIN_NAME + name : name);
   for (size_t i = 0; i < this->domains.size(); ++i)
   {
-//    if (this->domains[i]->GetName() == full_name)
     if (this->domains[i]->GetName() == name)
     {
       return i;
@@ -224,16 +222,13 @@ const size_t tLoggingDomainRegistry::GetDomainIndexByName(const std::string &nam
 //----------------------------------------------------------------------
 tLoggingDomainConfigurationSharedPointer tLoggingDomainRegistry::GetConfigurationByName(const std::string &name)
 {
-//  std::string full_name(name[0] == '.' ? cDEFAULT_DOMAIN_NAME + name : name);
   for (std::vector<tLoggingDomainConfigurationSharedPointer>::iterator it = this->domain_configurations.begin(); it != this->domain_configurations.end(); ++it)
   {
-//    if ((*it)->name == full_name)
     if ((*it)->name == name)
     {
       return *it;
     }
   }
-//  this->domain_configurations.push_back(tLoggingDomainConfigurationSharedPointer(new tLoggingDomainConfiguration(full_name)));
   this->domain_configurations.push_back(tLoggingDomainConfigurationSharedPointer(new tLoggingDomainConfiguration(name)));
   return this->domain_configurations.back();
 }

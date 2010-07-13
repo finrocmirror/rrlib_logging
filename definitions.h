@@ -48,8 +48,8 @@
 // Internal includes with ""
 //----------------------------------------------------------------------
 #define _rrlib_logging_include_guard_
-#include "tLoggingDomain.h"
-#include "tLoggingDomainRegistry.h"
+#include "logging/tLoggingDomain.h"
+#include "logging/tLoggingDomainRegistry.h"
 
 // macros for internal use
 #define RRLIB_LOG_STREAM_CALL(level, domain...) \

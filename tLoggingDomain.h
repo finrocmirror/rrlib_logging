@@ -58,8 +58,9 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "tLoggingDomainConfiguration.h"
-#include "tLoggingStreamBuffer.h"
+#include "logging/tLoggingDomainConfiguration.h"
+#include "logging/tLoggingStreamBuffer.h"
+#include "logging/tLoggingStreamProxy.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -321,12 +322,13 @@ public:
    *
    * \returns A reference to the stream that can be used for the remaining message parts
    */
-  inline std::ostream &GetMessageStream(const char *description, const char *function, const char *file, unsigned int line, eLogLevel level) const
+  inline tLoggingStreamProxy GetMessageStream(const char *description, const char *function, const char *file, unsigned int line, eLogLevel level) const
   {
+    tLoggingStreamProxy stream_proxy(this->stream);
     this->stream_buffer.Clear();
     if (level < this->GetMinMessageLevel() || !this->IsEnabled())
     {
-      return this->stream;
+      return stream_proxy;
     }
     this->SetupOutputStream(this->configuration->stream_mask);
 
@@ -360,7 +362,7 @@ public:
     this->stream << "\033[;0m";
     this->SetupOutputStream(this->configuration->stream_mask);
 
-    return stream;
+    return stream_proxy;
   }
 
   /*! A printf like variant of using logging domains for message output

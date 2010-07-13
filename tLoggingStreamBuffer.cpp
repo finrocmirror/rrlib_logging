@@ -34,7 +34,7 @@
  */
 //----------------------------------------------------------------------
 #define _rrlib_logging_include_guard_
-#include "tLoggingStreamBuffer.h"
+#include "logging/tLoggingStreamBuffer.h"
 
 //----------------------------------------------------------------------
 // External includes with <>

@@ -43,7 +43,7 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "rrlib/logging/definitions.h"
+#include "logging/definitions.h"
 
 #define DEBUGMSG(args...)   RRLIB_LOG_MESSAGE(rrlib::logging::eLL_VERBOSE, ScopedLoggingDomain, args)
 #define INFOMSG(args...)    RRLIB_LOG_MESSAGE(rrlib::logging::eLL_LOW, ScopedLoggingDomain, args)
