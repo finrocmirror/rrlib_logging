@@ -48,15 +48,15 @@
 // Internal includes with ""
 //----------------------------------------------------------------------
 #define _rrlib_logging_include_guard_
-#include "logging/tLoggingDomain.h"
-#include "logging/tLoggingDomainRegistry.h"
+#include "logging/tLogDomain.h"
+#include "logging/tLogDomainRegistry.h"
 
 // macros for internal use
 #define RRLIB_LOG_STREAM_CALL(level, domain...) \
-  (#domain[0] ? domain::GetDomainForUseInRRLibMacros() : ScopedLoggingDomain::GetDomainForUseInRRLibMacros())->GetMessageStream(GetDescription(), __FUNCTION__, __FILE__, __LINE__, level) \
+  (#domain[0] ? domain::GetDomainForUseInRRLibMacros() : ScopedLoggingDomain::GetDomainForUseInRRLibMacros())->GetMessageStream(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level) \
    
 #define RRLIB_LOG_MESSAGE_CALL(level, domain, args...) \
-  domain::GetDomainForUseInRRLibMacros()->PrintMessage(GetDescription(), __FUNCTION__, __FILE__, __LINE__, level, args); \
+  domain::GetDomainForUseInRRLibMacros()->PrintMessage(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level, args); \
    
 /*
 #define RRLIB_LOG_MESSAGE_CALL(level, first_arg, args...) \
@@ -88,7 +88,7 @@
  * \param args     The format string for printf and the optional arguments to be printed.
  */
 #define RRLIB_LOG_MESSAGE(level, domain, args...) \
-  if (level  >= rrlib::logging::eLL_HIGH) \
+  if (level  <= rrlib::logging::eLL_DEBUG) \
   { \
     RRLIB_LOG_MESSAGE_CALL(level, domain, args) \
   } \
@@ -137,12 +137,12 @@
   typedef ScopedLoggingDomain ParentScopedLoggingDomain; \
   struct ScopedLoggingDomain \
   { \
-    static rrlib::logging::tLoggingDomainSharedPointer GetDomain()    \
+    static rrlib::logging::tLogDomainSharedPointer GetDomain()    \
     { \
-      static rrlib::logging::tLoggingDomainSharedPointer instance(rrlib::logging::tLoggingDomainRegistry::GetInstance().GetSubDomain(name, ParentScopedLoggingDomain::GetDomain())); \
+      static rrlib::logging::tLogDomainSharedPointer instance(rrlib::logging::tLogDomainRegistry::GetInstance().GetSubDomain(name, ParentScopedLoggingDomain::GetDomain())); \
       return instance; \
     } \
-    static inline rrlib::logging::tLoggingDomainSharedPointer GetDomainForUseInRRLibMacros() \
+    static inline rrlib::logging::tLogDomainSharedPointer GetDomainForUseInRRLibMacros() \
     { \
       return GetDomain(); \
     } \
@@ -169,12 +169,12 @@
 #define CREATE_NAMED_LOGGING_DOMAIN(class_name, domain_name) \
   struct class_name \
   { \
-    static rrlib::logging::tLoggingDomainSharedPointer GetDomain()    \
+    static rrlib::logging::tLogDomainSharedPointer GetDomain()    \
     { \
-      static rrlib::logging::tLoggingDomainSharedPointer instance(rrlib::logging::tLoggingDomainRegistry::GetInstance().GetSubDomain(domain_name, ScopedLoggingDomain::GetDomain())); \
+      static rrlib::logging::tLogDomainSharedPointer instance(rrlib::logging::tLogDomainRegistry::GetInstance().GetSubDomain(domain_name, ScopedLoggingDomain::GetDomain())); \
       return instance; \
     } \
-    static inline rrlib::logging::tLoggingDomainSharedPointer GetDomainForUseInRRLibMacros() \
+    static inline rrlib::logging::tLogDomainSharedPointer GetDomainForUseInRRLibMacros() \
     { \
       return GetDomain(); \
     } \
@@ -184,26 +184,26 @@
 // The default global scoped logging domain
 struct ScopedLoggingDomain
 {
-  static rrlib::logging::tLoggingDomainSharedPointer GetDomain()
+  static rrlib::logging::tLogDomainSharedPointer GetDomain()
   {
-    return rrlib::logging::tLoggingDomainRegistry::GetDefaultDomain();
+    return rrlib::logging::tLogDomainRegistry::GetDefaultDomain();
   }
-  static rrlib::logging::tLoggingDomainSharedPointer GetDomainForUseInRRLibMacros()
+  static rrlib::logging::tLogDomainSharedPointer GetDomainForUseInRRLibMacros()
   {
     return GetDomain();
   }
 };
 
-// The default global GetDescription definition
-inline const char *GetDescription()
+// The default global GetLogDescription definition
+inline const char *GetLogDescription()
 {
   return "<Description not defined>";
 }
 
 // To trick the compiler we need a global function declaration
-inline rrlib::logging::tLoggingDomainSharedPointer GetDomainForUseInRRLibMacros()
+inline rrlib::logging::tLogDomainSharedPointer GetDomainForUseInRRLibMacros()
 {
-  return rrlib::logging::tLoggingDomainSharedPointer();
+  return rrlib::logging::tLogDomainSharedPointer();
 }
 
 #endif

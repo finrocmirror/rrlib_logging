@@ -19,19 +19,19 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    tLoggingDomainConfiguration.h
+/*!\file    tLogDomainConfiguration.h
  *
  * \author  Tobias Foehst
  *
  * \date    2010-06-20
  *
- * \brief Contains tLoggingDomainConfiguration and corresponding enumerations eLogLevel, eLogStream, eLogStreamMask
+ * \brief Contains tLogDomainConfiguration and corresponding enumerations eLogLevel, eLogStream, eLogStreamMask
  *
- * \b tLoggingDomainConfiguration
+ * \b tLogDomainConfiguration
  *
- * tLoggingDomainConfiguration encapsulates the configuration of logging
+ * tLogDomainConfiguration encapsulates the configuration of logging
  * domains in the RRLib logging facility. It therefore stores settings
- * like enabled output fields, min. message level, etc.
+ * like enabled output fields, max. message level, etc.
  *
  *
  * \b eLogLevel
@@ -51,20 +51,14 @@
  * or into on combined file for all domains that are recursively
  * configured in one subtree of the domain hierarchy.
  *
- *
- * \b eLogStreamMask
- *
- * Using this enumeration enables specification of multiple log streams
- * via a bitmask techniques.
- *
  */
 //----------------------------------------------------------------------
 #ifndef _rrlib_logging_include_guard_
 #error Invalid include directive. Try #include "rrlib/logging/definitions.h" instead.
 #endif
 
-#ifndef rrlib_logging_tLoggingDomainConfiguration_h_
-#define rrlib_logging_tLoggingDomainConfiguration_h_
+#ifndef rrlib_logging_tLogDomainConfiguration_h_
+#define rrlib_logging_tLogDomainConfiguration_h_
 
 //----------------------------------------------------------------------
 // External includes with <>
@@ -94,12 +88,15 @@ namespace logging
 //! Enumeration type that contains the available message levels
 enum eLogLevel
 {
-  eLL_VERBOSE,    //!< Messages of this level should only be used for debugging purposes
-  eLL_LOW,        //!< Lower level message (not processed when _RRLIB_LOGGING_LESS_OUTPUT_ is defined)
-  eLL_MEDIUM,     //!< Medium level messages (default min. level when _RRLIB_LOGGING_LESS_OUTPUT_ is not defined)
-  eLL_HIGH,       //!< Higher level messages (default min. level when _RRLIB_LOGGING_LESS_OUTPUT_ is defined)
-  eLL_ALWAYS,     //!< Messages of this level are always shown if the domain is active
-  eLL_DIMENSION   //!< Endmarker and dimension of eLogLevel
+  eLL_USER,             //!< Can be used to give info to the user and is always shown if domain is active
+  eLL_ERROR,            //!< Can be used to inform about errors and is always show if domain is active
+  eLL_WARNING,          //!< Can be used to inform about warnings (default max level with _RRLIB_LOG_LESS_OUTPUT_)
+  eLL_DEBUG_WARNING,    //!< Debug info with warning character
+  eLL_DEBUG,            //!< Debug info about coarse program flow (default max level without _RRLIB_LOG_LESS_OUTPUT_)
+  eLL_DEBUG_VERBOSE_1,  //!< Higher detail debug info (not available in release mode)
+  eLL_DEBUG_VERBOSE_2,  //!< Higher detail debug info (not available in release mode)
+  eLL_DEBUG_VERBOSE_3,  //!< Higher detail debug info (not available in release mode)
+  eLL_DIMENSION         //!< Endmarker and dimension of eLogLevel
 };
 
 //! Enumeration type that contains the available message streams
@@ -171,17 +168,17 @@ inline const eLogStreamMask &operator |= (eLogStreamMask &a, const eLogStreamMas
 }
 
 #ifdef _RRLIB_LOGGING_LESS_OUTPUT_
-const eLogLevel cDEFAULT_MIN_LOG_LEVEL = eLL_HIGH;   //!< Default min log level for reduced output mode
-const bool cDEFAULT_PRINT_TIME = false;              //!< Default print time setting for reduced output mode
-const bool cDEFAULT_PRINT_NAME = false;              //!< Default print name setting for reduced output mode
-const bool cDEFAULT_PRINT_LEVEL = false;             //!< Default print level setting for reduced output mode
-const bool cDEFAULT_PRINT_LOCATION = false;          //!< Default print location setting for reduced output mode
+const eLogLevel cDEFAULT_MAX_LOG_LEVEL = eLL_WARNING; //!< Default max log level for reduced output mode
+const bool cDEFAULT_PRINT_TIME = false;               //!< Default print time setting for reduced output mode
+const bool cDEFAULT_PRINT_NAME = false;               //!< Default print name setting for reduced output mode
+const bool cDEFAULT_PRINT_LEVEL = false;              //!< Default print level setting for reduced output mode
+const bool cDEFAULT_PRINT_LOCATION = false;           //!< Default print location setting for reduced output mode
 #else
-const eLogLevel cDEFAULT_MIN_LOG_LEVEL = eLL_MEDIUM; //!< Default min log level for normal output mode
-const bool cDEFAULT_PRINT_TIME = false;              //!< Default print time setting for normal output mode
-const bool cDEFAULT_PRINT_NAME = false;              //!< Default print name setting for normal output mode
-const bool cDEFAULT_PRINT_LEVEL = false;             //!< Default print level setting for normal output mode
-const bool cDEFAULT_PRINT_LOCATION = true;           //!< Default print location setting for normal output mode
+const eLogLevel cDEFAULT_MAX_LOG_LEVEL = eLL_DEBUG;   //!< Default max log level for normal output mode
+const bool cDEFAULT_PRINT_TIME = false;               //!< Default print time setting for normal output mode
+const bool cDEFAULT_PRINT_NAME = false;               //!< Default print name setting for normal output mode
+const bool cDEFAULT_PRINT_LEVEL = false;              //!< Default print level setting for normal output mode
+const bool cDEFAULT_PRINT_LOCATION = true;            //!< Default print location setting for normal output mode
 #endif
 
 //----------------------------------------------------------------------
@@ -189,17 +186,17 @@ const bool cDEFAULT_PRINT_LOCATION = true;           //!< Default print location
 //----------------------------------------------------------------------
 //! This class encapsulates the configuration of logging domains
 /*! Each logging domain has its own configuration consisting of settings
- *  like enabled output fields, min. message level, etc.
+ *  like enabled output fields, max. message level, etc.
  *  It is a implemented common structure that can be used by instances of
- *  tLoggingDomain and tLoggingDomainRegistry. Thus, it should not be
+ *  tLogDomain and tLogDomainRegistry. Thus, it should not be
  *  instantiated or used by other classes and is declared totally private
  *  with the mentioned classes as friends.
  *
  */
-class tLoggingDomainConfiguration
+class tLogDomainConfiguration
 {
-  friend class tLoggingDomainRegistry;
-  friend class tLoggingDomain;
+  friend class tLogDomainRegistry;
+  friend class tLogDomain;
 
   std::string name;
   bool configure_sub_tree;
@@ -209,10 +206,10 @@ class tLoggingDomainConfiguration
   bool print_name;
   bool print_level;
   bool print_location;
-  eLogLevel min_message_level;
+  eLogLevel max_message_level;
   eLogStreamMask stream_mask;
 
-  explicit tLoggingDomainConfiguration(const std::string &name)
+  explicit tLogDomainConfiguration(const std::string &name)
       : name(name),
       configure_sub_tree(false),
       enabled(false),
@@ -220,22 +217,22 @@ class tLoggingDomainConfiguration
       print_name(cDEFAULT_PRINT_NAME),
       print_level(cDEFAULT_PRINT_LEVEL),
       print_location(cDEFAULT_PRINT_LOCATION),
-      min_message_level(cDEFAULT_MIN_LOG_LEVEL),
+      max_message_level(cDEFAULT_MAX_LOG_LEVEL),
       stream_mask(eLSM_STDOUT)
   {}
 
-  tLoggingDomainConfiguration(const tLoggingDomainConfiguration &other)
+  tLogDomainConfiguration(const tLogDomainConfiguration &other)
       : configure_sub_tree(other.configure_sub_tree),
       enabled(other.enabled),
       print_time(other.print_time),
       print_name(other.print_name),
       print_level(other.print_level),
       print_location(other.print_location),
-      min_message_level(other.min_message_level),
+      max_message_level(other.max_message_level),
       stream_mask(other.stream_mask)
   {}
 
-  tLoggingDomainConfiguration &operator = (const tLoggingDomainConfiguration other)
+  tLogDomainConfiguration &operator = (const tLogDomainConfiguration other)
   {
     this->configure_sub_tree = other.configure_sub_tree;
     this->enabled = other.enabled;
@@ -243,14 +240,14 @@ class tLoggingDomainConfiguration
     this->print_name = other.print_name;
     this->print_level = other.print_level;
     this->print_location = other.print_location;
-    this->min_message_level = other.min_message_level;
+    this->max_message_level = other.max_message_level;
     this->stream_mask = other.stream_mask;
     return *this;
   }
 };
 
-//! Shared pointer to instances of tLoggingDomainConfiguration
-typedef std::tr1::shared_ptr<tLoggingDomainConfiguration> tLoggingDomainConfigurationSharedPointer;
+//! Shared pointer to instances of tLogDomainConfiguration
+typedef std::tr1::shared_ptr<tLogDomainConfiguration> tLogDomainConfigurationSharedPointer;
 
 //----------------------------------------------------------------------
 // End of namespace declaration

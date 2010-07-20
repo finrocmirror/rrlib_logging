@@ -19,21 +19,21 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    tLoggingDomainRegistry.h
+/*!\file    tLogDomainRegistry.h
  *
  * \author  Tobias Foehst
  *
  * \date    2010-06-16
  *
- * \brief Contains tLoggingDomainRegistry
+ * \brief Contains tLogDomainRegistry
  *
- * \b tLoggingDomainRegistry
+ * \b tLogDomainRegistry
  *
- * tLoggingDomainRegistry is a central management facility for logging
+ * tLogDomainRegistry is a central management facility for logging
  * domains and their configuration.
  * In RRLib logging messages can be send via several logging domains.
  * These have to be created and maintained using a single instance of
- * tLoggingDomainRegistry. Thus, this class implements the singleton
+ * tLogDomainRegistry. Thus, this class implements the singleton
  * pattern and contains a list of logging domains and configurations
  * that either were created along with active domains or were configured
  * by the user from a file or calling the appropriate methods.
@@ -44,8 +44,8 @@
 #error Invalid include directive. Try #include "rrlib/logging/definitions.h" instead.
 #endif
 
-#ifndef rrlib_logging_tLoggingDomainRegistry_h_
-#define rrlib_logging_tLoggingDomainRegistry_h_
+#ifndef rrlib_logging_tLogDomainRegistry_h_
+#define rrlib_logging_tLogDomainRegistry_h_
 
 //----------------------------------------------------------------------
 // External includes with <>
@@ -60,8 +60,8 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "logging/tLoggingDomain.h"
-#include "logging/tLoggingDomainConfiguration.h"
+#include "logging/tLogDomain.h"
+#include "logging/tLogDomainConfiguration.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -78,8 +78,8 @@ namespace logging
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
-//! Shared pointer to instances of tLoggingDomain for user space
-typedef std::tr1::shared_ptr<const tLoggingDomain> tLoggingDomainSharedPointer;
+//! Shared pointer to instances of tLogDomain for user space
+typedef std::tr1::shared_ptr<const tLogDomain> tLogDomainSharedPointer;
 
 //----------------------------------------------------------------------
 // Class declaration
@@ -93,17 +93,17 @@ typedef std::tr1::shared_ptr<const tLoggingDomain> tLoggingDomainSharedPointer;
  *  the user from a file or calling the appropriate methods.
  *
  */
-class tLoggingDomainRegistry
+class tLogDomainRegistry
 {
   std::string file_name_prefix;
-  std::vector<std::tr1::shared_ptr<tLoggingDomain> > domains;
-  std::vector<tLoggingDomainConfigurationSharedPointer> domain_configurations;
+  std::vector<std::tr1::shared_ptr<tLogDomain> > domains;
+  std::vector<tLogDomainConfigurationSharedPointer> domain_configurations;
 
-  /*! Ctor of tLoggingDomainRegistry
+  /*! Ctor of tLogDomainRegistry
    *
    * Private default ctor for singleton pattern
    */
-  tLoggingDomainRegistry();
+  tLogDomainRegistry();
 
   /*! Get the index of the domain with the given name
    *
@@ -124,7 +124,7 @@ class tLoggingDomainRegistry
    *
    * \returns The wanted domain configuration as a shared pointer
    */
-  tLoggingDomainConfigurationSharedPointer GetConfigurationByName(const std::string &name);
+  tLogDomainConfigurationSharedPointer GetConfigurationByName(const std::string &name);
 
   /*! Update configuration the subtree of a domain for recursion
    *
@@ -164,7 +164,7 @@ public:
    *
    * \returns The only instance of this class that should exist
    */
-  static tLoggingDomainRegistry &GetInstance();
+  static tLogDomainRegistry &GetInstance();
 
   /*! Get the default domain
    *
@@ -173,7 +173,7 @@ public:
    *
    * \returns The default domain object
    */
-  static inline tLoggingDomainSharedPointer GetDefaultDomain()
+  static inline tLogDomainSharedPointer GetDefaultDomain()
   {
     return GetInstance().domains[0];
   }
@@ -190,7 +190,7 @@ public:
    *
    * \returns The found or newly created domain object as a shared pointer
    */
-  tLoggingDomainSharedPointer GetSubDomain(const std::string &name, tLoggingDomainSharedPointer parent);
+  tLogDomainSharedPointer GetSubDomain(const std::string &name, tLogDomainSharedPointer parent);
 
   /*! Set a prefix for filenames that are created as log
    *
@@ -268,7 +268,7 @@ public:
   /*! Set if the domain is enabled or not
    *
    * If a domain is not enabled, none of its messages will be visible
-   * regardless of its min message level.
+   * regardless of its max message level.
    *
    * \param name    The full qualified name of the domain
    * \param value   The new value of the setting
@@ -313,16 +313,16 @@ public:
    */
   void SetDomainPrintsLocation(const std::string &name, bool value);
 
-  /*! Set the minimal message level of the given domain
+  /*! Set the maximal message level of the given domain
    *
-   * The output of each message that has a level below the given value
-   * will be suppressed. Default is eML_MEDIUM or eML_HIGH depending on
+   * The output of each message that has a level above the given value
+   * will be suppressed. Default is eML_DEBUG or eML_WARNING depending on
    * compile flags.
    *
    * \param name    The full qualified name of the domain
    * \param value   The new value of the setting
    */
-  void SetDomainMinMessageLevel(const std::string &name, eLogLevel value);
+  void SetDomainMaxMessageLevel(const std::string &name, eLogLevel value);
 
   /*! Set the output stream that should be used by the given domain
    *

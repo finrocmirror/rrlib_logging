@@ -19,7 +19,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    tLoggingStreamBuffer.cpp
+/*!\file    tLogStreamBuffer.cpp
  *
  * \author  Tobias Foehst
  *
@@ -29,12 +29,12 @@
  *
  * \b
  *
- * A few words for tLoggingStreamBuffer.cpp
+ * A few words for tLogStreamBuffer.cpp
  *
  */
 //----------------------------------------------------------------------
 #define _rrlib_logging_include_guard_
-#include "logging/tLoggingStreamBuffer.h"
+#include "logging/tLogStreamBuffer.h"
 
 //----------------------------------------------------------------------
 // External includes with <>
@@ -66,9 +66,9 @@ using namespace rrlib::logging;
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-// class tLoggingStreamBuffer overflow
+// class tLogStreamBuffer overflow
 //----------------------------------------------------------------------
-int tLoggingStreamBuffer::overflow(int c)
+int tLogStreamBuffer::overflow(int c)
 {
   if (c == EOF)
   {
@@ -87,9 +87,9 @@ int tLoggingStreamBuffer::overflow(int c)
 }
 
 //----------------------------------------------------------------------
-// class tLoggingStreamBuffer sync
+// class tLogStreamBuffer sync
 //----------------------------------------------------------------------
-int tLoggingStreamBuffer::sync()
+int tLogStreamBuffer::sync()
 {
   int result = 0;
   for (std::vector<std::streambuf *>::iterator it = this->buffers.begin(); it != this->buffers.end(); ++it)

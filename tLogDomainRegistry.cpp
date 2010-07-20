@@ -19,7 +19,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    tLoggingDomainRegistry.cpp
+/*!\file    tLogDomainRegistry.cpp
  *
  * \author  Tobias Foehst
  *
@@ -29,12 +29,12 @@
  *
  * \b
  *
- * A few words for tLoggingDomainRegistry.cpp
+ * A few words for tLogDomainRegistry.cpp
  *
  */
 //----------------------------------------------------------------------
 #define _rrlib_logging_include_guard_
-#include "tLoggingDomainRegistry.h"
+#include "tLogDomainRegistry.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -47,7 +47,7 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "logging/tLoggingDomain.h"
+#include "logging/tLogDomain.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -75,48 +75,49 @@ using namespace rrlib::xml2;
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-// class tLoggingDomainRegistry constructors
+// class tLogDomainRegistry constructors
 //----------------------------------------------------------------------
-tLoggingDomainRegistry::tLoggingDomainRegistry()
+tLogDomainRegistry::tLogDomainRegistry()
 {
-  this->domain_configurations.push_back(tLoggingDomainConfigurationSharedPointer(new tLoggingDomainConfiguration(".")));
+  this->domain_configurations.push_back(tLogDomainConfigurationSharedPointer(new tLogDomainConfiguration(".")));
   this->domain_configurations.back()->enabled = true;
-  this->domains.push_back(std::tr1::shared_ptr<tLoggingDomain>(new tLoggingDomain(this->domain_configurations.back())));
+  this->domains.push_back(std::tr1::shared_ptr<tLogDomain>(new tLogDomain(this->domain_configurations.back())));
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomainRegistry GetInstance
+// class tLogDomainRegistry GetInstance
 //----------------------------------------------------------------------
-tLoggingDomainRegistry &tLoggingDomainRegistry::GetInstance()
+tLogDomainRegistry &tLogDomainRegistry::GetInstance()
 {
-  static tLoggingDomainRegistry instance;
+  static tLogDomainRegistry instance;
   return instance;
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomainRegistry GetSubDomain
+// class tLogDomainRegistry GetSubDomain
 //----------------------------------------------------------------------
-tLoggingDomainSharedPointer tLoggingDomainRegistry::GetSubDomain(const std::string &name, tLoggingDomainSharedPointer parent)
+tLogDomainSharedPointer tLogDomainRegistry::GetSubDomain(const std::string &name, tLogDomainSharedPointer parent)
 {
   assert(name.length() > 0);
+  assert(parent != tLogDomainSharedPointer());
   const std::string full_qualified_domain_name(parent->GetName() + (parent->parent ? "." : "") + name);
   size_t i = this->GetDomainIndexByName(full_qualified_domain_name);
   if (i == this->domains.size())
   {
-    tLoggingDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(full_qualified_domain_name));
-    this->domains.push_back(std::tr1::shared_ptr<tLoggingDomain>(new tLoggingDomain(configuration, *const_cast<tLoggingDomain *>(parent.get()))));
+    tLogDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(full_qualified_domain_name));
+    this->domains.push_back(std::tr1::shared_ptr<tLogDomain>(new tLogDomain(configuration, *const_cast<tLogDomain *>(parent.get()))));
     return this->domains.back();
   }
   return this->domains[i];
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomainRegistry GetMaxDomainNameLength
+// class tLogDomainRegistry GetMaxDomainNameLength
 //----------------------------------------------------------------------
-size_t tLoggingDomainRegistry::GetMaxDomainNameLength() const
+size_t tLogDomainRegistry::GetMaxDomainNameLength() const
 {
   size_t result = 0;
-  for (std::vector<tLoggingDomainConfigurationSharedPointer>::const_iterator it = this->domain_configurations.begin(); it != this->domain_configurations.end(); ++it)
+  for (std::vector<tLogDomainConfigurationSharedPointer>::const_iterator it = this->domain_configurations.begin(); it != this->domain_configurations.end(); ++it)
   {
     result = std::max(result, (*it)->name.length());
   }
@@ -124,88 +125,88 @@ size_t tLoggingDomainRegistry::GetMaxDomainNameLength() const
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomainRegistry SetDomainConfiguresSubTree
+// class tLogDomainRegistry SetDomainConfiguresSubTree
 //----------------------------------------------------------------------
-void tLoggingDomainRegistry::SetDomainConfiguresSubTree(const std::string &name, bool value)
+void tLogDomainRegistry::SetDomainConfiguresSubTree(const std::string &name, bool value)
 {
-  tLoggingDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
+  tLogDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
   configuration->configure_sub_tree = value;
   this->PropagateDomainConfigurationToChildren(name);
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomainRegistry SetDomainIsEnabled
+// class tLogDomainRegistry SetDomainIsEnabled
 //----------------------------------------------------------------------
-void tLoggingDomainRegistry::SetDomainIsEnabled(const std::string &name, bool value)
+void tLogDomainRegistry::SetDomainIsEnabled(const std::string &name, bool value)
 {
-  tLoggingDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
+  tLogDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
   configuration->enabled = value;
   this->PropagateDomainConfigurationToChildren(name);
 }
 //----------------------------------------------------------------------
-// class tLoggingDomainRegistry SetDomainPrintsTime
+// class tLogDomainRegistry SetDomainPrintsTime
 //----------------------------------------------------------------------
-void tLoggingDomainRegistry::SetDomainPrintsTime(const std::string &name, bool value)
+void tLogDomainRegistry::SetDomainPrintsTime(const std::string &name, bool value)
 {
-  tLoggingDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
+  tLogDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
   configuration->print_time = value;
   this->PropagateDomainConfigurationToChildren(name);
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomainRegistry SetDomainPrintsName
+// class tLogDomainRegistry SetDomainPrintsName
 //----------------------------------------------------------------------
-void tLoggingDomainRegistry::SetDomainPrintsName(const std::string &name, bool value)
+void tLogDomainRegistry::SetDomainPrintsName(const std::string &name, bool value)
 {
-  tLoggingDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
+  tLogDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
   configuration->print_name = value;
   this->PropagateDomainConfigurationToChildren(name);
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomainRegistry SetDomainPrintsLevel
+// class tLogDomainRegistry SetDomainPrintsLevel
 //----------------------------------------------------------------------
-void tLoggingDomainRegistry::SetDomainPrintsLevel(const std::string &name, bool value)
+void tLogDomainRegistry::SetDomainPrintsLevel(const std::string &name, bool value)
 {
-  tLoggingDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
+  tLogDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
   configuration->print_level = value;
   this->PropagateDomainConfigurationToChildren(name);
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomainRegistry SetDomainPrintsLocation
+// class tLogDomainRegistry SetDomainPrintsLocation
 //----------------------------------------------------------------------
-void tLoggingDomainRegistry::SetDomainPrintsLocation(const std::string &name, bool value)
+void tLogDomainRegistry::SetDomainPrintsLocation(const std::string &name, bool value)
 {
-  tLoggingDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
+  tLogDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
   configuration->print_location = value;
   this->PropagateDomainConfigurationToChildren(name);
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomainRegistry SetDomainMinMessageLevel
+// class tLogDomainRegistry SetDomainMaxMessageLevel
 //----------------------------------------------------------------------
-void tLoggingDomainRegistry::SetDomainMinMessageLevel(const std::string &name, eLogLevel value)
+void tLogDomainRegistry::SetDomainMaxMessageLevel(const std::string &name, eLogLevel value)
 {
-  tLoggingDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
-  configuration->min_message_level = value;
+  tLogDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
+  configuration->max_message_level = value;
   this->PropagateDomainConfigurationToChildren(name);
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomainRegistry SetDomainStreamMask
+// class tLogDomainRegistry SetDomainStreamMask
 //----------------------------------------------------------------------
-void tLoggingDomainRegistry::SetDomainStreamMask(const std::string &name, eLogStreamMask mask)
+void tLogDomainRegistry::SetDomainStreamMask(const std::string &name, eLogStreamMask mask)
 {
-  tLoggingDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
+  tLogDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
   configuration->stream_mask = mask;
   this->PropagateDomainConfigurationToChildren(name);
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomainRegistry GetDomainIndexByName
+// class tLogDomainRegistry GetDomainIndexByName
 //----------------------------------------------------------------------
-const size_t tLoggingDomainRegistry::GetDomainIndexByName(const std::string &name) const
+const size_t tLogDomainRegistry::GetDomainIndexByName(const std::string &name) const
 {
   for (size_t i = 0; i < this->domains.size(); ++i)
   {
@@ -218,30 +219,30 @@ const size_t tLoggingDomainRegistry::GetDomainIndexByName(const std::string &nam
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomainRegistry GetConfigurationByName
+// class tLogDomainRegistry GetConfigurationByName
 //----------------------------------------------------------------------
-tLoggingDomainConfigurationSharedPointer tLoggingDomainRegistry::GetConfigurationByName(const std::string &name)
+tLogDomainConfigurationSharedPointer tLogDomainRegistry::GetConfigurationByName(const std::string &name)
 {
-  for (std::vector<tLoggingDomainConfigurationSharedPointer>::iterator it = this->domain_configurations.begin(); it != this->domain_configurations.end(); ++it)
+  for (std::vector<tLogDomainConfigurationSharedPointer>::iterator it = this->domain_configurations.begin(); it != this->domain_configurations.end(); ++it)
   {
     if ((*it)->name == name)
     {
       return *it;
     }
   }
-  this->domain_configurations.push_back(tLoggingDomainConfigurationSharedPointer(new tLoggingDomainConfiguration(name)));
+  this->domain_configurations.push_back(tLogDomainConfigurationSharedPointer(new tLogDomainConfiguration(name)));
   return this->domain_configurations.back();
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomainRegistry PropagateDomainConfigurationToChildren
+// class tLogDomainRegistry PropagateDomainConfigurationToChildren
 //----------------------------------------------------------------------
-void tLoggingDomainRegistry::PropagateDomainConfigurationToChildren(const std::string &name)
+void tLogDomainRegistry::PropagateDomainConfigurationToChildren(const std::string &name)
 {
   size_t i = this->GetDomainIndexByName(name);
   if (i != this->domains.size())
   {
-    for (std::vector<tLoggingDomain *>::iterator it = this->domains[i]->children.begin(); it != this->domains[i]->children.end(); ++it)
+    for (std::vector<tLogDomain *>::iterator it = this->domains[i]->children.begin(); it != this->domains[i]->children.end(); ++it)
     {
       (*it)->ConfigureSubTree();
     }
@@ -251,9 +252,9 @@ void tLoggingDomainRegistry::PropagateDomainConfigurationToChildren(const std::s
 #ifdef _RRLIB_XML2_WRAPPER_PRESENT_
 
 //----------------------------------------------------------------------
-// class tLoggingDomainRegistry ConfigureFromFile
+// class tLogDomainRegistry ConfigureFromFile
 //----------------------------------------------------------------------
-bool tLoggingDomainRegistry::ConfigureFromFile(const std::string &file_name)
+bool tLogDomainRegistry::ConfigureFromFile(const std::string &file_name)
 {
   try
   {
@@ -262,19 +263,19 @@ bool tLoggingDomainRegistry::ConfigureFromFile(const std::string &file_name)
   }
   catch (const tXML2WrapperException &e)
   {
-    std::cerr << "RRLib Logging: tLoggingDomainRegistry::ConfigureFromFile >> " << e.what() << std::endl;
+    std::cerr << "RRLib Logging: tLogDomainRegistry::ConfigureFromFile >> " << e.what() << std::endl;
     return false;
   }
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomainRegistry ConfigureFromXMLNode
+// class tLogDomainRegistry ConfigureFromXMLNode
 //----------------------------------------------------------------------
-bool tLoggingDomainRegistry::ConfigureFromXMLNode(const tXMLNode &node)
+bool tLogDomainRegistry::ConfigureFromXMLNode(const tXMLNode &node)
 {
   if (node.GetName() != "rrlib_logging")
   {
-    std::cerr << "RRLib Logging: tLoggingDomainRegistry::ConfigureFromXMLNode >> Unexpected content (Not an rrlib_logging tree)" << std::endl;
+    std::cerr << "RRLib Logging: tLogDomainRegistry::ConfigureFromXMLNode >> Unexpected content (Not an rrlib_logging tree)" << std::endl;
     return false;
   }
 
@@ -293,7 +294,7 @@ bool tLoggingDomainRegistry::ConfigureFromXMLNode(const tXMLNode &node)
   }
   catch (const tXML2WrapperException &e)
   {
-    std::cerr << "RRLib Logging: tLoggingDomainRegistry::ConfigureFromXMLNode >> " << e.what() << std::endl;
+    std::cerr << "RRLib Logging: tLogDomainRegistry::ConfigureFromXMLNode >> " << e.what() << std::endl;
     return false;
   }
 
@@ -301,13 +302,13 @@ bool tLoggingDomainRegistry::ConfigureFromXMLNode(const tXMLNode &node)
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomainRegistry AddConfigurationFromXMLNode
+// class tLogDomainRegistry AddConfigurationFromXMLNode
 //----------------------------------------------------------------------
-bool tLoggingDomainRegistry::AddConfigurationFromXMLNode(const tXMLNode &node, const std::string &parent_name)
+bool tLogDomainRegistry::AddConfigurationFromXMLNode(const tXMLNode &node, const std::string &parent_name)
 {
-  static const char *level_names_init[eLL_DIMENSION] = { "verbose", "low", "medium", "high", "always" };
+  static const char *level_names_init[eLL_DIMENSION] = { "user", "error", "warning", "debug_warning", "debug", "debug_verbose_1", "debug_verbose_2", "debug_verbose_3" };
   static const std::vector<std::string> level_names(level_names_init, level_names_init + eLL_DIMENSION);
-  // FIXME: with c++0x this can be static const std::vector<std::string> level_names = { "verbose", "low", "medium", "high", "always" };
+  // FIXME: with c++0x this can be static const std::vector<std::string> level_names = { "user", "error", "warning", "debug_warning", "debug", "debug_verbose_1", "debug_verbose_2", "debug_verbose_3" };
 
   static const char *stream_names_init[eLS_DIMENSION] = { "stdout", "stderr", "file", "combined_file" };
   static const std::vector<std::string> stream_names(stream_names_init, stream_names_init + eLS_DIMENSION);
@@ -349,9 +350,9 @@ bool tLoggingDomainRegistry::AddConfigurationFromXMLNode(const tXMLNode &node, c
     this->SetDomainPrintsLocation(name, node.GetBoolAttribute("print_location"));
   }
 
-  if (node.HasAttribute("min_level"))
+  if (node.HasAttribute("max_level"))
   {
-    this->SetDomainMinMessageLevel(name, node.GetEnumAttribute<eLogLevel>("min_level", level_names));
+    this->SetDomainMaxMessageLevel(name, node.GetEnumAttribute<eLogLevel>("max_level", level_names));
   }
 
   bool stream_configured = false;
@@ -368,7 +369,7 @@ bool tLoggingDomainRegistry::AddConfigurationFromXMLNode(const tXMLNode &node, c
     {
       if (stream_configured)
       {
-        std::cerr << "RRLib Logging: tLoggingDomainRegistry::AddConfigurationFromXMLNode >> Stream already configured in domain element!" << std::endl;
+        std::cerr << "RRLib Logging: tLogDomainRegistry::AddConfigurationFromXMLNode >> Stream already configured in domain element!" << std::endl;
         return false;
       }
       stream_mask |= static_cast<eLogStreamMask>(1 << it->GetEnumAttribute<eLogStream>("output", stream_names));

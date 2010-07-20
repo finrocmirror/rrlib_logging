@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rrlib_logging PUBLIC "-//RRLib//DTD logging 1.0" "../etc/rrlib_logging.dtd">
 <rrlib_logging>
-  <domain name="global" configures_sub_tree="true" enabled="true" print_time="true" print_name="true" print_level="true" min_level="verbose">
+  <domain name="global" configures_sub_tree="true" enabled="true" print_time="true" print_name="true" print_level="true" max_level="debug">
     <stream output="stdout" />
   </domain>
 </rrlib_logging>

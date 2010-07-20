@@ -19,19 +19,19 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    tLoggingDomain.h
+/*!\file    tLogDomain.h
  *
  * \author  Tobias Foehst
  *
  * \date    2010-06-16
  *
- * \brief Contains tLoggingDomain
+ * \brief Contains tLogDomain
  *
- * \b tLoggingDomain
+ * \b tLogDomain
  *
  * The RRLib logging system is structured into hierarchical domains that
- * can be created and configured via tLoggingDomainRegistry. That given,
- * in the program implementation instances of the class tLoggingDomain
+ * can be created and configured via tLogDomainRegistry. That given,
+ * in the program implementation instances of the class tLogDomain
  * wrap the stream that can be access either in C++ iostream style via
  * operator << or in good old-fashioned C style using printf formatting.
  *
@@ -41,8 +41,8 @@
 #error Invalid include directive. Try #include "rrlib/logging/definitions.h" instead.
 #endif
 
-#ifndef rrlib_logging_tLoggingDomain_h_
-#define rrlib_logging_tLoggingDomain_h_
+#ifndef rrlib_logging_tLogDomain_h_
+#define rrlib_logging_tLogDomain_h_
 
 //----------------------------------------------------------------------
 // External includes with <>
@@ -58,9 +58,9 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "logging/tLoggingDomainConfiguration.h"
-#include "logging/tLoggingStreamBuffer.h"
-#include "logging/tLoggingStreamProxy.h"
+#include "logging/tLogDomainConfiguration.h"
+#include "logging/tLogStreamBuffer.h"
+#include "logging/tLogStream.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -83,22 +83,22 @@ namespace logging
 //----------------------------------------------------------------------
 //! This class implements messaging via a specific logging domain
 /*! The RRLib logging system is structured into hierarchical domains that
- *  can be created and configured via tLoggingDomainRegistry. That given,
+ *  can be created and configured via tLogDomainRegistry. That given,
  *  in the program implementation instances of this class wrap the stream
  *  that can be access either in C++ iostream style via operator << or
  *  in the good old-fashioned C style using printf formatting.
  *
  */
-class tLoggingDomain
+class tLogDomain
 {
-  friend class tLoggingDomainRegistry;
+  friend class tLogDomainRegistry;
 
-  tLoggingDomain *parent;
-  std::vector<tLoggingDomain *> children;
+  tLogDomain *parent;
+  std::vector<tLogDomain *> children;
 
-  tLoggingDomainConfigurationSharedPointer configuration;
+  tLogDomainConfigurationSharedPointer configuration;
 
-  mutable tLoggingStreamBuffer stream_buffer;
+  mutable tLogStreamBuffer stream_buffer;
   mutable std::ostream stream;
   mutable std::ofstream file_stream;
 
@@ -109,7 +109,7 @@ class tLoggingDomain
    *
    * \param configuration   The configuration for the new domain
    */
-  tLoggingDomain(tLoggingDomainConfigurationSharedPointer configuration);
+  tLogDomain(tLogDomainConfigurationSharedPointer configuration);
 
   /*! The ctor for a new sub domain
    *
@@ -119,7 +119,7 @@ class tLoggingDomain
    * \param configuration   The configuration for the new domain
    * \param parent          The parent domain
    */
-  tLoggingDomain(tLoggingDomainConfigurationSharedPointer configuration, tLoggingDomain &parent);
+  tLogDomain(tLogDomainConfigurationSharedPointer configuration, tLogDomain &parent);
 
   /*! Recursively configure the subtree that begins in this domain
    *
@@ -204,9 +204,9 @@ class tLoggingDomain
 //----------------------------------------------------------------------
 public:
 
-  /*! The dtor of tLoggingDomain
+  /*! The dtor of tLogDomain
    */
-  ~tLoggingDomain();
+  ~tLogDomain();
 
   /*! Get the full qualified name of this domain
    *
@@ -222,8 +222,8 @@ public:
 
   /*! Get configuration status of this domain's enabled flag
    *
-   * If a domain is enabled it processes log messages that are not below a
-   * specified min level. Otherwise it is totally quite.
+   * If a domain is enabled it processes log messages that are not above a
+   * specified max level. Otherwise it is totally quite.
    *
    * \returns Whether the domain is enabled or not
    */
@@ -280,15 +280,15 @@ public:
     return this->configuration->print_location;
   }
 
-  /*! Get the minimal log level a message must have to be processed
+  /*! Get the maximal log level a message must have to be processed
    *
-   * Each message has a log level that must not below the configured limit to be processed.
+   * Each message has a log level that must not be above the configured limit to be processed.
    *
-   * \returns The configured minimal log level
+   * \returns The configured maxnimal log level
    */
-  inline const eLogLevel GetMinMessageLevel() const
+  inline const eLogLevel GetMaxMessageLevel() const
   {
-    return this->configuration->min_message_level;
+    return this->configuration->max_message_level;
   }
 
   /*! Get the mask representing which streams are used for message output
@@ -322,11 +322,12 @@ public:
    *
    * \returns A reference to the stream that can be used for the remaining message parts
    */
-  inline tLoggingStreamProxy GetMessageStream(const char *description, const char *function, const char *file, unsigned int line, eLogLevel level) const
+  template <typename TDescription>
+  inline tLogStream GetMessageStream(const TDescription &description, const char *function, const char *file, unsigned int line, eLogLevel level) const
   {
-    tLoggingStreamProxy stream_proxy(this->stream);
+    tLogStream stream_proxy(this->stream);
     this->stream_buffer.Clear();
-    if (level < this->GetMinMessageLevel() || !this->IsEnabled())
+    if (level > this->GetMaxMessageLevel() || !this->IsEnabled())
     {
       return stream_proxy;
     }
@@ -384,9 +385,10 @@ public:
    * \param fmt           The format string for printf
    * \param ...           The remaining arguments for printf
    */
-  inline void PrintMessage(const char *description, const char *function, const char *file, int line, eLogLevel level, const char *fmt, ...) const
+  template <typename TDescription>
+  inline void PrintMessage(const TDescription &description, const char *function, const char *file, int line, eLogLevel level, const char *fmt, ...) const
   {
-    if (level < this->GetMinMessageLevel() || !this->IsEnabled())
+    if (level > this->GetMaxMessageLevel() || !this->IsEnabled())
     {
       return;
     }

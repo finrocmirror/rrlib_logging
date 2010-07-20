@@ -83,7 +83,7 @@ struct Test
 
   static void function()
   {
-    RRLIB_LOG_STREAM(eLL_HIGH, my_domain) << "local class test" << std::endl;
+    RRLIB_LOG_STREAM(eLL_ERROR, my_domain) << "local class test";
   }
 };
 
@@ -92,53 +92,53 @@ struct Test
 
 int main(int argc, char **argv)
 {
-  if (!tLoggingDomainRegistry::GetInstance().ConfigureFromFile("logging_config.xml"))
+  if (!tLogDomainRegistry::GetInstance().ConfigureFromFile("logging_config.xml"))
   {
-    std::cout << "Loading configuration failed!" << std::endl;
+    std::cout << "Loading configuration failed!";
     return EXIT_FAILURE;
   }
 
-  tLoggingDomainRegistry::GetInstance().SetOutputFileNamePrefix(basename(argv[0]));
+  tLogDomainRegistry::GetInstance().SetOutputFileNamePrefix(basename(argv[0]));
 
 
-//  std::cout << tLoggingDomainRegistry::GetInstance() << std::endl;
+//  std::cout << tLogDomainRegistry::GetInstance() << std::endl;
 
-//  tLoggingDomainRegistry::GetInstance().EnableDomain("global", true);
-//  tLoggingDomainRegistry::GetInstance().SetDomainPrintsName("global", true);
-//  tLoggingDomainRegistry::GetInstance().SetDomainPrintsTime("global", true);
-//  tLoggingDomainRegistry::GetInstance().SetDomainPrintsLevel("global", true);
-//  tLoggingDomainRegistry::GetInstance().SetDomainPrintsLocation("global", true);
-//  tLoggingDomainRegistry::GetInstance().SetDomainMinMessageLevel("global", eLL_VERBOSE);
-//  tLoggingDomainRegistry::GetInstance().SetDomainStreamID("global", eLS_FILE);
+//  tLogDomainRegistry::GetInstance().EnableDomain("global", true);
+//  tLogDomainRegistry::GetInstance().SetDomainPrintsName("global", true);
+//  tLogDomainRegistry::GetInstance().SetDomainPrintsTime("global", true);
+//  tLogDomainRegistry::GetInstance().SetDomainPrintsLevel("global", true);
+//  tLogDomainRegistry::GetInstance().SetDomainPrintsLocation("global", true);
+//  tLogDomainRegistry::GetInstance().SetDomainMinMessageLevel("global", eLL_VERBOSE);
+//  tLogDomainRegistry::GetInstance().SetDomainStreamID("global", eLS_FILE);
 
-//  tLoggingDomainRegistry::GetInstance().SetDomainStreamMask("global", eLSM_STDOUT | eLSM_FILE | eLSM_COMBINED_FILE);
+//  tLogDomainRegistry::GetInstance().SetDomainStreamMask("global", eLSM_STDOUT | eLSM_FILE | eLSM_COMBINED_FILE);
 
-//  tLoggingDomainRegistry::GetInstance().EnableDomain(".local");
-//  tLoggingDomainRegistry::GetInstance().EnableDomain(".local.class");
-//  tLoggingDomainRegistry::GetInstance().EnableDomain(".example", true);
-//  tLoggingDomainRegistry::GetInstance().SetDomainMinMessageLevel(".example", eLL_VERBOSE);
-//  tLoggingDomainRegistry::GetInstance().SetDomainStreamID(".example", eLS_COMBINED_FILE);
-//  tLoggingDomainRegistry::GetInstance().EnableDomain("global.libA");
-//  tLoggingDomainRegistry::GetInstance().EnableDomain("global.libB");
+//  tLogDomainRegistry::GetInstance().EnableDomain(".local");
+//  tLogDomainRegistry::GetInstance().EnableDomain(".local.class");
+//  tLogDomainRegistry::GetInstance().EnableDomain(".example", true);
+//  tLogDomainRegistry::GetInstance().SetDomainMinMessageLevel(".example", eLL_VERBOSE);
+//  tLogDomainRegistry::GetInstance().SetDomainStreamID(".example", eLS_COMBINED_FILE);
+//  tLogDomainRegistry::GetInstance().EnableDomain("global.libA");
+//  tLogDomainRegistry::GetInstance().EnableDomain("global.libB");
 
   CREATE_SCOPED_LOGGING_DOMAIN("main");
 
   CREATE_NAMED_LOGGING_DOMAIN(my_domain, "main_named");
 
-  RRLIB_LOG_STREAM(eLL_MEDIUM) << "foo" << std::endl;
-  RRLIB_LOG_STREAM(eLL_HIGH, my_domain) << "foo2" << std::endl;
-  RRLIB_LOG_MESSAGE(eLL_LOW, my_domain, "%s\n", "FOO");
+  RRLIB_LOG_STREAM(eLL_WARNING) << "foo";
+  RRLIB_LOG_STREAM(eLL_ERROR, my_domain) << "foo2";
+  RRLIB_LOG_MESSAGE(eLL_DEBUG, my_domain, "%s", "FOO");
 
   libA::Test();
   libB::Test();
 
   local::Test::function();
 
-  DEBUGMSG("blablabla Debug\n");
-  INFOMSG("blablabla Info\n");
-  WARNINGMSG("blablabla Warning\n");
-  ERRORMSG("blablabla Error\n");
-  USERMSG("blablabla User\n");
+  DEBUGMSG("blablabla Debug");
+  INFOMSG("blablabla Info");
+  WARNINGMSG("blablabla Warning");
+  ERRORMSG("blablabla Error");
+  USERMSG("blablabla User");
 
 
 

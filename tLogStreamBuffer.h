@@ -19,17 +19,17 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    tLoggingStreamBuffer.h
+/*!\file    tLogStreamBuffer.h
  *
  * \author  Tobias Foehst
  *
  * \date    2010-06-23
  *
- * \brief Contains tLoggingStreamBuffer
+ * \brief Contains tLogStreamBuffer
  *
- * \b tLoggingStreamBuffer
+ * \b tLogStreamBuffer
  *
- * tLoggingStreamBuffer is an implementation for std::ostreams with
+ * tLogStreamBuffer is an implementation for std::ostreams with
  * multiple sinks. Using a std::ostream for output internally uses a
  * std::streambuf for the low level operations necessary to print the
  * stream input to a file or terminal. By specializing std::streambuf in
@@ -46,8 +46,8 @@
 #error Invalid include directive. Try #include "rrlib/logging/definitions.h" instead.
 #endif
 
-#ifndef rrlib_logging_tLoggingStreamBuffer_h_
-#define rrlib_logging_tLoggingStreamBuffer_h_
+#ifndef rrlib_logging_tLogStreamBuffer_h_
+#define rrlib_logging_tLogStreamBuffer_h_
 
 //----------------------------------------------------------------------
 // External includes with <>
@@ -89,7 +89,7 @@ namespace logging
  *  not open /dev/null to swallow all input.
  *
  */
-class tLoggingStreamBuffer : public std::streambuf
+class tLogStreamBuffer : public std::streambuf
 {
   std::vector<std::streambuf *> buffers;
 

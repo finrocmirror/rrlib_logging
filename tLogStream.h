@@ -19,15 +19,15 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    tLoggingStreamProxy.h
+/*!\file    tLogStream.h
  *
  * \author  Tobias Foehst
  *
  * \date    2010-07-06
  *
- * \brief Contains tLoggingStreamProxy
+ * \brief Contains tLogStream
  *
- * \b tLoggingStreamProxy
+ * \b tLogStream
  *
  * This proxy class for std::ostream allows synchronized streaming.
  * Streaming typically has the problem that one can not easily determine
@@ -50,8 +50,8 @@
 #error Invalid include directive. Try #include "rrlib/logging/definitions.h" instead.
 #endif
 
-#ifndef rrlib_logging_tLoggingStreamProxy_h_
-#define rrlib_logging_tLoggingStreamProxy_h_
+#ifndef rrlib_logging_tLogStreamProxy_h_
+#define rrlib_logging_tLogStreamProxy_h_
 
 //----------------------------------------------------------------------
 // External includes with <>
@@ -98,7 +98,7 @@ namespace logging
  *  on the heap is not supported to avoid dangling locks.
  *
  */
-class tLoggingStreamProxy
+class tLogStream
 {
   std::ostream &stream;
 
@@ -109,7 +109,7 @@ class tLoggingStreamProxy
   }
 
   // Prohibit assignment to non-const references
-  tLoggingStreamProxy &operator = (const tLoggingStreamProxy &other);
+  tLogStream &operator = (const tLogStream &other);
 
   // Prohibit creation on heap
   void *operator new(size_t size);
@@ -119,25 +119,26 @@ class tLoggingStreamProxy
 //----------------------------------------------------------------------
 public:
 
-  /*! The ctor of tLoggingStreamProxy
+  /*! The ctor of tLogStream
    *
    * Acquires a lock for the output.
    * This methods blocks until the lock can be acquired.
    *
    * \param stream   The std::ostream that is used via this proxy
    */
-  explicit tLoggingStreamProxy(std::ostream &stream)
+  explicit tLogStream(std::ostream &stream)
       : stream(stream)
   {
     GetMutex().lock();
   }
 
-  /*! The dtor of tLoggingStreamProxy
+  /*! The dtor of tLogStreamProxy
    *
    * Releases the lock
    */
-  ~tLoggingStreamProxy()
+  ~tLogStream()
   {
+    *this << std::endl;
     GetMutex().unlock();
   }
 
@@ -151,7 +152,7 @@ public:
    * \returns A reference to the altered stream (in this case the proxy)
    */
   template <typename T>
-  inline tLoggingStreamProxy &operator << (const T &value)
+  inline tLogStream &operator << (const T &value)
   {
     this->stream << value;
     return *this;
@@ -167,7 +168,7 @@ public:
    *
    * \returns A reference to the altered stream (in this case the proxy)
    */
-  inline tLoggingStreamProxy &operator << (std::ostream &(&manipulator)(std::ostream &))
+  inline tLogStream &operator << (std::ostream &(&manipulator)(std::ostream &))
   {
     manipulator(this->stream);
     return *this;

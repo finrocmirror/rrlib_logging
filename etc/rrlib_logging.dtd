@@ -7,7 +7,7 @@
     <!ATTLIST domain print_time (true|false) "false">
     <!ATTLIST domain print_name (true|false) "false">
     <!ATTLIST domain print_level (true|false) "false">
-    <!ATTLIST domain min_level (verbose|low|medium|high|always) #IMPLIED>
+    <!ATTLIST domain max_level (user|error|warning|debug_warning|debug|debug_verbose_1|debug_verbose_2|debug_verbose_3) #IMPLIED>
     <!ATTLIST domain stream (stdout|stderr|file|combined_file) #IMPLIED>
 <!ELEMENT stream EMPTY>
     <!ATTLIST stream output (stdout|stderr|file|combined_file) #REQUIRED>

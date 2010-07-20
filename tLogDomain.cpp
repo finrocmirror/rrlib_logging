@@ -19,7 +19,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    tLoggingDomain.cpp
+/*!\file    tLogDomain.cpp
  *
  * \author  Tobias Foehst
  *
@@ -29,12 +29,12 @@
  *
  * \b
  *
- * A few words for tLoggingDomain.cpp
+ * A few words for tLogDomain.cpp
  *
  */
 //----------------------------------------------------------------------
 #define _rrlib_logging_include_guard_
-#include "tLoggingDomain.h"
+#include "tLogDomain.h"
 
 //----------------------------------------------------------------------
 // External includes with <>
@@ -43,7 +43,7 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "logging/tLoggingDomainRegistry.h"
+#include "logging/tLogDomainRegistry.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -67,15 +67,15 @@ using namespace rrlib::logging;
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-// class tLoggingDomain constructors
+// class tLogDomain constructors
 //----------------------------------------------------------------------
-tLoggingDomain::tLoggingDomain(tLoggingDomainConfigurationSharedPointer configuration)
+tLogDomain::tLogDomain(tLogDomainConfigurationSharedPointer configuration)
     : parent(0),
     configuration(configuration),
     stream(&this->stream_buffer)
 {}
 
-tLoggingDomain::tLoggingDomain(tLoggingDomainConfigurationSharedPointer configuration, tLoggingDomain &parent)
+tLogDomain::tLogDomain(tLogDomainConfigurationSharedPointer configuration, tLogDomain &parent)
     : parent(&parent),
     configuration(configuration),
     stream(&this->stream_buffer)
@@ -85,9 +85,9 @@ tLoggingDomain::tLoggingDomain(tLoggingDomainConfigurationSharedPointer configur
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomain destructor
+// class tLogDomain destructor
 //----------------------------------------------------------------------
-tLoggingDomain::~tLoggingDomain()
+tLogDomain::~tLogDomain()
 {
   if (this->file_stream.is_open())
   {
@@ -96,14 +96,14 @@ tLoggingDomain::~tLoggingDomain()
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomain ConfigureSubTree
+// class tLogDomain ConfigureSubTree
 //----------------------------------------------------------------------
-void tLoggingDomain::ConfigureSubTree()
+void tLogDomain::ConfigureSubTree()
 {
   if (this->parent && this->parent->configuration->configure_sub_tree)
   {
     *this->configuration = *this->parent->configuration;
-    for (std::vector<tLoggingDomain *>::iterator it = this->children.begin(); it != this->children.end(); ++it)
+    for (std::vector<tLogDomain *>::iterator it = this->children.begin(); it != this->children.end(); ++it)
     {
       (*it)->ConfigureSubTree();
     }
@@ -111,9 +111,9 @@ void tLoggingDomain::ConfigureSubTree()
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomain SetupOutputStream
+// class tLogDomain SetupOutputStream
 //----------------------------------------------------------------------
-void tLoggingDomain::SetupOutputStream(eLogStreamMask mask) const
+void tLogDomain::SetupOutputStream(eLogStreamMask mask) const
 {
   this->stream_buffer.Clear();
   if (mask & static_cast<int>(eLSM_STDOUT))
@@ -130,22 +130,22 @@ void tLoggingDomain::SetupOutputStream(eLogStreamMask mask) const
   }
   if (mask & eLSM_COMBINED_FILE)
   {
-    const tLoggingDomain *domain = this;
+    const tLogDomain *domain = this;
     for (; domain->parent && domain->parent->configuration->configure_sub_tree; domain = domain->parent);
     this->stream_buffer.AddStream(domain->OpenFileOutputStream() ? domain->file_stream : std::cerr);
   }
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomain OpenFileOutputStream
+// class tLogDomain OpenFileOutputStream
 //----------------------------------------------------------------------
-const bool tLoggingDomain::OpenFileOutputStream() const
+const bool tLogDomain::OpenFileOutputStream() const
 {
   if (this->file_stream.is_open())
   {
     return true;
   }
-  const std::string &file_name_prefix(tLoggingDomainRegistry::GetInstance().GetOutputFileNamePrefix());
+  const std::string &file_name_prefix(tLogDomainRegistry::GetInstance().GetOutputFileNamePrefix());
   if (file_name_prefix.length() == 0)
   {
     std::cerr << "RRLib Logging >> Prefix for file names not set. Can not use eMS_FILE." << std::endl
@@ -163,9 +163,9 @@ const bool tLoggingDomain::OpenFileOutputStream() const
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomain GetTimeString
+// class tLogDomain GetTimeString
 //----------------------------------------------------------------------
-const std::string tLoggingDomain::GetTimeString() const
+const std::string tLogDomain::GetTimeString() const
 {
   char time_string_buffer[32];
   time_t t = time(0);
@@ -175,39 +175,39 @@ const std::string tLoggingDomain::GetTimeString() const
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomain GetNameString
+// class tLogDomain GetNameString
 //----------------------------------------------------------------------
-const std::string tLoggingDomain::GetNameString() const
+const std::string tLogDomain::GetNameString() const
 {
   char name_string_buffer[128];
-  snprintf(name_string_buffer, sizeof(name_string_buffer), "%-*s ", tLoggingDomainRegistry::GetInstance().GetMaxDomainNameLength(), this->GetName().c_str());
+  snprintf(name_string_buffer, sizeof(name_string_buffer), "%-*s ", tLogDomainRegistry::GetInstance().GetMaxDomainNameLength(), this->GetName().c_str());
   return name_string_buffer;
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomain GetLevelString
+// class tLogDomain GetLevelString
 //----------------------------------------------------------------------
-const std::string tLoggingDomain::GetLevelString(eLogLevel level) const
+const std::string tLogDomain::GetLevelString(eLogLevel level) const
 {
   switch (level)
   {
-  case eLL_VERBOSE:
-    return "[verbose] ";
-  case eLL_LOW:
-    return "[low]     ";
-  case eLL_MEDIUM:
-    return "[medium]  ";
-  case eLL_HIGH:
-    return "[high]    ";
+  case eLL_ERROR:
+    return "[error]   ";
+  case eLL_WARNING:
+    return "[warning] ";
+  case eLL_DEBUG_WARNING:
+    return "[debug]   ";
+  case eLL_DEBUG:
+    return "[debug]   ";
   default:
     return "          ";
   }
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomain GetLocationString
+// class tLogDomain GetLocationString
 //----------------------------------------------------------------------
-const std::string tLoggingDomain::GetLocationString(const char *file, unsigned int line) const
+const std::string tLogDomain::GetLocationString(const char *file, unsigned int line) const
 {
   char location_string_buffer[128];
   snprintf(location_string_buffer, sizeof(location_string_buffer), "[%s:%u] ", file, line);
@@ -215,20 +215,20 @@ const std::string tLoggingDomain::GetLocationString(const char *file, unsigned i
 }
 
 //----------------------------------------------------------------------
-// class tLoggingDomain GetColoredOutputString
+// class tLogDomain GetColoredOutputString
 //----------------------------------------------------------------------
-const std::string tLoggingDomain::GetControlStringForColoredOutput(eLogLevel level) const
+const std::string tLogDomain::GetControlStringForColoredOutput(eLogLevel level) const
 {
   switch (level)
   {
-  case eLL_VERBOSE:
-    return "\033[;2;32m";
-  case eLL_LOW:
-    return "\033[;2;33m";
-  case eLL_MEDIUM:
-    return "\033[;1;34m";
-  case eLL_HIGH:
+  case eLL_ERROR:
     return "\033[;1;31m";
+  case eLL_WARNING:
+    return "\033[;1;34m";
+  case eLL_DEBUG_WARNING:
+    return "\033[;2;33m";
+  case eLL_DEBUG:
+    return "\033[;2;32m";
   default:
     return "\033[;0m";
   }
