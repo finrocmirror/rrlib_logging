@@ -284,7 +284,7 @@ public:
    *
    * Each message has a log level that must not be above the configured limit to be processed.
    *
-   * \returns The configured maxnimal log level
+   * \returns The configured maximal log level
    */
   inline const eLogLevel GetMaxMessageLevel() const
   {

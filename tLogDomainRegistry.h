@@ -145,7 +145,7 @@ class tLogDomainRegistry
    * of nested nodes.
    *
    * \param node    The XML node that contains the configuration
-   * \parent_name   For recursive calls the current domain name is build from parent_name and domain_name
+   * \param parent_name   For recursive calls the current domain name is build from parent_name and domain_name
    *
    * \returns Whether the domain was successfully configured or not
    */

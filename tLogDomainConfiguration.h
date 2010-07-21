@@ -88,16 +88,17 @@ namespace logging
 //! Enumeration type that contains the available message levels
 enum eLogLevel
 {
-  eLL_USER,             //!< Can be used to give info to the user and is always shown if domain is active
-  eLL_ERROR,            //!< Can be used to inform about errors and is always show if domain is active
-  eLL_WARNING,          //!< Can be used to inform about warnings (default max level with _RRLIB_LOG_LESS_OUTPUT_)
-  eLL_DEBUG_WARNING,    //!< Debug info with warning character
-  eLL_DEBUG,            //!< Debug info about coarse program flow (default max level without _RRLIB_LOG_LESS_OUTPUT_)
-  eLL_DEBUG_VERBOSE_1,  //!< Higher detail debug info (not available in release mode)
-  eLL_DEBUG_VERBOSE_2,  //!< Higher detail debug info (not available in release mode)
-  eLL_DEBUG_VERBOSE_3,  //!< Higher detail debug info (not available in release mode)
+  eLL_USER,             //!< Information for user (including end-users). Is always shown.
+  eLL_ERROR,            //!< Error message. Used to inform about _certain_ malfunction of application. Is always shown.
+  eLL_WARNING,          //!< Critical warning. Warns about possible application malfunction and invalid (and therefore discarded) user input. (default max level with _RRLIB_LOG_LESS_OUTPUT_)
+  eLL_DEBUG_WARNING,    //!< Debug info with warning character (e.g. "Parameter x not set - using default y")
+  eLL_DEBUG,            //!< Debug info about coarse program flow (default max level without _RRLIB_LOG_LESS_OUTPUT_) - information possibly relevant to developers outside of respective domain
+  eLL_DEBUG_VERBOSE_1,  //!< Higher detail debug info (not available in release mode) - only relevant to developers in respective domain
+  eLL_DEBUG_VERBOSE_2,  //!< Higher detail debug info (not available in release mode) - only relevant to developers in respective domain
+  eLL_DEBUG_VERBOSE_3,  //!< Higher detail debug info (not available in release mode) - only relevant to developers in respective domain
   eLL_DIMENSION         //!< Endmarker and dimension of eLogLevel
 };
+
 
 //! Enumeration type that contains the available message streams
 enum eLogStream
