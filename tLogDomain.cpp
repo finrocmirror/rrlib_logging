@@ -113,22 +113,22 @@ void tLogDomain::ConfigureSubTree()
 //----------------------------------------------------------------------
 // class tLogDomain SetupOutputStream
 //----------------------------------------------------------------------
-void tLogDomain::SetupOutputStream(eLogStreamMask mask) const
+void tLogDomain::SetupOutputStream(int mask) const
 {
   this->stream_buffer.Clear();
-  if (mask & static_cast<int>(eLSM_STDOUT))
+  if (mask & (1 << eLS_STDOUT))
   {
     this->stream_buffer.AddStream(std::cout);
   }
-  if (mask & eLSM_STDERR)
+  if (mask & (1 << eLS_STDERR))
   {
     this->stream_buffer.AddStream(std::cerr);
   }
-  if (mask & eLSM_FILE)
+  if (mask & (1 << eLS_FILE))
   {
     this->stream_buffer.AddStream(this->OpenFileOutputStream() ? this->file_stream : std::cerr);
   }
-  if (mask & eLSM_COMBINED_FILE)
+  if (mask & (1 << eLS_COMBINED_FILE))
   {
     const tLogDomain *domain = this;
     for (; domain->parent && domain->parent->configuration->configure_sub_tree; domain = domain->parent);

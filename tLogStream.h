@@ -141,7 +141,14 @@ public:
    */
   ~tLogStream()
   {
-    *this << std::endl;
+    if (reinterpret_cast<tLogStreamBuffer *>(this->stream.rdbuf())->EndsWithNewline())
+    {
+      *this << std::flush;
+    }
+    else
+    {
+      *this << std::endl;
+    }
     GetMutex().unlock();
   }
 
@@ -169,9 +176,9 @@ public:
    *
    * \returns A reference to the altered stream (in this case the proxy)
    */
-  inline tLogStream &operator << (const std::exception &value)
+  inline tLogStream &operator << (const std::exception &exception)
   {
-    this->stream << value.what();
+    this->stream << "Exception (" << typeid(exception).name() << "): " << exception.what();
     return *this;
   }
 

@@ -75,6 +75,8 @@ int tLogStreamBuffer::overflow(int c)
     return !EOF;
   }
 
+  this->ends_with_newline = c == '\n';
+
   int result = c;
   for (std::vector<std::streambuf *>::iterator it = this->buffers.begin(); it != this->buffers.end(); ++it)
   {

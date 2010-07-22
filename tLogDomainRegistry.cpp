@@ -194,9 +194,22 @@ void tLogDomainRegistry::SetDomainMaxMessageLevel(const std::string &name, eLogL
 }
 
 //----------------------------------------------------------------------
+// class tLogDomainRegistry SetDomainStream
+//----------------------------------------------------------------------
+void tLogDomainRegistry::SetDomainStream(const std::string &name, eLogStream stream_1, eLogStream stream_2, eLogStream stream_3, eLogStream stream_4)
+{
+  int mask = 0;
+  mask |= (stream_1 != eLS_DIMENSION) ? (1 << stream_1) : 0;
+  mask |= (stream_2 != eLS_DIMENSION) ? (1 << stream_1) : 0;
+  mask |= (stream_3 != eLS_DIMENSION) ? (1 << stream_1) : 0;
+  mask |= (stream_4 != eLS_DIMENSION) ? (1 << stream_1) : 0;
+  this->SetDomainStreamMask(name, mask);
+}
+
+//----------------------------------------------------------------------
 // class tLogDomainRegistry SetDomainStreamMask
 //----------------------------------------------------------------------
-void tLogDomainRegistry::SetDomainStreamMask(const std::string &name, eLogStreamMask mask)
+void tLogDomainRegistry::SetDomainStreamMask(const std::string &name, int mask)
 {
   tLogDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
   configuration->stream_mask = mask;
@@ -359,10 +372,10 @@ bool tLogDomainRegistry::AddConfigurationFromXMLNode(const tXMLNode &node, const
   if (node.HasAttribute("stream"))
   {
     stream_configured = true;
-    this->SetDomainStreamMask(name, static_cast<eLogStreamMask>(1 << node.GetEnumAttribute<eLogStream >("stream", stream_names)));
+    this->SetDomainStream(name, node.GetEnumAttribute<eLogStream>("stream", stream_names));
   }
 
-  eLogStreamMask stream_mask = static_cast<eLogStreamMask>(0);
+  int stream_mask = 0;
   for (std::vector<tXMLNode>::const_iterator it = node.GetChildren().begin(); it != node.GetChildren().end(); ++it)
   {
     if (it->GetName() == "stream")
@@ -372,7 +385,7 @@ bool tLogDomainRegistry::AddConfigurationFromXMLNode(const tXMLNode &node, const
         std::cerr << "RRLib Logging: tLogDomainRegistry::AddConfigurationFromXMLNode >> Stream already configured in domain element!" << std::endl;
         return false;
       }
-      stream_mask |= static_cast<eLogStreamMask>(1 << it->GetEnumAttribute<eLogStream>("output", stream_names));
+      stream_mask |= 1 << it->GetEnumAttribute<eLogStream>("output", stream_names);
     }
   }
   if (stream_mask != 0)

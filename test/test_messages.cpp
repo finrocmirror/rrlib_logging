@@ -126,9 +126,9 @@ int main(int argc, char **argv)
 
   CREATE_NAMED_LOGGING_DOMAIN(my_domain, "main_named");
 
-  RRLIB_LOG_STREAM(eLL_WARNING) << "foo";
-  RRLIB_LOG_STREAM(eLL_ERROR, my_domain) << "foo2";
-  RRLIB_LOG_MESSAGE(eLL_DEBUG, my_domain, "%s", "FOO");
+  RRLIB_LOG_STREAM(eLL_WARNING) << "foo" << std::endl;
+  RRLIB_LOG_STREAM(eLL_ERROR, my_domain) << "foo2" << std::endl;
+  RRLIB_LOG_MESSAGE(eLL_DEBUG, my_domain, "%s\n", "FOO");
 
   libA::Test();
   libB::Test();
@@ -142,6 +142,8 @@ int main(int argc, char **argv)
   USERMSG("blablabla User");
 
   RRLIB_LOG_STREAM(eLL_ERROR) << std::runtime_error("runtime_error");
+
+  RRLIB_LOG_STREAM(eLL_WARNING) << std::hex << 324 << std::endl;
 
   return EXIT_SUCCESS;
 }

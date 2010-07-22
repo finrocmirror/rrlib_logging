@@ -90,9 +90,9 @@ enum eLogLevel
 {
   eLL_USER,             //!< Information for user (including end-users). Is always shown.
   eLL_ERROR,            //!< Error message. Used to inform about _certain_ malfunction of application. Is always shown.
-  eLL_WARNING,          //!< Critical warning. Warns about possible application malfunction and invalid (and therefore discarded) user input. (default max level with _RRLIB_LOG_LESS_OUTPUT_)
+  eLL_WARNING,          //!< Critical warning. Warns about possible application malfunction and invalid (and therefore discarded) user input. (default max level with _RRLIB_LOGGING_LESS_OUTPUT_)
   eLL_DEBUG_WARNING,    //!< Debug info with warning character (e.g. "Parameter x not set - using default y")
-  eLL_DEBUG,            //!< Debug info about coarse program flow (default max level without _RRLIB_LOG_LESS_OUTPUT_) - information possibly relevant to developers outside of respective domain
+  eLL_DEBUG,            //!< Debug info about coarse program flow (default max level without _RRLIB_LOGGING_LESS_OUTPUT_) - information possibly relevant to developers outside of respective domain
   eLL_DEBUG_VERBOSE_1,  //!< Higher detail debug info (not available in release mode) - only relevant to developers in respective domain
   eLL_DEBUG_VERBOSE_2,  //!< Higher detail debug info (not available in release mode) - only relevant to developers in respective domain
   eLL_DEBUG_VERBOSE_3,  //!< Higher detail debug info (not available in release mode) - only relevant to developers in respective domain
@@ -110,76 +110,20 @@ enum eLogStream
   eLS_DIMENSION        //!< Endmarker and dimension of eLogStream
 };
 
-//! Enumeration type that contains bitmasks for the available message streams
-enum eLogStreamMask
-{
-  eLSM_STDOUT = 1 << eLS_STDOUT,
-  eLSM_STDERR = 1 << eLS_STDERR,
-  eLSM_FILE = 1 << eLS_FILE,
-  eLSM_COMBINED_FILE = 1 << eLS_COMBINED_FILE,
-  eLSM_DIMENSION = 1 << eLS_DIMENSION
-};
-
-/*! Bitwise AND operation for eLogStreamMask
- *
- * \param a   The left-hand argument
- * \param b   The right-hand argument
- *
- * \returns a AND b (bitwise)
- */
-inline const eLogStreamMask operator & (eLogStreamMask a, eLogStreamMask b)
-{
-  return static_cast<eLogStreamMask>(static_cast<int>(a) & static_cast<int>(b));
-}
-
-/*! Bitwise OR operation for eLogStreamMask
- *
- * \param a   The left-hand argument
- * \param b   The right-hand argument
- *
- * \returns a OR b (bitwise)
- */
-inline const eLogStreamMask operator | (eLogStreamMask a, eLogStreamMask b)
-{
-  return static_cast<eLogStreamMask>(static_cast<int>(a) | static_cast<int>(b));
-}
-
-/*! Bitwise NOT operation for eLogStreamMask
- *
- * \param a   The argument to be inverted
- *
- * \returns NOT a (bitwise)
- */
-inline const eLogStreamMask operator ~(eLogStreamMask a)
-{
-  return static_cast<eLogStreamMask>(~static_cast<int>(a));
-}
-
-/*! Assignment with bitwise OR operation for eLogStreamMask
- *
- * \param a   The left-hand argument (which has the new value afterwards)
- * \param b   The right-hand argument
- *
- * \returns Reference to a after assigning a AND b (bitwise)
- */
-inline const eLogStreamMask &operator |= (eLogStreamMask &a, const eLogStreamMask &b)
-{
-  a = a | b;
-  return a;
-}
-
 #ifdef _RRLIB_LOGGING_LESS_OUTPUT_
-const eLogLevel cDEFAULT_MAX_LOG_LEVEL = eLL_WARNING; //!< Default max log level for reduced output mode
 const bool cDEFAULT_PRINT_TIME = false;               //!< Default print time setting for reduced output mode
 const bool cDEFAULT_PRINT_NAME = false;               //!< Default print name setting for reduced output mode
 const bool cDEFAULT_PRINT_LEVEL = false;              //!< Default print level setting for reduced output mode
 const bool cDEFAULT_PRINT_LOCATION = false;           //!< Default print location setting for reduced output mode
+const eLogLevel cDEFAULT_MAX_LOG_LEVEL = eLL_WARNING; //!< Default max log level for reduced output mode
+const int cDEFAULT_STREAM_MASK = 1 << eLS_STDOUT;     //!< Default output stream mask
 #else
-const eLogLevel cDEFAULT_MAX_LOG_LEVEL = eLL_DEBUG;   //!< Default max log level for normal output mode
 const bool cDEFAULT_PRINT_TIME = false;               //!< Default print time setting for normal output mode
 const bool cDEFAULT_PRINT_NAME = false;               //!< Default print name setting for normal output mode
 const bool cDEFAULT_PRINT_LEVEL = false;              //!< Default print level setting for normal output mode
 const bool cDEFAULT_PRINT_LOCATION = true;            //!< Default print location setting for normal output mode
+const eLogLevel cDEFAULT_MAX_LOG_LEVEL = eLL_DEBUG;   //!< Default max log level for normal output mode
+const int cDEFAULT_STREAM_MASK = 1 << eLS_STDOUT;     //!< Default output stream mask
 #endif
 
 //----------------------------------------------------------------------
@@ -208,7 +152,7 @@ class tLogDomainConfiguration
   bool print_level;
   bool print_location;
   eLogLevel max_message_level;
-  eLogStreamMask stream_mask;
+  int stream_mask;
 
   explicit tLogDomainConfiguration(const std::string &name)
       : name(name),
@@ -219,7 +163,7 @@ class tLogDomainConfiguration
       print_level(cDEFAULT_PRINT_LEVEL),
       print_location(cDEFAULT_PRINT_LOCATION),
       max_message_level(cDEFAULT_MAX_LOG_LEVEL),
-      stream_mask(eLSM_STDOUT)
+      stream_mask(cDEFAULT_STREAM_MASK)
   {}
 
   tLogDomainConfiguration(const tLogDomainConfiguration &other)

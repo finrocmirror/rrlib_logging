@@ -97,6 +97,8 @@ class tLogStreamBuffer : public std::streambuf
 
   virtual int sync();
 
+  bool ends_with_newline;
+
 //----------------------------------------------------------------------
 // Public methods
 //----------------------------------------------------------------------
@@ -124,6 +126,15 @@ public:
   inline void Clear()
   {
     this->buffers.clear();
+  }
+
+  /*! Find out whether the last character put into this stream was a newline or not
+   *
+   * \returns Whether the last character put into this stream was \n or not
+   */
+  inline bool EndsWithNewline() const
+  {
+    return this->ends_with_newline;
   }
 
 };

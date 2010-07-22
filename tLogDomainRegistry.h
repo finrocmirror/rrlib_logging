@@ -137,6 +137,13 @@ class tLogDomainRegistry
    */
   void PropagateDomainConfigurationToChildren(const std::string &name);
 
+  /*! Set the output streams that should be used by the given domain
+   *
+   * \param name   The full qualified name of the domain
+   * \param mask   The mask that represents the streams to be used
+   */
+  void SetDomainStreamMask(const std::string &name, int mask);
+
 #ifdef _RRLIB_XML2_WRAPPER_PRESENT_
   /*! Add a domain configuration from a given XML node
    *
@@ -324,15 +331,15 @@ public:
    */
   void SetDomainMaxMessageLevel(const std::string &name, eLogLevel value);
 
-  /*! Set the output stream that should be used by the given domain
+  /*! Set the output streams that should be used by the given domain
    *
-   * If set to true every configuration update to the given domain
-   * will be propagated to its subtree.
-   *
-   * \param name   The full qualified name of the domain
-   * \param mask   The new value of the setting
+   * \param name       The full qualified name of the domain
+   * \param stream_1   The first stream to be used by the given domain
+   * \param stream_2   The second stream to be used by the given domain
+   * \param stream_3   The third stream to be used by the given domain
+   * \param stream_4   The fourth stream to be used by the given domain
    */
-  void SetDomainStreamMask(const std::string &name, eLogStreamMask mask);
+  void SetDomainStream(const std::string &name, eLogStream stream_1, eLogStream stream_2 = eLS_DIMENSION, eLogStream stream_3 = eLS_DIMENSION, eLogStream stream_4 = eLS_DIMENSION);
 
 #ifdef _RRLIB_XML2_WRAPPER_PRESENT_
   /*! Read domain configuration from a given XML file

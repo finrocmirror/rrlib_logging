@@ -144,7 +144,7 @@ class tLogDomain
    *
    *\param mask   The bitmask that selects the output streams to use
    */
-  void SetupOutputStream(eLogStreamMask mask) const;
+  void SetupOutputStream(int mask) const;
 
   /*! Get the current time as string for internal use in messages
    *
@@ -291,17 +291,17 @@ public:
     return this->configuration->max_message_level;
   }
 
-  /*! Get the mask representing which streams are used for message output
-   *
-   * For message output several streams can be used. This bitmask configures
-   * which of them are enabled.
-   *
-   * \returns The bitmask that contains the enabled message streams
-   */
-  inline const eLogStreamMask GetStreamMask() const
-  {
-    return this->configuration->stream_mask;
-  }
+//  /*! Get the mask representing which streams are used for message output
+//   *
+//   * For message output several streams can be used. This bitmask configures
+//   * which of them are enabled.
+//   *
+//   * \returns The bitmask that contains the enabled message streams
+//   */
+//  inline const eLogStreamMask GetStreamMask() const
+//  {
+//    return this->configuration->stream_mask;
+//  }
 
   /*! Get a message stream from this domain
    *
@@ -337,7 +337,7 @@ public:
     {
       this->stream << this->GetTimeString();
     }
-    this->SetupOutputStream(this->configuration->stream_mask & ~(eLSM_FILE | eLSM_COMBINED_FILE));
+    this->SetupOutputStream(this->configuration->stream_mask & ~((1 << eLS_FILE) | (1 << eLS_COMBINED_FILE)));
     this->stream << this->GetControlStringForColoredOutput(level);
     this->SetupOutputStream(this->configuration->stream_mask);
 
@@ -359,7 +359,7 @@ public:
     }
 #endif
     this->stream << ">> ";
-    this->SetupOutputStream(this->configuration->stream_mask & ~(eLSM_FILE | eLSM_COMBINED_FILE));
+    this->SetupOutputStream(this->configuration->stream_mask & ~((1 << eLS_FILE) | (1 << eLS_COMBINED_FILE)));
     this->stream << "\033[;0m";
     this->SetupOutputStream(this->configuration->stream_mask);
 
