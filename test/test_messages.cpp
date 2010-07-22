@@ -39,6 +39,7 @@
 //----------------------------------------------------------------------
 #include <cstdlib>
 #include <iostream>
+#include <stdexcept>
 
 extern "C"
 {
@@ -140,7 +141,7 @@ int main(int argc, char **argv)
   ERRORMSG("blablabla Error");
   USERMSG("blablabla User");
 
-
+  RRLIB_LOG_STREAM(eLL_ERROR) << std::runtime_error("runtime_error");
 
   return EXIT_SUCCESS;
 }

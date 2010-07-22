@@ -57,6 +57,9 @@
 // External includes with <>
 //----------------------------------------------------------------------
 #include <iostream>
+#include <exception>
+#include <boost/type_traits/is_base_of.hpp>
+#include <boost/utility/enable_if.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 
 //----------------------------------------------------------------------
@@ -152,9 +155,23 @@ public:
    * \returns A reference to the altered stream (in this case the proxy)
    */
   template <typename T>
-  inline tLogStream &operator << (const T &value)
+  inline typename boost::disable_if<boost::is_base_of<std::exception, T>, tLogStream &>::type operator << (const T &value)
   {
     this->stream << value;
+    return *this;
+  }
+
+  /*! Streaming operator for exceptions
+   *
+   * This method implements log streaming for std::exception
+   *
+   * \param exception   The exception to put into the stream
+   *
+   * \returns A reference to the altered stream (in this case the proxy)
+   */
+  inline tLogStream &operator << (const std::exception &value)
+  {
+    this->stream << value.what();
     return *this;
   }
 
