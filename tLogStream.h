@@ -137,11 +137,12 @@ public:
 
   /*! The dtor of tLogStreamProxy
    *
-   * Releases the lock
+   * Releases the lock, adds a newline if necessary and flushes the stream
    */
   ~tLogStream()
   {
-    if (reinterpret_cast<tLogStreamBuffer *>(this->stream.rdbuf())->EndsWithNewline())
+    tLogStreamBuffer *buffer = dynamic_cast<tLogStreamBuffer *>(this->stream.rdbuf());
+    if (buffer && buffer->EndsWithNewline())
     {
       *this << std::flush;
     }
