@@ -105,11 +105,7 @@ class tLogStream
 {
   std::ostream &stream;
 
-  static boost::recursive_mutex &GetMutex()
-  {
-    static boost::recursive_mutex mutex;
-    return mutex;
-  }
+  boost::recursive_mutex* mutex;
 
   // Prohibit assignment to non-const references
   tLogStream &operator = (const tLogStream &other);
@@ -128,11 +124,13 @@ public:
    * This methods blocks until the lock can be acquired.
    *
    * \param stream   The std::ostream that is used via this proxy
+   * \param mutex_   Mutex to acquire while this proxy is used
    */
-  explicit tLogStream(std::ostream &stream)
-      : stream(stream)
+  explicit tLogStream(std::ostream &stream, boost::recursive_mutex* mutex_)
+      : stream(stream),
+      mutex(mutex_)
   {
-    GetMutex().lock();
+    mutex->lock();
   }
 
   /*! The dtor of tLogStreamProxy
@@ -150,7 +148,7 @@ public:
     {
       *this << std::endl;
     }
-    GetMutex().unlock();
+    mutex->unlock();
   }
 
   /*! Streaming operator (forwarder)

@@ -102,6 +102,8 @@ class tLogDomain
   mutable std::ostream stream;
   mutable std::ofstream file_stream;
 
+  std::tr1::shared_ptr<boost::recursive_mutex> mutex;
+
   /*! The ctor of a top level domain
    *
    * This ctor is to be called by the registry that creates the top level
@@ -120,6 +122,15 @@ class tLogDomain
    * \param parent          The parent domain
    */
   tLogDomain(tLogDomainConfigurationSharedPointer configuration, tLogDomain &parent);
+
+  /*!
+   * \returns Shared Pointer to output mutex that is shared by all logging domains
+   */
+  static std::tr1::shared_ptr<boost::recursive_mutex> GetMutex()
+  {
+    static std::tr1::shared_ptr<boost::recursive_mutex> mutex(new boost::recursive_mutex());
+    return mutex;
+  }
 
   /*! Recursively configure the subtree that begins in this domain
    *
@@ -325,7 +336,7 @@ public:
   template <typename TDescription>
   inline tLogStream GetMessageStream(const TDescription &description, const char *function, const char *file, unsigned int line, eLogLevel level) const
   {
-    tLogStream stream_proxy(this->stream);
+    tLogStream stream_proxy(this->stream, mutex.get());
     this->stream_buffer.Clear();
     if (level > this->GetMaxMessageLevel() || !this->IsEnabled())
     {

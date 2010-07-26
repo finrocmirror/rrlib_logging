@@ -142,9 +142,10 @@
       static rrlib::logging::tLogDomainSharedPointer instance(rrlib::logging::tLogDomainRegistry::GetInstance().GetSubDomain(name, ParentScopedLoggingDomain::GetDomain())); \
       return instance; \
     } \
-    static inline rrlib::logging::tLogDomainSharedPointer GetDomainForUseInRRLibMacros() \
+    static inline const rrlib::logging::tLogDomain* GetDomainForUseInRRLibMacros() \
     { \
-      return GetDomain(); \
+      static const rrlib::logging::tLogDomain* instance = GetDomain().get(); \
+      return instance; \
     } \
   }; \
    
@@ -174,9 +175,10 @@
       static rrlib::logging::tLogDomainSharedPointer instance(rrlib::logging::tLogDomainRegistry::GetInstance().GetSubDomain(domain_name, ScopedLoggingDomain::GetDomain())); \
       return instance; \
     } \
-    static inline rrlib::logging::tLogDomainSharedPointer GetDomainForUseInRRLibMacros() \
+    static inline const rrlib::logging::tLogDomain* GetDomainForUseInRRLibMacros() \
     { \
-      return GetDomain(); \
+      static const rrlib::logging::tLogDomain* instance = GetDomain().get(); \
+      return instance; \
     } \
   }; \
    
@@ -188,9 +190,12 @@ struct ScopedLoggingDomain
   {
     return rrlib::logging::tLogDomainRegistry::GetDefaultDomain();
   }
-  static rrlib::logging::tLogDomainSharedPointer GetDomainForUseInRRLibMacros()
+  static const rrlib::logging::tLogDomain* GetDomainForUseInRRLibMacros()
   {
-    return GetDomain();
+    static const rrlib::logging::tLogDomain* instance = GetDomain().get();
+    \
+    return instance;
+    \
   }
 };
 
@@ -201,9 +206,9 @@ inline const char *GetLogDescription()
 }
 
 // To trick the compiler we need a global function declaration
-inline rrlib::logging::tLogDomainSharedPointer GetDomainForUseInRRLibMacros()
+inline const rrlib::logging::tLogDomain* GetDomainForUseInRRLibMacros()
 {
-  return rrlib::logging::tLogDomainSharedPointer();
+  return NULL;
 }
 
 #endif
