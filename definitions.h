@@ -193,9 +193,7 @@ struct ScopedLoggingDomain
   static const rrlib::logging::tLogDomain* GetDomainForUseInRRLibMacros()
   {
     static const rrlib::logging::tLogDomain* instance = GetDomain().get();
-    \
     return instance;
-    \
   }
 };
 
