@@ -22,6 +22,7 @@
 /*!\file    definitions.h
  *
  * \author  Tobias Foehst
+ * \author  Max Reichardt
  *
  * \date    2010-06-16
  *

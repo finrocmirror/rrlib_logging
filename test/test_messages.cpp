@@ -104,7 +104,7 @@ int main(int argc, char **argv)
 
 //  std::cout << tLogDomainRegistry::GetInstance() << std::endl;
 
-//  tLogDomainRegistry::GetInstance().EnableDomain("global", true);
+//  tLogDomainRegistry::GetInstance().SetDomainConfiguresSubTree("global", true);
 //  tLogDomainRegistry::GetInstance().SetDomainPrintsName("global", true);
 //  tLogDomainRegistry::GetInstance().SetDomainPrintsTime("global", true);
 //  tLogDomainRegistry::GetInstance().SetDomainPrintsLevel("global", true);
@@ -114,13 +114,9 @@ int main(int argc, char **argv)
 
 //  tLogDomainRegistry::GetInstance().SetDomainStreamMask("global", eLSM_STDOUT | eLSM_FILE | eLSM_COMBINED_FILE);
 
-//  tLogDomainRegistry::GetInstance().EnableDomain(".local");
-//  tLogDomainRegistry::GetInstance().EnableDomain(".local.class");
-//  tLogDomainRegistry::GetInstance().EnableDomain(".example", true);
+//  tLogDomainRegistry::GetInstance().SetDomainConfiguresSubTree(".example", true);
 //  tLogDomainRegistry::GetInstance().SetDomainMinMessageLevel(".example", eLL_VERBOSE);
 //  tLogDomainRegistry::GetInstance().SetDomainStreamID(".example", eLS_COMBINED_FILE);
-//  tLogDomainRegistry::GetInstance().EnableDomain("global.libA");
-//  tLogDomainRegistry::GetInstance().EnableDomain("global.libB");
 
   CREATE_SCOPED_LOGGING_DOMAIN("main");
 

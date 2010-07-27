@@ -22,6 +22,7 @@
 /*!\file    tLogStream.h
  *
  * \author  Tobias Foehst
+ * \author  Max Reichardt
  *
  * \date    2010-07-06
  *

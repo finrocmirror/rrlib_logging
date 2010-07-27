@@ -146,7 +146,6 @@ class tLogDomainConfiguration
   std::string name;
   bool configure_sub_tree;
 
-  bool enabled;
   bool print_time;
   bool print_name;
   bool print_level;
@@ -157,7 +156,6 @@ class tLogDomainConfiguration
   explicit tLogDomainConfiguration(const std::string &name)
       : name(name),
       configure_sub_tree(false),
-      enabled(false),
       print_time(cDEFAULT_PRINT_TIME),
       print_name(cDEFAULT_PRINT_NAME),
       print_level(cDEFAULT_PRINT_LEVEL),
@@ -168,7 +166,6 @@ class tLogDomainConfiguration
 
   tLogDomainConfiguration(const tLogDomainConfiguration &other)
       : configure_sub_tree(other.configure_sub_tree),
-      enabled(other.enabled),
       print_time(other.print_time),
       print_name(other.print_name),
       print_level(other.print_level),
@@ -180,7 +177,6 @@ class tLogDomainConfiguration
   tLogDomainConfiguration &operator = (const tLogDomainConfiguration other)
   {
     this->configure_sub_tree = other.configure_sub_tree;
-    this->enabled = other.enabled;
     this->print_time = other.print_time;
     this->print_name = other.print_name;
     this->print_level = other.print_level;

@@ -22,6 +22,7 @@
 /*!\file    tLogDomain.h
  *
  * \author  Tobias Foehst
+ * \author  Max Reichardt
  *
  * \date    2010-06-16
  *
@@ -231,18 +232,6 @@ public:
     return this->configuration->name;
   }
 
-  /*! Get configuration status of this domain's enabled flag
-   *
-   * If a domain is enabled it processes log messages that are not above a
-   * specified max level. Otherwise it is totally quite.
-   *
-   * \returns Whether the domain is enabled or not
-   */
-  inline const bool IsEnabled() const
-  {
-    return this->configuration->enabled;
-  }
-
   /*! Get configuration status of this domain's print_time flag
    *
    * The current time is prepended to messages of this domain if the
@@ -338,7 +327,7 @@ public:
   {
     tLogStream stream_proxy(this->stream, mutex.get());
     this->stream_buffer.Clear();
-    if (level > this->GetMaxMessageLevel() || !this->IsEnabled())
+    if (level > this->GetMaxMessageLevel())
     {
       return stream_proxy;
     }
@@ -399,7 +388,7 @@ public:
   template <typename TDescription>
   inline void PrintMessage(const TDescription &description, const char *function, const char *file, int line, eLogLevel level, const char *fmt, ...) const
   {
-    if (level > this->GetMaxMessageLevel() || !this->IsEnabled())
+    if (level > this->GetMaxMessageLevel())
     {
       return;
     }

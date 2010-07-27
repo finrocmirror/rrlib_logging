@@ -3,11 +3,10 @@
 <!ELEMENT domain (domain|stream)*>
     <!ATTLIST domain name CDATA #REQUIRED>
     <!ATTLIST domain configures_sub_tree (true|false) "false">
-    <!ATTLIST domain enabled (true|false) "false">
     <!ATTLIST domain print_time (true|false) "false">
     <!ATTLIST domain print_name (true|false) "false">
     <!ATTLIST domain print_level (true|false) "false">
-    <!ATTLIST domain max_level (user|error|warning|debug_warning|debug|debug_verbose_1|debug_verbose_2|debug_verbose_3) #IMPLIED>
+    <!ATTLIST domain max_level (error|warning|debug_warning|debug|debug_verbose_1|debug_verbose_2|debug_verbose_3) #IMPLIED>
     <!ATTLIST domain stream (stdout|stderr|file|combined_file) #IMPLIED>
 <!ELEMENT stream EMPTY>
     <!ATTLIST stream output (stdout|stderr|file|combined_file) #REQUIRED>

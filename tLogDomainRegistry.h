@@ -234,34 +234,6 @@ public:
    */
   size_t GetMaxDomainNameLength() const;
 
-  /*! Enable a given domain and switch recursion on or off
-   *
-   * This is a shortcut for setting the configuration of the domain's
-   * sub tree and enabling it.
-   *
-   * \param name            The full qualified name of the domain
-   * \param with_sub_tree   Switch recursion on or off
-   */
-  void EnableDomain(const std::string &name, bool with_sub_tree = false)
-  {
-    this->SetDomainConfiguresSubTree(name, with_sub_tree);
-    this->SetDomainIsEnabled(name, true);
-  }
-
-  /*! Disable a given domain and switch recursion on or off
-   *
-   * This is a shortcut for setting the configuration of the domain's
-   * sub tree and disabling it.
-   *
-   * \param name            The full qualified name of the domain
-   * \param with_sub_tree   Switch recursion on or off
-   */
-  void DisableDomain(const std::string &name, bool with_sub_tree = false)
-  {
-    this->SetDomainConfiguresSubTree(name, with_sub_tree);
-    this->SetDomainIsEnabled(name, false);
-  }
-
   /*! Set if the domain configures its subtree or not
    *
    * If set to true every configuration update to the given domain
@@ -271,16 +243,6 @@ public:
    * \param value   The new value of the setting
    */
   void SetDomainConfiguresSubTree(const std::string &name, bool value);
-
-  /*! Set if the domain is enabled or not
-   *
-   * If a domain is not enabled, none of its messages will be visible
-   * regardless of its max message level.
-   *
-   * \param name    The full qualified name of the domain
-   * \param value   The new value of the setting
-   */
-  void SetDomainIsEnabled(const std::string &name, bool value);
 
   /*! Set if the domain should prepend the current time to each message
    *

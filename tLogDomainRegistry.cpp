@@ -80,7 +80,6 @@ using namespace rrlib::xml2;
 tLogDomainRegistry::tLogDomainRegistry()
 {
   this->domain_configurations.push_back(tLogDomainConfigurationSharedPointer(new tLogDomainConfiguration(".")));
-  this->domain_configurations.back()->enabled = true;
   this->domains.push_back(std::tr1::shared_ptr<tLogDomain>(new tLogDomain(this->domain_configurations.back())));
 }
 
@@ -135,15 +134,6 @@ void tLogDomainRegistry::SetDomainConfiguresSubTree(const std::string &name, boo
 }
 
 //----------------------------------------------------------------------
-// class tLogDomainRegistry SetDomainIsEnabled
-//----------------------------------------------------------------------
-void tLogDomainRegistry::SetDomainIsEnabled(const std::string &name, bool value)
-{
-  tLogDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
-  configuration->enabled = value;
-  this->PropagateDomainConfigurationToChildren(name);
-}
-//----------------------------------------------------------------------
 // class tLogDomainRegistry SetDomainPrintsTime
 //----------------------------------------------------------------------
 void tLogDomainRegistry::SetDomainPrintsTime(const std::string &name, bool value)
@@ -188,6 +178,7 @@ void tLogDomainRegistry::SetDomainPrintsLocation(const std::string &name, bool v
 //----------------------------------------------------------------------
 void tLogDomainRegistry::SetDomainMaxMessageLevel(const std::string &name, eLogLevel value)
 {
+  assert(value >= eLL_ERROR);
   tLogDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
   configuration->max_message_level = value;
   this->PropagateDomainConfigurationToChildren(name);
@@ -319,9 +310,9 @@ bool tLogDomainRegistry::ConfigureFromXMLNode(const tXMLNode &node)
 //----------------------------------------------------------------------
 bool tLogDomainRegistry::AddConfigurationFromXMLNode(const tXMLNode &node, const std::string &parent_name)
 {
-  static const char *level_names_init[eLL_DIMENSION] = { "user", "error", "warning", "debug_warning", "debug", "debug_verbose_1", "debug_verbose_2", "debug_verbose_3" };
-  static const std::vector<std::string> level_names(level_names_init, level_names_init + eLL_DIMENSION);
-  // FIXME: with c++0x this can be static const std::vector<std::string> level_names = { "user", "error", "warning", "debug_warning", "debug", "debug_verbose_1", "debug_verbose_2", "debug_verbose_3" };
+  static const char *level_names_init[eLL_DIMENSION - eLL_ERROR] = { "error", "warning", "debug_warning", "debug", "debug_verbose_1", "debug_verbose_2", "debug_verbose_3" };
+  static const std::vector<std::string> level_names(level_names_init, level_names_init + eLL_DIMENSION - eLL_ERROR);
+  // FIXME: with c++0x this can be static const std::vector<std::string> level_names = { "error", "warning", "debug_warning", "debug", "debug_verbose_1", "debug_verbose_2", "debug_verbose_3" };
 
   static const char *stream_names_init[eLS_DIMENSION] = { "stdout", "stderr", "file", "combined_file" };
   static const std::vector<std::string> stream_names(stream_names_init, stream_names_init + eLS_DIMENSION);
@@ -336,11 +327,6 @@ bool tLogDomainRegistry::AddConfigurationFromXMLNode(const tXMLNode &node, const
   if (node.HasAttribute("configures_sub_tree"))
   {
     this->SetDomainConfiguresSubTree(name, node.GetBoolAttribute("configures_sub_tree"));
-  }
-
-  if (node.HasAttribute("enabled"))
-  {
-    this->SetDomainIsEnabled(name, node.GetBoolAttribute("enabled"));
   }
 
   if (node.HasAttribute("print_time"))
@@ -365,7 +351,7 @@ bool tLogDomainRegistry::AddConfigurationFromXMLNode(const tXMLNode &node, const
 
   if (node.HasAttribute("max_level"))
   {
-    this->SetDomainMaxMessageLevel(name, node.GetEnumAttribute<eLogLevel>("max_level", level_names));
+    this->SetDomainMaxMessageLevel(name, static_cast<eLogLevel>(eLL_ERROR + node.GetEnumAttribute<eLogLevel>("max_level", level_names)));
   }
 
   bool stream_configured = false;

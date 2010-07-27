@@ -22,6 +22,7 @@
 /*!\file    tLogDomain.cpp
  *
  * \author  Tobias Foehst
+ * \author  Max Reichardt
  *
  * \date    2010-06-16
  *
@@ -37,7 +38,7 @@
 #include "tLogDomain.h"
 
 //----------------------------------------------------------------------
-// External includes with <>
+// External includes (system with <>, local with "")
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------

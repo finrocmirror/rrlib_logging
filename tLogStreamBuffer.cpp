@@ -35,11 +35,11 @@
 //----------------------------------------------------------------------
 #define _rrlib_logging_include_guard_
 #include "logging/tLogStreamBuffer.h"
-#include <cstdio>
 
 //----------------------------------------------------------------------
-// External includes with <>
+// External includes (system with <>, local with "")
 //----------------------------------------------------------------------
+#include <cstdio>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
