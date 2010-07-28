@@ -190,7 +190,7 @@ const std::string tLogDomain::GetNameString() const
 //----------------------------------------------------------------------
 // class tLogDomain GetLevelString
 //----------------------------------------------------------------------
-const std::string tLogDomain::GetLevelString(eLogLevel level) const
+const std::string tLogDomain::GetLevelString(tLogLevel level) const
 {
   switch (level)
   {
@@ -220,7 +220,7 @@ const std::string tLogDomain::GetLocationString(const char *file, unsigned int l
 //----------------------------------------------------------------------
 // class tLogDomain GetColoredOutputString
 //----------------------------------------------------------------------
-const std::string tLogDomain::GetControlStringForColoredOutput(eLogLevel level) const
+const std::string tLogDomain::GetControlStringForColoredOutput(tLogLevel level) const
 {
   switch (level)
   {

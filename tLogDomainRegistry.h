@@ -140,9 +140,9 @@ class tLogDomainRegistry
   /*! Set the output streams that should be used by the given domain
    *
    * \param name   The full qualified name of the domain
-   * \param mask   The mask that represents the streams to be used
+   * \param mask   The mask that represents the streams to be used as sink
    */
-  void SetDomainStreamMask(const std::string &name, int mask);
+  void SetDomainSinkMask(const std::string &name, int mask);
 
 #ifdef _RRLIB_XML2_WRAPPER_PRESENT_
   /*! Add a domain configuration from a given XML node
@@ -219,7 +219,7 @@ public:
    *
    * Get the file name prefix that was configured
    *
-   * \returns the stored prefix
+   * \returns the stored prefeix
    */
   inline const std::string &GetOutputFileNamePrefix() const
   {
@@ -291,17 +291,17 @@ public:
    * \param name    The full qualified name of the domain
    * \param value   The new value of the setting
    */
-  void SetDomainMaxMessageLevel(const std::string &name, eLogLevel value);
+  void SetDomainMaxMessageLevel(const std::string &name, tLogLevel value);
 
-  /*! Set the output streams that should be used by the given domain
+  /*! Set the output streams that should be used as sink by the given domain
    *
-   * \param name       The full qualified name of the domain
-   * \param stream_1   The first stream to be used by the given domain
-   * \param stream_2   The second stream to be used by the given domain
-   * \param stream_3   The third stream to be used by the given domain
-   * \param stream_4   The fourth stream to be used by the given domain
+   * \param name     The full qualified name of the domain
+   * \param sink_1   The first sink to be used by the given domain
+   * \param sink_2   The second sink to be used by the given domain
+   * \param sink_3   The third sink to be used by the given domain
+   * \param sink_4   The fourth sink to be used by the given domain
    */
-  void SetDomainStream(const std::string &name, eLogStream stream_1, eLogStream stream_2 = eLS_DIMENSION, eLogStream stream_3 = eLS_DIMENSION, eLogStream stream_4 = eLS_DIMENSION);
+  void SetDomainSink(const std::string &name, tLogSink sink_1, tLogSink sink_2 = eLS_DIMENSION, tLogSink sink_3 = eLS_DIMENSION, tLogSink sink_4 = eLS_DIMENSION);
 
 #ifdef _RRLIB_XML2_WRAPPER_PRESENT_
   /*! Read domain configuration from a given XML file

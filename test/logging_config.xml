@@ -2,6 +2,6 @@
 <!DOCTYPE rrlib_logging PUBLIC "-//RRLib//DTD logging 1.0" "../etc/rrlib_logging.dtd">
 <rrlib_logging>
   <domain name="global" configures_sub_tree="true" print_time="true" print_name="true" print_level="true" max_level="debug">
-    <stream output="stdout" />
+    <sink output="stdout" />
   </domain>
 </rrlib_logging>

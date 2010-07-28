@@ -186,7 +186,7 @@ class tLogDomain
    *
    * \returns The given level as padded string
    */
-  const std::string GetLevelString(eLogLevel level) const;
+  const std::string GetLevelString(tLogLevel level) const;
 
   /*! Get the given location as string for internal use in messages
    *
@@ -209,7 +209,7 @@ class tLogDomain
    *
    * \returns The string containing the control sequence
    */
-  const std::string GetControlStringForColoredOutput(eLogLevel level) const;
+  const std::string GetControlStringForColoredOutput(tLogLevel level) const;
 
 //----------------------------------------------------------------------
 // Public methods
@@ -286,7 +286,7 @@ public:
    *
    * \returns The configured maximal log level
    */
-  inline const eLogLevel GetMaxMessageLevel() const
+  inline const tLogLevel GetMaxMessageLevel() const
   {
     return this->configuration->max_message_level;
   }
@@ -323,7 +323,7 @@ public:
    * \returns A reference to the stream that can be used for the remaining message parts
    */
   template <typename TDescription>
-  inline tLogStream GetMessageStream(const TDescription &description, const char *function, const char *file, unsigned int line, eLogLevel level) const
+  inline tLogStream GetMessageStream(const TDescription &description, const char *function, const char *file, unsigned int line, tLogLevel level) const
   {
     tLogStream stream_proxy(this->stream, mutex.get());
     this->stream_buffer.Clear();
@@ -331,15 +331,15 @@ public:
     {
       return stream_proxy;
     }
-    this->SetupOutputStream(this->configuration->stream_mask);
+    this->SetupOutputStream(this->configuration->sink_mask);
 
     if (this->GetPrintTime())
     {
       this->stream << this->GetTimeString();
     }
-    this->SetupOutputStream(this->configuration->stream_mask & ~((1 << eLS_FILE) | (1 << eLS_COMBINED_FILE)));
+    this->SetupOutputStream(this->configuration->sink_mask & ~((1 << eLS_FILE) | (1 << eLS_COMBINED_FILE)));
     this->stream << this->GetControlStringForColoredOutput(level);
-    this->SetupOutputStream(this->configuration->stream_mask);
+    this->SetupOutputStream(this->configuration->sink_mask);
 
 #ifndef _RRLIB_LOGGING_LESS_OUTPUT_
     if (this->GetPrintName())
@@ -359,9 +359,9 @@ public:
     }
 #endif
     this->stream << ">> ";
-    this->SetupOutputStream(this->configuration->stream_mask & ~((1 << eLS_FILE) | (1 << eLS_COMBINED_FILE)));
+    this->SetupOutputStream(this->configuration->sink_mask & ~((1 << eLS_FILE) | (1 << eLS_COMBINED_FILE)));
     this->stream << "\033[;0m";
-    this->SetupOutputStream(this->configuration->stream_mask);
+    this->SetupOutputStream(this->configuration->sink_mask);
 
     return stream_proxy;
   }
@@ -386,7 +386,7 @@ public:
    * \param ...           The remaining arguments for printf
    */
   template <typename TDescription>
-  inline void PrintMessage(const TDescription &description, const char *function, const char *file, int line, eLogLevel level, const char *fmt, ...) const
+  inline void PrintMessage(const TDescription &description, const char *function, const char *file, int line, tLogLevel level, const char *fmt, ...) const
   {
     if (level > this->GetMaxMessageLevel())
     {

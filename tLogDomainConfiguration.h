@@ -34,7 +34,7 @@
  * like enabled output fields, max. message level, etc.
  *
  *
- * \b eLogLevel
+ * \b tLogLevel
  *
  * The enumeration that encodes the message levels. These levels are
  * predefined and can be used to give the messages different priorities,
@@ -44,11 +44,11 @@
  * They are also used for colored output to stdout or stderr.
  *
  *
- * \b eLogStream
+ * \b tLogSink
  *
- * The enumeration that encodes the streams used by a logging domain.
- * Messages can be streams to stdout, stderr, into on file per domain
- * or into on combined file for all domains that are recursively
+ * The enumeration that encodes the sinks used by a logging domain.
+ * Messages can be streamed to stdout, stderr, into one file per domain
+ * or into one combined file for all domains that are recursively
  * configured in one subtree of the domain hierarchy.
  *
  */
@@ -86,7 +86,7 @@ namespace logging
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
 //! Enumeration type that contains the available message levels
-enum eLogLevel
+enum tLogLevel
 {
   eLL_USER,             //!< Information for user (including end-users). Is always shown.
   eLL_ERROR,            //!< Error message. Used to inform about _certain_ malfunction of application. Is always shown.
@@ -100,8 +100,8 @@ enum eLogLevel
 };
 
 
-//! Enumeration type that contains the available message streams
-enum eLogStream
+//! Enumeration type that contains the available sinks for message domains
+enum tLogSink
 {
   eLS_STDOUT,          //!< Messages are printed to stdout
   eLS_STDERR,          //!< Messages are printed to stderr
@@ -111,19 +111,19 @@ enum eLogStream
 };
 
 #ifdef _RRLIB_LOGGING_LESS_OUTPUT_
-const bool cDEFAULT_PRINT_TIME = false;               //!< Default print time setting for reduced output mode
-const bool cDEFAULT_PRINT_NAME = false;               //!< Default print name setting for reduced output mode
-const bool cDEFAULT_PRINT_LEVEL = false;              //!< Default print level setting for reduced output mode
-const bool cDEFAULT_PRINT_LOCATION = false;           //!< Default print location setting for reduced output mode
-const eLogLevel cDEFAULT_MAX_LOG_LEVEL = eLL_WARNING; //!< Default max log level for reduced output mode
-const int cDEFAULT_STREAM_MASK = 1 << eLS_STDOUT;     //!< Default output stream mask
+const bool cDEFAULT_PRINT_TIME = false;                 //!< Default print time setting for reduced output mode
+const bool cDEFAULT_PRINT_NAME = false;                 //!< Default print name setting for reduced output mode
+const bool cDEFAULT_PRINT_LEVEL = false;                //!< Default print level setting for reduced output mode
+const bool cDEFAULT_PRINT_LOCATION = false;             //!< Default print location setting for reduced output mode
+const tLogLevel cDEFAULT_MAX_LOG_LEVEL = eLL_WARNING;   //!< Default max log level for reduced output mode
+const int cDEFAULT_SINK_MASK = 1 << eLS_STDOUT;         //!< Default output stream mask
 #else
 const bool cDEFAULT_PRINT_TIME = false;               //!< Default print time setting for normal output mode
 const bool cDEFAULT_PRINT_NAME = false;               //!< Default print name setting for normal output mode
 const bool cDEFAULT_PRINT_LEVEL = false;              //!< Default print level setting for normal output mode
 const bool cDEFAULT_PRINT_LOCATION = true;            //!< Default print location setting for normal output mode
-const eLogLevel cDEFAULT_MAX_LOG_LEVEL = eLL_DEBUG;   //!< Default max log level for normal output mode
-const int cDEFAULT_STREAM_MASK = 1 << eLS_STDOUT;     //!< Default output stream mask
+const tLogLevel cDEFAULT_MAX_LOG_LEVEL = eLL_DEBUG;   //!< Default max log level for normal output mode
+const int cDEFAULT_SINK_MASK = 1 << eLS_STDOUT;       //!< Default output stream mask
 #endif
 
 //----------------------------------------------------------------------
@@ -150,8 +150,8 @@ class tLogDomainConfiguration
   bool print_name;
   bool print_level;
   bool print_location;
-  eLogLevel max_message_level;
-  int stream_mask;
+  tLogLevel max_message_level;
+  int sink_mask;
 
   explicit tLogDomainConfiguration(const std::string &name)
       : name(name),
@@ -161,7 +161,7 @@ class tLogDomainConfiguration
       print_level(cDEFAULT_PRINT_LEVEL),
       print_location(cDEFAULT_PRINT_LOCATION),
       max_message_level(cDEFAULT_MAX_LOG_LEVEL),
-      stream_mask(cDEFAULT_STREAM_MASK)
+      sink_mask(cDEFAULT_SINK_MASK)
   {}
 
   tLogDomainConfiguration(const tLogDomainConfiguration &other)
@@ -171,7 +171,7 @@ class tLogDomainConfiguration
       print_level(other.print_level),
       print_location(other.print_location),
       max_message_level(other.max_message_level),
-      stream_mask(other.stream_mask)
+      sink_mask(other.sink_mask)
   {}
 
   tLogDomainConfiguration &operator = (const tLogDomainConfiguration other)
@@ -182,7 +182,7 @@ class tLogDomainConfiguration
     this->print_level = other.print_level;
     this->print_location = other.print_location;
     this->max_message_level = other.max_message_level;
-    this->stream_mask = other.stream_mask;
+    this->sink_mask = other.sink_mask;
     return *this;
   }
 };

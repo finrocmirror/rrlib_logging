@@ -176,7 +176,7 @@ void tLogDomainRegistry::SetDomainPrintsLocation(const std::string &name, bool v
 //----------------------------------------------------------------------
 // class tLogDomainRegistry SetDomainMaxMessageLevel
 //----------------------------------------------------------------------
-void tLogDomainRegistry::SetDomainMaxMessageLevel(const std::string &name, eLogLevel value)
+void tLogDomainRegistry::SetDomainMaxMessageLevel(const std::string &name, tLogLevel value)
 {
   assert(value >= eLL_ERROR);
   tLogDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
@@ -185,25 +185,25 @@ void tLogDomainRegistry::SetDomainMaxMessageLevel(const std::string &name, eLogL
 }
 
 //----------------------------------------------------------------------
-// class tLogDomainRegistry SetDomainStream
+// class tLogDomainRegistry SetDomainSink
 //----------------------------------------------------------------------
-void tLogDomainRegistry::SetDomainStream(const std::string &name, eLogStream stream_1, eLogStream stream_2, eLogStream stream_3, eLogStream stream_4)
+void tLogDomainRegistry::SetDomainSink(const std::string &name, tLogSink sink_1, tLogSink sink_2, tLogSink sink_3, tLogSink sink_4)
 {
   int mask = 0;
-  mask |= (stream_1 != eLS_DIMENSION) ? (1 << stream_1) : 0;
-  mask |= (stream_2 != eLS_DIMENSION) ? (1 << stream_1) : 0;
-  mask |= (stream_3 != eLS_DIMENSION) ? (1 << stream_1) : 0;
-  mask |= (stream_4 != eLS_DIMENSION) ? (1 << stream_1) : 0;
-  this->SetDomainStreamMask(name, mask);
+  mask |= (sink_1 != eLS_DIMENSION) ? (1 << sink_1) : 0;
+  mask |= (sink_2 != eLS_DIMENSION) ? (1 << sink_2) : 0;
+  mask |= (sink_3 != eLS_DIMENSION) ? (1 << sink_3) : 0;
+  mask |= (sink_4 != eLS_DIMENSION) ? (1 << sink_4) : 0;
+  this->SetDomainSinkMask(name, mask);
 }
 
 //----------------------------------------------------------------------
-// class tLogDomainRegistry SetDomainStreamMask
+// class tLogDomainRegistry SetDomainSinkMask
 //----------------------------------------------------------------------
-void tLogDomainRegistry::SetDomainStreamMask(const std::string &name, int mask)
+void tLogDomainRegistry::SetDomainSinkMask(const std::string &name, int mask)
 {
   tLogDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
-  configuration->stream_mask = mask;
+  configuration->sink_mask = mask;
   this->PropagateDomainConfigurationToChildren(name);
 }
 
@@ -314,8 +314,8 @@ bool tLogDomainRegistry::AddConfigurationFromXMLNode(const tXMLNode &node, const
   static const std::vector<std::string> level_names(level_names_init, level_names_init + eLL_DIMENSION - eLL_ERROR);
   // FIXME: with c++0x this can be static const std::vector<std::string> level_names = { "error", "warning", "debug_warning", "debug", "debug_verbose_1", "debug_verbose_2", "debug_verbose_3" };
 
-  static const char *stream_names_init[eLS_DIMENSION] = { "stdout", "stderr", "file", "combined_file" };
-  static const std::vector<std::string> stream_names(stream_names_init, stream_names_init + eLS_DIMENSION);
+  static const char *sink_names_init[eLS_DIMENSION] = { "stdout", "stderr", "file", "combined_file" };
+  static const std::vector<std::string> sink_names(sink_names_init, sink_names_init + eLS_DIMENSION);
   // FIXME: with c++0x this can be static const std::vector<std::string> stream_names = { "stdout", "stderr", "file", "combined_file" };
 
   assert(node.GetName() == "domain");
@@ -351,32 +351,32 @@ bool tLogDomainRegistry::AddConfigurationFromXMLNode(const tXMLNode &node, const
 
   if (node.HasAttribute("max_level"))
   {
-    this->SetDomainMaxMessageLevel(name, static_cast<eLogLevel>(eLL_ERROR + node.GetEnumAttribute<eLogLevel>("max_level", level_names)));
+    this->SetDomainMaxMessageLevel(name, static_cast<tLogLevel>(eLL_ERROR + node.GetEnumAttribute<tLogLevel>("max_level", level_names)));
   }
 
-  bool stream_configured = false;
-  if (node.HasAttribute("stream"))
+  bool sinks_configured = false;
+  if (node.HasAttribute("sink"))
   {
-    stream_configured = true;
-    this->SetDomainStream(name, node.GetEnumAttribute<eLogStream>("stream", stream_names));
+    sinks_configured = true;
+    this->SetDomainSink(name, node.GetEnumAttribute<tLogSink>("sink", sink_names));
   }
 
-  int stream_mask = 0;
+  int sink_mask = 0;
   for (std::vector<tXMLNode>::const_iterator it = node.GetChildren().begin(); it != node.GetChildren().end(); ++it)
   {
-    if (it->GetName() == "stream")
+    if (it->GetName() == "sink")
     {
-      if (stream_configured)
+      if (sinks_configured)
       {
-        std::cerr << "RRLib Logging: tLogDomainRegistry::AddConfigurationFromXMLNode >> Stream already configured in domain element!" << std::endl;
+        std::cerr << "RRLib Logging: tLogDomainRegistry::AddConfigurationFromXMLNode >> Sink already configured in domain element!" << std::endl;
         return false;
       }
-      stream_mask |= 1 << it->GetEnumAttribute<eLogStream>("output", stream_names);
+      sink_mask |= 1 << it->GetEnumAttribute<tLogSink>("output", sink_names);
     }
   }
-  if (stream_mask != 0)
+  if (sink_mask != 0)
   {
-    this->SetDomainStreamMask(name, stream_mask);
+    this->SetDomainSinkMask(name, sink_mask);
   }
 
   for (std::vector<tXMLNode>::const_iterator it = node.GetChildren().begin(); it != node.GetChildren().end(); ++it)
