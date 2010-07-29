@@ -104,6 +104,13 @@ class tLogStreamBuffer : public std::streambuf
 //----------------------------------------------------------------------
 public:
 
+  /*! The ctor of tLogStreamBuffer
+   *
+   */
+  tLogStreamBuffer()
+      : ends_with_newline(false)
+  {}
+
   /*! Add a target output stream to this buffer
    *
    * This buffer forwards its input to a list of target streams.

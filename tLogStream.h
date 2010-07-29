@@ -109,7 +109,7 @@ class tLogStream
 {
   std::ostream &stream;
 
-  boost::recursive_mutex* mutex;
+  boost::recursive_mutex *mutex;
 
   // Prohibit assignment
   tLogStream &operator = (const tLogStream &other);
@@ -130,7 +130,7 @@ public:
    * \param stream   The std::ostream that is used via this proxy
    * \param mutex    Mutex to acquire while this proxy is used
    */
-  explicit tLogStream(std::ostream &stream, boost::recursive_mutex* mutex)
+  explicit tLogStream(std::ostream &stream, boost::recursive_mutex *mutex)
       : stream(stream),
       mutex(mutex)
   {
