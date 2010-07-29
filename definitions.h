@@ -53,23 +53,23 @@
 #include "logging/tLogDomainRegistry.h"
 
 // macros for internal use
-#define RRLIB_LOG_STREAM_CALL(level, domain...) \
-  (#domain[0] ? domain::GetDomainForUseInRRLibMacros() : ScopedLoggingDomain::GetDomainForUseInRRLibMacros())->GetMessageStream(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level) \
+
+#define RRLIB_LOG_GET_DOMAIN_I(domain...) \
+  GetDomainForUseInRRLibMacros(default_log, ## domain) \
    
-#define RRLIB_LOG_MESSAGE_CALL(level, domain, args...) \
-  domain::GetDomainForUseInRRLibMacros()->PrintMessage(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level, args); \
+#define RRLIB_LOG_GET_DOMAIN(domain, args...) \
+  RRLIB_LOG_GET_DOMAIN_I(domain)
+
+#define RRLIB_LOG_STREAM_CALL(level, args...) \
+  (level <= RRLIB_LOG_GET_DOMAIN(args)->GetMaxMessageLevel() ? RRLIB_LOG_GET_DOMAIN(args)->GetMessageStream(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level).Evaluate(args) : RRLIB_LOG_GET_DOMAIN(args)->GetMessageStream(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level)) \
    
-/*
-#define RRLIB_LOG_MESSAGE_CALL(level, first_arg, args...) \
-  if (#first_arg[0] == '\"') { \
-    ScopedLoggingDomain::GetDomainForUseInRRLibMacros()->PrintMessage(GetDescription(), __FUNCTION__, __FILE__, __LINE__, level, ## args); \
-  } else { \
-    typeof(first_arg) object = ""; \
-    ScopedLoggingDomain::GetDomainForUseInRRLibMacros()->PrintMessage(GetDescription(), __FUNCTION__, __FILE__, __LINE__, level, object, ## args); \
+
+#define RRLIB_LOG_MESSAGE_CALL(level, args...) \
+  if (level <= RRLIB_LOG_GET_DOMAIN(args)->GetMaxMessageLevel()) \
+  { \
+    RRLIB_LOG_GET_DOMAIN(args)->PrintMessage(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level, args); \
   } \
-*/
-
-
+   
 #ifdef _RRLIB_LOGGING_LESS_OUTPUT_
 
 /*! Macro to get a stream for messages using operator <<
@@ -79,8 +79,8 @@
  *
  * \returns The stream for message output
  */
-#define RRLIB_LOG_STREAM(level, domain...) \
-  RRLIB_LOG_STREAM_CALL(level, domain) \
+#define RRLIB_LOG_STREAM(level, args...) \
+  RRLIB_LOG_STREAM_CALL(level, args) \
    
 /*! Macro for messages using printf syntax
  *
@@ -88,10 +88,10 @@
  * \param domain   The domain the message should be processed in
  * \param args     The format string for printf and the optional arguments to be printed.
  */
-#define RRLIB_LOG_MESSAGE(level, domain, args...) \
-  if (level  <= rrlib::logging::eLL_DEBUG) \
+#define RRLIB_LOG_MESSAGE(level, args...) \
+  if (level <= rrlib::logging::eLL_DEBUG) \
   { \
-    RRLIB_LOG_MESSAGE_CALL(level, domain, args) \
+    RRLIB_LOG_MESSAGE_CALL(level, args) \
   } \
    
 #else
@@ -103,8 +103,8 @@
  *
  * \returns The stream for message output
  */
-#define RRLIB_LOG_STREAM(level, domain...) \
-  RRLIB_LOG_STREAM_CALL(level, domain) \
+#define RRLIB_LOG_STREAM(level, args...) \
+  RRLIB_LOG_STREAM_CALL(level, args) \
    
 /*! Macro for messages using printf syntax
  *
@@ -112,13 +112,13 @@
  * \param domain   The domain the message should be processed in
  * \param args     The format string for printf and the optional arguments to be printed.
  */
-#define RRLIB_LOG_MESSAGE(level, domain, args...) \
-  RRLIB_LOG_MESSAGE_CALL(level, domain, args) \
+#define RRLIB_LOG_MESSAGE(level, args...) \
+  RRLIB_LOG_MESSAGE_CALL(level, args) \
    
 #endif
 
 
-/*! Macro for creation of a new scoped logging domain
+/*! Macro for creation of a default domain for the current scope
  *
  *  Typical use of logging domains is the creation of a domain for
  *  a specific scope. That means, that the domain is valid between
@@ -128,86 +128,74 @@
  *  results in reopening the same domain and combining the log
  *  messages.
  *
- *  The scoped logging domain is the default for following occurences
- *  of RRLIB_LOG_STREAM and can be used in RRLIB_LOG_MESSAGE using
- *  the symbol ScopedLoggingDomain.
- *
- * \param name   The local part of the name in the domain tree.
+ * \param domain_name   The local part of the name in the domain tree.
  */
-#define CREATE_SCOPED_LOGGING_DOMAIN(name) \
-  typedef ScopedLoggingDomain ParentScopedLoggingDomain; \
-  struct ScopedLoggingDomain \
+#define RRLIB_LOG_CREATE_DEFAULT_DOMAIN(domain_name) \
+  struct default_log_struct \
   { \
-    static rrlib::logging::tLogDomainSharedPointer GetDomain()    \
+    static rrlib::logging::tLogDomainSharedPointer GetDomain() \
     { \
-      static rrlib::logging::tLogDomainSharedPointer instance(rrlib::logging::tLogDomainRegistry::GetInstance().GetSubDomain(name, ParentScopedLoggingDomain::GetDomain())); \
-      return instance; \
-    } \
-    static inline const rrlib::logging::tLogDomain* GetDomainForUseInRRLibMacros() \
-    { \
-      static const rrlib::logging::tLogDomain* instance = GetDomain().get(); \
+      static rrlib::logging::tLogDomainSharedPointer instance(rrlib::logging::tLogDomainRegistry::GetInstance().GetSubDomain(domain_name, default_log())); \
       return instance; \
     } \
   }; \
+  static rrlib::logging::tLogDomainSharedPointer default_log() \
+  { \
+    return default_log_struct::GetDomain(); \
+  } \
    
-/*! Macro for creation of a new named logging domain
+/*! Macro for creation of a new named domain for the current scope
  *
- *  A named logging domain is the same like a scoped logging
- *  domain, but can exist in parallel on the same scope. It then
- *  has a symbolic name that can be specified in RRLIB_LOG_STREAM
- *  or RRLIB_LOG_MESSAGE. Thus, it is possible to defined more
- *  specific domains for one scope for purposes like writing data to
- *  a file or being more selective in message processing.
+ *  A named logging domain can exists in parallel to the deault
+ *  domain in the same scope. It then has a symbolic name that can
+ *  be specified in RRLIB_LOG_STREAM or RRLIB_LOG_MESSAGE. Thus, it
+ *  is possible to define more specific domains for one scope for
+ *  purposes like writing data to a file or being more selective in
+ *  message processing.
  *
  *  In the domain hierarchy the named logging domain exists below the
- *  last created ScopedLoggingDomain. That means that first creating
- *  a named domain and then creating the scoped domain places both at
+ *  last created default domain. That means that first creating a
+ *  named domain and then creating the scoped domain places both at
  *  the same level whereas changing the order places the named domain
- *  below the current ScopedLoggingDomain.
+ *  below the current default_log.
  *
- * \param class-name    The symbolic that can be used in following code to use the new domain
- * \param domain-name   The local part of the name in the domain tree.
+ * \param symbolic_name   The name that can be used in following code to use the new domain
+ * \param domain_name     The local part of the name in the domain tree.
  */
-#define CREATE_NAMED_LOGGING_DOMAIN(class_name, domain_name) \
-  struct class_name \
+#define RRLIB_LOG_CREATE_NAMED_DOMAIN(symbolic_name, domain_name) \
+  struct symbolic_name ## _struct \
   { \
-    static rrlib::logging::tLogDomainSharedPointer GetDomain()    \
+    static rrlib::logging::tLogDomainSharedPointer GetDomain() \
     { \
-      static rrlib::logging::tLogDomainSharedPointer instance(rrlib::logging::tLogDomainRegistry::GetInstance().GetSubDomain(domain_name, ScopedLoggingDomain::GetDomain())); \
-      return instance; \
-    } \
-    static inline const rrlib::logging::tLogDomain* GetDomainForUseInRRLibMacros() \
-    { \
-      static const rrlib::logging::tLogDomain* instance = GetDomain().get(); \
+      static rrlib::logging::tLogDomainSharedPointer instance(rrlib::logging::tLogDomainRegistry::GetInstance().GetSubDomain(domain_name, default_log())); \
       return instance; \
     } \
   }; \
+  static rrlib::logging::tLogDomainSharedPointer symbolic_name() \
+  { \
+    return symbolic_name ## _struct::GetDomain(); \
+  } \
    
 
 // The default global scoped logging domain
-struct ScopedLoggingDomain
+rrlib::logging::tLogDomainSharedPointer default_log()
 {
-  static rrlib::logging::tLogDomainSharedPointer GetDomain()
-  {
-    return rrlib::logging::tLogDomainRegistry::GetDefaultDomain();
-  }
-  static const rrlib::logging::tLogDomain* GetDomainForUseInRRLibMacros()
-  {
-    static const rrlib::logging::tLogDomain* instance = GetDomain().get();
-    return instance;
-  }
-};
+  return rrlib::logging::tLogDomainRegistry::GetDefaultDomain();
+}
+
+rrlib::logging::tLogDomainSharedPointer GetDomainForUseInRRLibMacros(rrlib::logging::tLogDomainSharedPointer(&default_domain)(), ...)
+{
+  return default_domain();
+}
+rrlib::logging::tLogDomainSharedPointer GetDomainForUseInRRLibMacros(rrlib::logging::tLogDomainSharedPointer(&default_domain)(), rrlib::logging::tLogDomainSharedPointer(&named_domain)())
+{
+  return named_domain();
+}
 
 // The default global GetLogDescription definition
 inline const char *GetLogDescription()
 {
   return "<Description not defined>";
-}
-
-// To trick the compiler we need a global function declaration
-inline const rrlib::logging::tLogDomain* GetDomainForUseInRRLibMacros()
-{
-  return NULL;
 }
 
 #endif

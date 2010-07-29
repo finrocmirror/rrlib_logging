@@ -5,7 +5,7 @@
 
 namespace libA
 {
-CREATE_SCOPED_LOGGING_DOMAIN("libA");
+RRLIB_LOG_CREATE_DEFAULT_DOMAIN("libA");
 
 void Test()
 {

@@ -78,8 +78,6 @@ namespace logging
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
-//! Shared pointer to instances of tLogDomain for user space
-typedef std::tr1::shared_ptr<const tLogDomain> tLogDomainSharedPointer;
 
 //----------------------------------------------------------------------
 // Class declaration

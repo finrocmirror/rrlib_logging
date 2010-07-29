@@ -78,6 +78,9 @@ namespace logging
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
+//! Shared pointer to instances of tLogDomain for user space
+class tLogDomain;
+typedef std::tr1::shared_ptr<const tLogDomain> tLogDomainSharedPointer;
 
 //----------------------------------------------------------------------
 // Class declaration
@@ -387,6 +390,23 @@ public:
    */
   template <typename TDescription>
   inline void PrintMessage(const TDescription &description, const char *function, const char *file, int line, tLogLevel level, const char *fmt, ...) const
+  {
+    if (level > this->GetMaxMessageLevel())
+    {
+      return;
+    }
+    char formatted_string_buffer[1024];
+
+    va_list printf_args;
+    va_start(printf_args, fmt);
+    vsnprintf(formatted_string_buffer, sizeof(formatted_string_buffer), fmt, printf_args);
+    va_end(printf_args);
+
+    this->GetMessageStream(description, function, file, line, level) << formatted_string_buffer;
+  }
+
+  template <typename TDescription>
+  inline void PrintMessage(const TDescription &description, const char *function, const char *file, int line, tLogLevel level, tLogDomainSharedPointer(&)(), const char *fmt, ...) const
   {
     if (level > this->GetMaxMessageLevel())
     {

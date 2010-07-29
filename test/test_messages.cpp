@@ -76,15 +76,23 @@ using namespace rrlib::logging;
 
 namespace local
 {
-CREATE_SCOPED_LOGGING_DOMAIN("local");
+
+RRLIB_LOG_CREATE_DEFAULT_DOMAIN("local");
 
 struct Test
 {
-  CREATE_NAMED_LOGGING_DOMAIN(my_domain, "class");
+  RRLIB_LOG_CREATE_NAMED_DOMAIN(my_domain, "class");
 
   static void function()
   {
-    RRLIB_LOG_STREAM(eLL_ERROR, my_domain) << "local class test";
+    RRLIB_LOG_STREAM(eLL_ERROR, my_domain, "this ", "is a ") << "local class test";
+
+    RRLIB_LOG_STREAM(eLL_WARNING) << "foo" << std::endl;
+    RRLIB_LOG_STREAM(eLL_ERROR, my_domain) << "foo2" << std::endl;
+    if (true)
+    {
+      RRLIB_LOG_MESSAGE(eLL_DEBUG, my_domain, "%s\n", "FOO");
+    }
   }
 };
 
@@ -118,13 +126,8 @@ int main(int argc, char **argv)
 //  tLogDomainRegistry::GetInstance().SetDomainMinMessageLevel(".example", eLL_VERBOSE);
 //  tLogDomainRegistry::GetInstance().SetDomainStreamID(".example", eLS_COMBINED_FILE);
 
-  CREATE_SCOPED_LOGGING_DOMAIN("main");
-
-  CREATE_NAMED_LOGGING_DOMAIN(my_domain, "main_named");
 
   RRLIB_LOG_STREAM(eLL_WARNING) << "foo" << std::endl;
-  RRLIB_LOG_STREAM(eLL_ERROR, my_domain) << "foo2" << std::endl;
-  RRLIB_LOG_MESSAGE(eLL_DEBUG, my_domain, "%s\n", "FOO");
 
   libA::Test();
   libB::Test();

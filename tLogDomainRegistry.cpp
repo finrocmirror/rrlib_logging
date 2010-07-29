@@ -178,9 +178,14 @@ void tLogDomainRegistry::SetDomainPrintsLocation(const std::string &name, bool v
 //----------------------------------------------------------------------
 void tLogDomainRegistry::SetDomainMaxMessageLevel(const std::string &name, tLogLevel value)
 {
-  assert(value >= eLL_ERROR);
+  tLogLevel effective_value = std::max(value, eLL_ERROR);
+
+#ifdef _RRLIB_LOGGING_LESS_OUTPUT_
+  tLogLevel effective_value = std::min(value, eLL_DEBUG);
+#endif
+
   tLogDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
-  configuration->max_message_level = value;
+  configuration->max_message_level = effective_value;
   this->PropagateDomainConfigurationToChildren(name);
 }
 
