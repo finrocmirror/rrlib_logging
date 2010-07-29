@@ -139,7 +139,7 @@
       return instance; \
     } \
   }; \
-  static rrlib::logging::tLogDomainSharedPointer default_log() \
+  inline static rrlib::logging::tLogDomainSharedPointer default_log() \
   { \
     return default_log_struct::GetDomain(); \
   } \
@@ -171,23 +171,23 @@
       return instance; \
     } \
   }; \
-  static rrlib::logging::tLogDomainSharedPointer symbolic_name() \
+  inline static rrlib::logging::tLogDomainSharedPointer symbolic_name() \
   { \
     return symbolic_name ## _struct::GetDomain(); \
   } \
    
 
 // The default global scoped logging domain
-rrlib::logging::tLogDomainSharedPointer default_log()
+inline rrlib::logging::tLogDomainSharedPointer default_log()
 {
   return rrlib::logging::tLogDomainRegistry::GetDefaultDomain();
 }
 
-rrlib::logging::tLogDomainSharedPointer GetDomainForUseInRRLibMacros(rrlib::logging::tLogDomainSharedPointer(&default_domain)(), ...)
+inline rrlib::logging::tLogDomainSharedPointer GetDomainForUseInRRLibMacros(rrlib::logging::tLogDomainSharedPointer(&default_domain)(), ...)
 {
   return default_domain();
 }
-rrlib::logging::tLogDomainSharedPointer GetDomainForUseInRRLibMacros(rrlib::logging::tLogDomainSharedPointer(&default_domain)(), rrlib::logging::tLogDomainSharedPointer(&named_domain)())
+inline rrlib::logging::tLogDomainSharedPointer GetDomainForUseInRRLibMacros(rrlib::logging::tLogDomainSharedPointer(&default_domain)(), rrlib::logging::tLogDomainSharedPointer(&named_domain)())
 {
   return named_domain();
 }
