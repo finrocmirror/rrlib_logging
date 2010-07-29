@@ -202,6 +202,12 @@ const std::string tLogDomain::GetLevelString(tLogLevel level) const
     return "[debug]   ";
   case eLL_DEBUG:
     return "[debug]   ";
+  case eLL_DEBUG_VERBOSE_1:
+    return "[verbose] ";
+  case eLL_DEBUG_VERBOSE_2:
+    return "[verbose] ";
+  case eLL_DEBUG_VERBOSE_3:
+    return "[verbose] ";
   default:
     return "          ";
   }
@@ -232,6 +238,12 @@ const std::string tLogDomain::GetControlStringForColoredOutput(tLogLevel level) 
     return "\033[;2;33m";
   case eLL_DEBUG:
     return "\033[;2;32m";
+  case eLL_DEBUG_VERBOSE_1:
+    return "\033[;2;36m";
+  case eLL_DEBUG_VERBOSE_2:
+    return "\033[;2;36m";
+  case eLL_DEBUG_VERBOSE_3:
+    return "\033[;2;36m";
   default:
     return "\033[;0m";
   }

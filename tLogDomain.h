@@ -336,6 +336,11 @@ public:
     }
     this->SetupOutputStream(this->configuration->sink_mask);
 
+    if (level == eLL_USER)
+    {
+      return stream_proxy;
+    }
+
     if (this->GetPrintTime())
     {
       this->stream << this->GetTimeString();
@@ -365,6 +370,19 @@ public:
     this->SetupOutputStream(this->configuration->sink_mask & ~((1 << eLS_FILE) | (1 << eLS_COMBINED_FILE)));
     this->stream << "\033[;0m";
     this->SetupOutputStream(this->configuration->sink_mask);
+
+    switch (level)
+    {
+    case eLL_ERROR:
+      stream_proxy << "ERROR: ";
+      break;
+    case eLL_WARNING:
+    case eLL_DEBUG_WARNING:
+      stream_proxy << "WARNING: ";
+      break;
+    default:
+      ;
+    }
 
     return stream_proxy;
   }

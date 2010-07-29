@@ -85,7 +85,7 @@ struct Test
 
   static void function()
   {
-    RRLIB_LOG_STREAM(eLL_ERROR, my_domain, "this ", "is a ") << "local class test";
+    RRLIB_LOG_STREAM(eLL_DEBUG_WARNING, my_domain, "this ", "is a ") << "local class test";
 
     RRLIB_LOG_STREAM(eLL_WARNING) << "foo" << std::endl;
     RRLIB_LOG_STREAM(eLL_ERROR, my_domain) << "foo2" << std::endl;
