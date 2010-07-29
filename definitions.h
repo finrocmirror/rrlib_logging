@@ -61,11 +61,11 @@
   RRLIB_LOG_GET_DOMAIN_I(domain)
 
 #define RRLIB_LOG_STREAM_CALL(level, args...) \
-  (level <= RRLIB_LOG_GET_DOMAIN(args)->GetMaxMessageLevel() ? RRLIB_LOG_GET_DOMAIN(args)->GetMessageStream(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level).Evaluate(args) : RRLIB_LOG_GET_DOMAIN(args)->GetMessageStream(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level)) \
+  ((level) <= RRLIB_LOG_GET_DOMAIN(args)->GetMaxMessageLevel() ? RRLIB_LOG_GET_DOMAIN(args)->GetMessageStream(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level).Evaluate(args) : RRLIB_LOG_GET_DOMAIN(args)->GetMessageStream(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level)) \
    
 
 #define RRLIB_LOG_MESSAGE_CALL(level, args...) \
-  if (level <= RRLIB_LOG_GET_DOMAIN(args)->GetMaxMessageLevel()) \
+  if ((level) <= RRLIB_LOG_GET_DOMAIN(args)->GetMaxMessageLevel()) \
   { \
     RRLIB_LOG_GET_DOMAIN(args)->PrintMessage(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level, args); \
   } \
@@ -89,7 +89,7 @@
  * \param args     The format string for printf and the optional arguments to be printed.
  */
 #define RRLIB_LOG_MESSAGE(level, args...) \
-  if (level <= rrlib::logging::eLL_DEBUG) \
+  if ((level) <= rrlib::logging::eLL_DEBUG) \
   { \
     RRLIB_LOG_MESSAGE_CALL(level, args) \
   } \
