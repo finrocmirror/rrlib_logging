@@ -50,11 +50,11 @@
 //----------------------------------------------------------------------
 #include <string>
 #include <vector>
-#include <iostream>
 #include <fstream>
 #include <ctime>
 #include <cstdarg>
 #include <cassert>
+#include <tr1/memory>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -62,6 +62,7 @@
 #include "logging/tLogDomainConfiguration.h"
 #include "logging/tLogStreamBuffer.h"
 #include "logging/tLogStream.h"
+#include "logging/tLogStreamContext.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -103,7 +104,6 @@ class tLogDomain
   tLogDomainConfigurationSharedPointer configuration;
 
   mutable tLogStreamBuffer stream_buffer;
-  mutable std::ostream stream;
   mutable std::ofstream file_stream;
 
   std::tr1::shared_ptr<boost::recursive_mutex> mutex;
@@ -292,18 +292,6 @@ public:
     return this->configuration->max_message_level;
   }
 
-//  /*! Get the mask representing which streams are used for message output
-//   *
-//   * For message output several streams can be used. This bitmask configures
-//   * which of them are enabled.
-//   *
-//   * \returns The bitmask that contains the enabled message streams
-//   */
-//  inline const eLogStreamMask GetStreamMask() const
-//  {
-//    return this->configuration->stream_mask;
-//  }
-
   /*! Get a message stream from this domain
    *
    * This method is the streaming interface to this logging domain.
@@ -326,7 +314,7 @@ public:
   template <typename TDescription>
   inline tLogStream GetMessageStream(const TDescription &description, const char *function, const char *file, unsigned int line, tLogLevel level) const
   {
-    tLogStream stream_proxy(this->stream, mutex.get());
+    tLogStream stream_proxy(std::tr1::shared_ptr<tLogStreamContext>(new tLogStreamContext(this->stream_buffer, mutex.get())));
     this->stream_buffer.Clear();
     if (level > this->GetMaxMessageLevel())
     {
@@ -344,9 +332,6 @@ public:
       stream_proxy << this->GetTimeString();
     }
     this->SetupOutputStreamColor(level);
-//    (this->configuration->sink_mask & ~((1 << eLS_FILE) | (1 << eLS_COMBINED_FILE)));
-//    stream_proxy << this->GetControlStringForColoredOutput(level);
-//    this->SetupOutputStream(this->configuration->sink_mask);
 
 #ifndef _RRLIB_LOGGING_LESS_OUTPUT_
     if (this->GetPrintName())
@@ -367,9 +352,6 @@ public:
 #endif
     stream_proxy << ">> ";
     this->stream_buffer.ResetColor();
-//    this->SetupOutputStream(this->configuration->sink_mask & ~((1 << eLS_FILE) | (1 << eLS_COMBINED_FILE)));
-//    stream_proxy << "\033[;0m";
-//    this->SetupOutputStream(this->configuration->sink_mask);
 
     switch (level)
     {

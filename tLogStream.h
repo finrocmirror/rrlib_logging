@@ -51,21 +51,22 @@
 #error Invalid include directive. Try #include "logging/definitions.h" instead.
 #endif
 
-#ifndef rrlib_logging_tLogStreamProxy_h_
-#define rrlib_logging_tLogStreamProxy_h_
+#ifndef rrlib_logging_tLogStream_h_
+#define rrlib_logging_tLogStream_h_
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
-#include <iostream>
 #include <exception>
 #include <boost/type_traits/is_base_of.hpp>
 #include <boost/utility/enable_if.hpp>
 #include <boost/thread/recursive_mutex.hpp>
+#include <tr1/memory>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
+#include "logging/tLogStreamContext.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -107,9 +108,7 @@ typedef std::tr1::shared_ptr<const tLogDomain> tLogDomainSharedPointer;
  */
 class tLogStream
 {
-  std::ostream &stream;
-
-  boost::recursive_mutex *mutex;
+  std::tr1::shared_ptr<tLogStreamContext> stream_context;
 
   // Prohibit assignment
   tLogStream &operator = (const tLogStream &other);
@@ -130,12 +129,9 @@ public:
    * \param stream   The std::ostream that is used via this proxy
    * \param mutex    Mutex to acquire while this proxy is used
    */
-  explicit tLogStream(std::ostream &stream, boost::recursive_mutex *mutex)
-      : stream(stream),
-      mutex(mutex)
-  {
-    mutex->lock();
-  }
+  explicit tLogStream(std::tr1::shared_ptr<tLogStreamContext> stream_context)
+      : stream_context(stream_context)
+  {}
 
   /*! The copy ctor of tLogStream
    *
@@ -145,29 +141,8 @@ public:
    * \param other   The other tLogStream object
    */
   tLogStream(const tLogStream &other)
-      : stream(other.stream),
-      mutex(other.mutex)
-  {
-    mutex->lock();
-  }
-
-  /*! The dtor of tLogStreamProxy
-   *
-   * Releases the lock, adds a newline if necessary and flushes the stream
-   */
-  ~tLogStream()
-  {
-    tLogStreamBuffer *buffer = dynamic_cast<tLogStreamBuffer *>(this->stream.rdbuf());
-    if (buffer && buffer->EndsWithNewline())
-    {
-      *this << std::flush;
-    }
-    else
-    {
-      *this << std::endl;
-    }
-    mutex->unlock();
-  }
+      : stream_context(other.stream_context)
+  {}
 
   /*! Streaming operator (forwarder)
    *
@@ -181,7 +156,7 @@ public:
   template <typename T>
   inline typename boost::disable_if<boost::is_base_of<std::exception, T>, tLogStream &>::type operator << (const T &value)
   {
-    this->stream << value;
+    this->stream_context->GetStream() << value;
     return *this;
   }
 
@@ -195,7 +170,7 @@ public:
    */
   inline tLogStream &operator << (const std::exception &exception)
   {
-    this->stream << "Exception (" << typeid(exception).name() << "): " << exception.what();
+    this->stream_context->GetStream() << "Exception (" << typeid(exception).name() << "): " << exception.what();
     return *this;
   }
 
@@ -211,7 +186,7 @@ public:
    */
   inline tLogStream &operator << (std::ostream &(&manipulator)(std::ostream &))
   {
-    manipulator(this->stream);
+    manipulator(this->stream_context->GetStream());
     return *this;
   }
 

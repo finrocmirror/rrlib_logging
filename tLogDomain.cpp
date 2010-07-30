@@ -73,14 +73,12 @@ using namespace rrlib::logging;
 tLogDomain::tLogDomain(tLogDomainConfigurationSharedPointer configuration)
     : parent(0),
     configuration(configuration),
-    stream(&this->stream_buffer),
     mutex(GetMutex())
 {}
 
 tLogDomain::tLogDomain(tLogDomainConfigurationSharedPointer configuration, tLogDomain &parent)
     : parent(&parent),
     configuration(configuration),
-    stream(&this->stream_buffer),
     mutex(GetMutex())
 {
   this->parent->children.push_back(this);
