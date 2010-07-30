@@ -101,11 +101,14 @@ struct Test
 
 int main(int argc, char **argv)
 {
+
+#ifdef _RRLIB_XML2_WRAPPER_PRESENT_
   if (!tLogDomainRegistry::GetInstance()->ConfigureFromFile("logging_config.xml"))
   {
     std::cout << "Loading configuration failed!";
     return EXIT_FAILURE;
   }
+#endif
 
   tLogDomainRegistry::GetInstance()->SetOutputFileNamePrefix(basename(argv[0]));
 
