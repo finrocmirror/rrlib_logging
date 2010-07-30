@@ -169,7 +169,7 @@ public:
    *
    * \returns The only instance of this class that should exist
    */
-  static tLogDomainRegistry &GetInstance();
+  static std::tr1::shared_ptr<tLogDomainRegistry> GetInstance();
 
   /*! Get the default domain
    *
@@ -180,7 +180,7 @@ public:
    */
   static inline tLogDomainSharedPointer GetDefaultDomain()
   {
-    return GetInstance().domains[0];
+    return GetInstance()->domains[0];
   }
 
   /*! Get a subdomain with given name and parent.

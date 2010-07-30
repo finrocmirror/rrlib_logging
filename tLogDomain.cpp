@@ -148,11 +148,11 @@ const bool tLogDomain::OpenFileOutputStream() const
   {
     return true;
   }
-  const std::string &file_name_prefix(tLogDomainRegistry::GetInstance().GetOutputFileNamePrefix());
+  const std::string &file_name_prefix(tLogDomainRegistry::GetInstance()->GetOutputFileNamePrefix());
   if (file_name_prefix.length() == 0)
   {
     std::cerr << "RRLib Logging >> Prefix for file names not set. Can not use eMS_FILE." << std::endl
-              << "                 Consider calling tMessageDomainRegistry::GetInstance().SetOutputFileNamePrefix(basename(argv[0])) for example." << std::endl;
+              << "                 Consider calling tMessageDomainRegistry::GetInstance()->SetOutputFileNamePrefix(basename(argv[0])) for example." << std::endl;
     return false;
   }
   std::string file_name(file_name_prefix + this->GetName() + ".log");
@@ -183,7 +183,7 @@ const std::string tLogDomain::GetTimeString() const
 const std::string tLogDomain::GetNameString() const
 {
   char name_string_buffer[128];
-  snprintf(name_string_buffer, sizeof(name_string_buffer), "%-*s ", tLogDomainRegistry::GetInstance().GetMaxDomainNameLength(), this->GetName().c_str());
+  snprintf(name_string_buffer, sizeof(name_string_buffer), "%-*s ", tLogDomainRegistry::GetInstance()->GetMaxDomainNameLength(), this->GetName().c_str());
   return name_string_buffer;
 }
 

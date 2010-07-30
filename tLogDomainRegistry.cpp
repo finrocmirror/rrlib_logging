@@ -86,9 +86,9 @@ tLogDomainRegistry::tLogDomainRegistry()
 //----------------------------------------------------------------------
 // class tLogDomainRegistry GetInstance
 //----------------------------------------------------------------------
-tLogDomainRegistry &tLogDomainRegistry::GetInstance()
+std::tr1::shared_ptr<tLogDomainRegistry> tLogDomainRegistry::GetInstance()
 {
-  static tLogDomainRegistry instance;
+  static std::tr1::shared_ptr<tLogDomainRegistry> instance(new tLogDomainRegistry());
   return instance;
 }
 

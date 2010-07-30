@@ -101,30 +101,30 @@ struct Test
 
 int main(int argc, char **argv)
 {
-  if (!tLogDomainRegistry::GetInstance().ConfigureFromFile("logging_config.xml"))
+  if (!tLogDomainRegistry::GetInstance()->ConfigureFromFile("logging_config.xml"))
   {
     std::cout << "Loading configuration failed!";
     return EXIT_FAILURE;
   }
 
-  tLogDomainRegistry::GetInstance().SetOutputFileNamePrefix(basename(argv[0]));
+  tLogDomainRegistry::GetInstance()->SetOutputFileNamePrefix(basename(argv[0]));
 
 
 //  std::cout << tLogDomainRegistry::GetInstance() << std::endl;
 
-//  tLogDomainRegistry::GetInstance().SetDomainConfiguresSubTree("global", true);
-//  tLogDomainRegistry::GetInstance().SetDomainPrintsName("global", true);
-//  tLogDomainRegistry::GetInstance().SetDomainPrintsTime("global", true);
-//  tLogDomainRegistry::GetInstance().SetDomainPrintsLevel("global", true);
-//  tLogDomainRegistry::GetInstance().SetDomainPrintsLocation("global", true);
-//  tLogDomainRegistry::GetInstance().SetDomainMinMessageLevel("global", eLL_VERBOSE);
-//  tLogDomainRegistry::GetInstance().SetDomainStreamID("global", eLS_FILE);
+//  tLogDomainRegistry::GetInstance()->SetDomainConfiguresSubTree("global", true);
+//  tLogDomainRegistry::GetInstance()->SetDomainPrintsName("global", true);
+//  tLogDomainRegistry::GetInstance()->SetDomainPrintsTime("global", true);
+//  tLogDomainRegistry::GetInstance()->SetDomainPrintsLevel("global", true);
+//  tLogDomainRegistry::GetInstance()->SetDomainPrintsLocation("global", true);
+//  tLogDomainRegistry::GetInstance()->SetDomainMinMessageLevel("global", eLL_VERBOSE);
+//  tLogDomainRegistry::GetInstance()->SetDomainStreamID("global", eLS_FILE);
 
-//  tLogDomainRegistry::GetInstance().SetDomainStreamMask("global", eLSM_STDOUT | eLSM_FILE | eLSM_COMBINED_FILE);
+//  tLogDomainRegistry::GetInstance()->SetDomainStreamMask("global", eLSM_STDOUT | eLSM_FILE | eLSM_COMBINED_FILE);
 
-//  tLogDomainRegistry::GetInstance().SetDomainConfiguresSubTree(".example", true);
-//  tLogDomainRegistry::GetInstance().SetDomainMinMessageLevel(".example", eLL_VERBOSE);
-//  tLogDomainRegistry::GetInstance().SetDomainStreamID(".example", eLS_COMBINED_FILE);
+//  tLogDomainRegistry::GetInstance()->SetDomainConfiguresSubTree(".example", true);
+//  tLogDomainRegistry::GetInstance()->SetDomainMinMessageLevel(".example", eLL_VERBOSE);
+//  tLogDomainRegistry::GetInstance()->SetDomainStreamID(".example", eLS_COMBINED_FILE);
 
 
   RRLIB_LOG_STREAM(eLL_WARNING) << "foo" << std::endl;

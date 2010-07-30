@@ -134,7 +134,7 @@
   { \
     static rrlib::logging::tLogDomainSharedPointer GetDomain() \
     { \
-      static rrlib::logging::tLogDomainSharedPointer instance(rrlib::logging::tLogDomainRegistry::GetInstance().GetSubDomain(domain_name, default_log())); \
+      static rrlib::logging::tLogDomainSharedPointer instance(rrlib::logging::tLogDomainRegistry::GetInstance()->GetSubDomain(domain_name, default_log())); \
       return instance; \
     } \
   }; \
@@ -166,7 +166,7 @@
   { \
     static rrlib::logging::tLogDomainSharedPointer GetDomain() \
     { \
-      static rrlib::logging::tLogDomainSharedPointer instance(rrlib::logging::tLogDomainRegistry::GetInstance().GetSubDomain(domain_name, default_log())); \
+      static rrlib::logging::tLogDomainSharedPointer instance(rrlib::logging::tLogDomainRegistry::GetInstance()->GetSubDomain(domain_name, default_log())); \
       return instance; \
     } \
   }; \
