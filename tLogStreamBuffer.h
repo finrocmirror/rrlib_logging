@@ -43,14 +43,14 @@
  */
 //----------------------------------------------------------------------
 #ifndef _rrlib_logging_include_guard_
-#error Invalid include directive. Try #include "rrlib/logging/definitions.h" instead.
+#error Invalid include directive. Try #include "logging/definitions.h" instead.
 #endif
 
 #ifndef rrlib_logging_tLogStreamBuffer_h_
 #define rrlib_logging_tLogStreamBuffer_h_
 
 //----------------------------------------------------------------------
-// External includes with <>
+// External includes (system with <>, local with "")
 //----------------------------------------------------------------------
 #include <iostream>
 #include <streambuf>
@@ -75,6 +75,30 @@ namespace logging
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
+enum tLogStreamBufferEffect
+{
+  eLSBE_REGULAR,
+  eLSBE_BOLD,
+  eLSBE_DARK,
+  eLSBE_UNDERLINED = 4,
+  eLSBE_BLINKING,
+  eLSBE_INVERTED = 7,
+  eLSBE_CONCEALED,
+  eLSBE_DIMENSION
+};
+
+enum tLogStreamBufferColor
+{
+  eLSBC_DEFAULT,
+  eLSBC_RED,
+  eLSBC_GREEN,
+  eLSBC_YELLOW,
+  eLSBC_BLUE,
+  eLSBC_MAGENTA,
+  eLSBC_CYAN,
+  eLSBC_GRAY,
+  eLSBC_DIMENSION
+};
 
 //----------------------------------------------------------------------
 // Class declaration
@@ -143,6 +167,10 @@ public:
   {
     return this->ends_with_newline;
   }
+
+  void SetColor(tLogStreamBufferEffect effect, tLogStreamBufferColor color);
+
+  void ResetColor();
 
 };
 

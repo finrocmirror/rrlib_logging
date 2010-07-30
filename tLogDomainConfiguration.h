@@ -54,14 +54,14 @@
  */
 //----------------------------------------------------------------------
 #ifndef _rrlib_logging_include_guard_
-#error Invalid include directive. Try #include "rrlib/logging/definitions.h" instead.
+#error Invalid include directive. Try #include "logging/definitions.h" instead.
 #endif
 
 #ifndef rrlib_logging_tLogDomainConfiguration_h_
 #define rrlib_logging_tLogDomainConfiguration_h_
 
 //----------------------------------------------------------------------
-// External includes with <>
+// External includes (system with <>, local with "")
 //----------------------------------------------------------------------
 #include <string>
 #include <tr1/memory>

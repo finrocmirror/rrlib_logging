@@ -226,25 +226,32 @@ const std::string tLogDomain::GetLocationString(const char *file, unsigned int l
 //----------------------------------------------------------------------
 // class tLogDomain GetColoredOutputString
 //----------------------------------------------------------------------
-const std::string tLogDomain::GetControlStringForColoredOutput(tLogLevel level) const
+void tLogDomain::SetupOutputStreamColor(tLogLevel level) const
 {
   switch (level)
   {
   case eLL_ERROR:
-    return "\033[;1;31m";
+    this->stream_buffer.SetColor(eLSBE_BOLD, eLSBC_RED);
+    break;
   case eLL_WARNING:
-    return "\033[;1;34m";
+    this->stream_buffer.SetColor(eLSBE_BOLD, eLSBC_BLUE);
+    break;
   case eLL_DEBUG_WARNING:
-    return "\033[;2;33m";
+    this->stream_buffer.SetColor(eLSBE_DARK, eLSBC_YELLOW);
+    break;
   case eLL_DEBUG:
-    return "\033[;2;32m";
+    this->stream_buffer.SetColor(eLSBE_DARK, eLSBC_GREEN);
+    break;
   case eLL_DEBUG_VERBOSE_1:
-    return "\033[;2;36m";
+    this->stream_buffer.SetColor(eLSBE_REGULAR, eLSBC_CYAN);
+    break;
   case eLL_DEBUG_VERBOSE_2:
-    return "\033[;2;36m";
+    this->stream_buffer.SetColor(eLSBE_REGULAR, eLSBC_CYAN);
+    break;
   case eLL_DEBUG_VERBOSE_3:
-    return "\033[;2;36m";
+    this->stream_buffer.SetColor(eLSBE_REGULAR, eLSBC_CYAN);
+    break;
   default:
-    return "\033[;0m";
+    ;
   }
 }

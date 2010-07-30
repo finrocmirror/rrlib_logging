@@ -39,14 +39,14 @@
  */
 //----------------------------------------------------------------------
 #ifndef _rrlib_logging_include_guard_
-#error Invalid include directive. Try #include "rrlib/logging/definitions.h" instead.
+#error Invalid include directive. Try #include "logging/definitions.h" instead.
 #endif
 
 #ifndef rrlib_logging_tLogDomain_h_
 #define rrlib_logging_tLogDomain_h_
 
 //----------------------------------------------------------------------
-// External includes with <>
+// External includes (system with <>, local with "")
 //----------------------------------------------------------------------
 #include <string>
 #include <vector>
@@ -203,16 +203,14 @@ class tLogDomain
    */
   const std::string GetLocationString(const char *file, unsigned int line) const;
 
-  /*! Get a string to setup colored output in a terminal
+  /*! Setup the underlying streambuffer to produce colored output
    *
-   * This method creates a string that contains the control sequence to
-   * setup colored output according to the given level.
+   * This method sets up the underlying streambuffer for colored
+   * output according to the given level.
    *
    * \param level   The according log level
-   *
-   * \returns The string containing the control sequence
    */
-  const std::string GetControlStringForColoredOutput(tLogLevel level) const;
+  void SetupOutputStreamColor(tLogLevel level) const;
 
 //----------------------------------------------------------------------
 // Public methods
@@ -343,33 +341,35 @@ public:
 
     if (this->GetPrintTime())
     {
-      this->stream << this->GetTimeString();
+      stream_proxy << this->GetTimeString();
     }
-    this->SetupOutputStream(this->configuration->sink_mask & ~((1 << eLS_FILE) | (1 << eLS_COMBINED_FILE)));
-    this->stream << this->GetControlStringForColoredOutput(level);
-    this->SetupOutputStream(this->configuration->sink_mask);
+    this->SetupOutputStreamColor(level);
+//    (this->configuration->sink_mask & ~((1 << eLS_FILE) | (1 << eLS_COMBINED_FILE)));
+//    stream_proxy << this->GetControlStringForColoredOutput(level);
+//    this->SetupOutputStream(this->configuration->sink_mask);
 
 #ifndef _RRLIB_LOGGING_LESS_OUTPUT_
     if (this->GetPrintName())
     {
-      this->stream << this->GetNameString();
+      stream_proxy << this->GetNameString();
     }
     if (this->GetPrintLevel())
     {
-      this->stream << this->GetLevelString(level);
+      stream_proxy << this->GetLevelString(level);
     }
 #endif
-    this->stream << description << "::" << function << " ";
+    stream_proxy << description << "::" << function << " ";
 #ifndef _RRLIB_LOGGING_LESS_OUTPUT_
     if (this->GetPrintLocation())
     {
-      this->stream << this->GetLocationString(file, line);
+      stream_proxy << this->GetLocationString(file, line);
     }
 #endif
-    this->stream << ">> ";
-    this->SetupOutputStream(this->configuration->sink_mask & ~((1 << eLS_FILE) | (1 << eLS_COMBINED_FILE)));
-    this->stream << "\033[;0m";
-    this->SetupOutputStream(this->configuration->sink_mask);
+    stream_proxy << ">> ";
+    this->stream_buffer.ResetColor();
+//    this->SetupOutputStream(this->configuration->sink_mask & ~((1 << eLS_FILE) | (1 << eLS_COMBINED_FILE)));
+//    stream_proxy << "\033[;0m";
+//    this->SetupOutputStream(this->configuration->sink_mask);
 
     switch (level)
     {

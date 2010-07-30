@@ -181,7 +181,7 @@ void tLogDomainRegistry::SetDomainMaxMessageLevel(const std::string &name, tLogL
   tLogLevel effective_value = std::max(value, eLL_ERROR);
 
 #ifdef _RRLIB_LOGGING_LESS_OUTPUT_
-  tLogLevel effective_value = std::min(value, eLL_DEBUG);
+  effective_value = std::min(value, eLL_DEBUG);
 #endif
 
   tLogDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(name));

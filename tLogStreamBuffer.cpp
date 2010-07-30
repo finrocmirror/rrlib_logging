@@ -40,10 +40,17 @@
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
 #include <cstdio>
+#include <cstring>
+
+extern "C"
+{
+#include <unistd.h>
+}
 
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
+#include "logging/fileno.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -103,4 +110,45 @@ int tLogStreamBuffer::sync()
     }
   }
   return result;
+}
+
+//----------------------------------------------------------------------
+// class tLogStreamBuffer SetColor
+//----------------------------------------------------------------------
+void tLogStreamBuffer::SetColor(tLogStreamBufferEffect effect, tLogStreamBufferColor color)
+{
+  char control_sequence[16];
+  snprintf(control_sequence, sizeof(control_sequence), "\033[;%u;3%um", effect, color);
+  const size_t length = strlen(control_sequence);
+  for (std::vector<std::streambuf *>::iterator it = this->buffers.begin(); it != this->buffers.end(); ++it)
+  {
+    int file_descriptor = fileno(*it);
+    if (file_descriptor > 0 && isatty(file_descriptor))
+    {
+      for (size_t i = 0; i < length; ++i)
+      {
+        (*it)->sputc(control_sequence[i]);
+      }
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+// class tLogStreamBuffer ResetColor
+//----------------------------------------------------------------------
+void tLogStreamBuffer::ResetColor()
+{
+  const char *control_sequence = "\033[;0m";
+  const size_t length = strlen(control_sequence);
+  for (std::vector<std::streambuf *>::iterator it = this->buffers.begin(); it != this->buffers.end(); ++it)
+  {
+    int file_descriptor = fileno(*it);
+    if (file_descriptor > 0 && isatty(file_descriptor))
+    {
+      for (size_t i = 0; i < length; ++i)
+      {
+        (*it)->sputc(control_sequence[i]);
+      }
+    }
+  }
 }

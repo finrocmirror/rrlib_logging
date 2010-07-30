@@ -42,7 +42,7 @@
 #define _rrlib_logging_definitions_h_
 
 //----------------------------------------------------------------------
-// External includes with <>
+// External includes (system with <>, local with "")
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
@@ -55,7 +55,7 @@
 // macros for internal use
 
 #define RRLIB_LOG_GET_DOMAIN_I(domain...) \
-  GetDomainForUseInRRLibMacros(default_log, ## domain) \
+  rrlib::logging::GetLogDomain(default_log, ## domain) \
    
 #define RRLIB_LOG_GET_DOMAIN(domain, args...) \
   RRLIB_LOG_GET_DOMAIN_I(domain)
@@ -63,7 +63,6 @@
 #define RRLIB_LOG_STREAM_CALL(level, args...) \
   ((level) <= RRLIB_LOG_GET_DOMAIN(args)->GetMaxMessageLevel() ? RRLIB_LOG_GET_DOMAIN(args)->GetMessageStream(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level).Evaluate(args) : RRLIB_LOG_GET_DOMAIN(args)->GetMessageStream(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level)) \
    
-
 #define RRLIB_LOG_MESSAGE_CALL(level, args...) \
   if ((level) <= RRLIB_LOG_GET_DOMAIN(args)->GetMaxMessageLevel()) \
   { \
@@ -183,19 +182,27 @@ inline rrlib::logging::tLogDomainSharedPointer default_log()
   return rrlib::logging::tLogDomainRegistry::GetDefaultDomain();
 }
 
-inline rrlib::logging::tLogDomainSharedPointer GetDomainForUseInRRLibMacros(rrlib::logging::tLogDomainSharedPointer(&default_domain)(), ...)
-{
-  return default_domain();
-}
-inline rrlib::logging::tLogDomainSharedPointer GetDomainForUseInRRLibMacros(rrlib::logging::tLogDomainSharedPointer(&default_domain)(), rrlib::logging::tLogDomainSharedPointer(&named_domain)())
-{
-  return named_domain();
-}
-
 // The default global GetLogDescription definition
 inline const char *GetLogDescription()
 {
   return "<Description not defined>";
+}
+
+namespace rrlib
+{
+namespace logging
+{
+
+inline rrlib::logging::tLogDomainSharedPointer GetLogDomain(rrlib::logging::tLogDomainSharedPointer(&default_domain)(), ...)
+{
+  return default_domain();
+}
+inline rrlib::logging::tLogDomainSharedPointer GetLogDomain(rrlib::logging::tLogDomainSharedPointer(&default_domain)(), rrlib::logging::tLogDomainSharedPointer(&named_domain)())
+{
+  return named_domain();
+}
+
+}
 }
 
 #endif
