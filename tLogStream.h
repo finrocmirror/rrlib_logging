@@ -144,6 +144,18 @@ public:
       : stream_context(other.stream_context)
   {}
 
+  /*! Implicit conversion to std::ostream for e.g. std::ostream_iterator
+   *
+   * To use this proxy class together with e.g. std::copy, which needs
+   * a std::ostream_iterator, this method is implemented.
+   *
+   * \returns A reference to the underlying std::ostream
+   */
+  operator std::ostream &()
+  {
+    return this->stream_context->GetStream();
+  }
+
   /*! Streaming operator (forwarder)
    *
    * This method forwards the streaming operation to the wrapped

@@ -25,12 +25,6 @@
  *
  * \date    2010-06-16
  *
- * \brief
- *
- * \b
- *
- * A few words for tLogStreamBuffer.cpp
- *
  */
 //----------------------------------------------------------------------
 #define _rrlib_logging_include_guard_
@@ -62,7 +56,7 @@ extern "C"
 using namespace rrlib::logging;
 
 //----------------------------------------------------------------------
-// Forward declarations
+// Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
@@ -74,7 +68,7 @@ using namespace rrlib::logging;
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-// class tLogStreamBuffer overflow
+// tLogStreamBuffer overflow
 //----------------------------------------------------------------------
 int tLogStreamBuffer::overflow(int c)
 {
@@ -97,7 +91,7 @@ int tLogStreamBuffer::overflow(int c)
 }
 
 //----------------------------------------------------------------------
-// class tLogStreamBuffer sync
+// tLogStreamBuffer sync
 //----------------------------------------------------------------------
 int tLogStreamBuffer::sync()
 {
@@ -113,7 +107,7 @@ int tLogStreamBuffer::sync()
 }
 
 //----------------------------------------------------------------------
-// class tLogStreamBuffer SetColor
+// tLogStreamBuffer SetColor
 //----------------------------------------------------------------------
 void tLogStreamBuffer::SetColor(tLogStreamBufferEffect effect, tLogStreamBufferColor color)
 {
@@ -134,7 +128,7 @@ void tLogStreamBuffer::SetColor(tLogStreamBufferEffect effect, tLogStreamBufferC
 }
 
 //----------------------------------------------------------------------
-// class tLogStreamBuffer ResetColor
+// tLogStreamBuffer ResetColor
 //----------------------------------------------------------------------
 void tLogStreamBuffer::ResetColor()
 {

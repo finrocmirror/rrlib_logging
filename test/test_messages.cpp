@@ -25,17 +25,11 @@
  *
  * \date    2010-06-16
  *
- * \brief
- *
- * \b
- *
- * A few words for test_messages.cpp
- *
  */
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-// External includes with <>
+// External includes (system with <>, local with "")
 //----------------------------------------------------------------------
 #include <cstdlib>
 #include <iostream>
@@ -63,7 +57,7 @@ extern "C"
 using namespace rrlib::logging;
 
 //----------------------------------------------------------------------
-// Forward declarations
+// Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
@@ -101,6 +95,7 @@ struct Test
 
 int main(int argc, char **argv)
 {
+  default_log_description = basename(argv[0]);
 
 #ifdef _RRLIB_XML2_WRAPPER_PRESENT_
   if (!tLogDomainRegistry::GetInstance()->ConfigureFromFile("logging_config.xml"))

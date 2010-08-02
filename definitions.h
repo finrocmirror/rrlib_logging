@@ -49,8 +49,11 @@
 // Internal includes with ""
 //----------------------------------------------------------------------
 #define _rrlib_logging_include_guard_
+
 #include "logging/tLogDomain.h"
 #include "logging/tLogDomainRegistry.h"
+
+#undef _rrlib_logging_include_guard_
 
 // macros for internal use
 
@@ -176,22 +179,14 @@
   } \
    
 
-// The default global scoped logging domain
-inline rrlib::logging::tLogDomainSharedPointer default_log()
-{
-  return rrlib::logging::tLogDomainRegistry::GetDefaultDomain();
-}
 
-// The default global GetLogDescription definition
-inline const char *GetLogDescription()
-{
-  return "<Description not defined>";
-}
 
 namespace rrlib
 {
 namespace logging
 {
+
+extern char *default_log_description;
 
 inline rrlib::logging::tLogDomainSharedPointer GetLogDomain(rrlib::logging::tLogDomainSharedPointer(&default_domain)(), ...)
 {
@@ -203,6 +198,18 @@ inline rrlib::logging::tLogDomainSharedPointer GetLogDomain(rrlib::logging::tLog
 }
 
 }
+}
+
+// The default global scoped logging domain
+inline rrlib::logging::tLogDomainSharedPointer default_log()
+{
+  return rrlib::logging::tLogDomainRegistry::GetDefaultDomain();
+}
+
+// The default global GetLogDescription definition
+inline const char *GetLogDescription()
+{
+  return rrlib::logging::default_log_description;
 }
 
 #endif

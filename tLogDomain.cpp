@@ -26,12 +26,6 @@
  *
  * \date    2010-06-16
  *
- * \brief
- *
- * \b
- *
- * A few words for tLogDomain.cpp
- *
  */
 //----------------------------------------------------------------------
 #define _rrlib_logging_include_guard_
@@ -56,7 +50,7 @@
 using namespace rrlib::logging;
 
 //----------------------------------------------------------------------
-// Forward declarations
+// Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
@@ -68,7 +62,7 @@ using namespace rrlib::logging;
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-// class tLogDomain constructors
+// tLogDomain constructors
 //----------------------------------------------------------------------
 tLogDomain::tLogDomain(tLogDomainConfigurationSharedPointer configuration)
     : parent(0),
@@ -86,7 +80,7 @@ tLogDomain::tLogDomain(tLogDomainConfigurationSharedPointer configuration, tLogD
 }
 
 //----------------------------------------------------------------------
-// class tLogDomain destructor
+// tLogDomain destructor
 //----------------------------------------------------------------------
 tLogDomain::~tLogDomain()
 {
@@ -97,7 +91,7 @@ tLogDomain::~tLogDomain()
 }
 
 //----------------------------------------------------------------------
-// class tLogDomain ConfigureSubTree
+// tLogDomain ConfigureSubTree
 //----------------------------------------------------------------------
 void tLogDomain::ConfigureSubTree()
 {
@@ -112,7 +106,7 @@ void tLogDomain::ConfigureSubTree()
 }
 
 //----------------------------------------------------------------------
-// class tLogDomain SetupOutputStream
+// tLogDomain SetupOutputStream
 //----------------------------------------------------------------------
 void tLogDomain::SetupOutputStream(int mask) const
 {
@@ -138,7 +132,7 @@ void tLogDomain::SetupOutputStream(int mask) const
 }
 
 //----------------------------------------------------------------------
-// class tLogDomain OpenFileOutputStream
+// tLogDomain OpenFileOutputStream
 //----------------------------------------------------------------------
 const bool tLogDomain::OpenFileOutputStream() const
 {
@@ -164,7 +158,7 @@ const bool tLogDomain::OpenFileOutputStream() const
 }
 
 //----------------------------------------------------------------------
-// class tLogDomain GetTimeString
+// tLogDomain GetTimeString
 //----------------------------------------------------------------------
 const std::string tLogDomain::GetTimeString() const
 {
@@ -176,7 +170,7 @@ const std::string tLogDomain::GetTimeString() const
 }
 
 //----------------------------------------------------------------------
-// class tLogDomain GetNameString
+// tLogDomain GetNameString
 //----------------------------------------------------------------------
 const std::string tLogDomain::GetNameString() const
 {
@@ -186,7 +180,7 @@ const std::string tLogDomain::GetNameString() const
 }
 
 //----------------------------------------------------------------------
-// class tLogDomain GetLevelString
+// tLogDomain GetLevelString
 //----------------------------------------------------------------------
 const std::string tLogDomain::GetLevelString(tLogLevel level) const
 {
@@ -212,7 +206,7 @@ const std::string tLogDomain::GetLevelString(tLogLevel level) const
 }
 
 //----------------------------------------------------------------------
-// class tLogDomain GetLocationString
+// tLogDomain GetLocationString
 //----------------------------------------------------------------------
 const std::string tLogDomain::GetLocationString(const char *file, unsigned int line) const
 {
@@ -222,7 +216,7 @@ const std::string tLogDomain::GetLocationString(const char *file, unsigned int l
 }
 
 //----------------------------------------------------------------------
-// class tLogDomain GetColoredOutputString
+// tLogDomain GetColoredOutputString
 //----------------------------------------------------------------------
 void tLogDomain::SetupOutputStreamColor(tLogLevel level) const
 {

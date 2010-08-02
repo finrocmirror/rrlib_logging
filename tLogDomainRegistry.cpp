@@ -25,12 +25,6 @@
  *
  * \date    2010-06-16
  *
- * \brief
- *
- * \b
- *
- * A few words for tLogDomainRegistry.cpp
- *
  */
 //----------------------------------------------------------------------
 #define _rrlib_logging_include_guard_
@@ -63,7 +57,7 @@ using namespace rrlib::xml2;
 #endif
 
 //----------------------------------------------------------------------
-// Forward declarations
+// Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
@@ -75,7 +69,7 @@ using namespace rrlib::xml2;
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-// class tLogDomainRegistry constructors
+// tLogDomainRegistry constructors
 //----------------------------------------------------------------------
 tLogDomainRegistry::tLogDomainRegistry()
 {
@@ -84,7 +78,7 @@ tLogDomainRegistry::tLogDomainRegistry()
 }
 
 //----------------------------------------------------------------------
-// class tLogDomainRegistry GetInstance
+// tLogDomainRegistry GetInstance
 //----------------------------------------------------------------------
 std::tr1::shared_ptr<tLogDomainRegistry> tLogDomainRegistry::GetInstance()
 {
@@ -93,7 +87,7 @@ std::tr1::shared_ptr<tLogDomainRegistry> tLogDomainRegistry::GetInstance()
 }
 
 //----------------------------------------------------------------------
-// class tLogDomainRegistry GetSubDomain
+// tLogDomainRegistry GetSubDomain
 //----------------------------------------------------------------------
 tLogDomainSharedPointer tLogDomainRegistry::GetSubDomain(const std::string &name, tLogDomainSharedPointer parent)
 {
@@ -111,7 +105,7 @@ tLogDomainSharedPointer tLogDomainRegistry::GetSubDomain(const std::string &name
 }
 
 //----------------------------------------------------------------------
-// class tLogDomainRegistry GetMaxDomainNameLength
+// tLogDomainRegistry GetMaxDomainNameLength
 //----------------------------------------------------------------------
 size_t tLogDomainRegistry::GetMaxDomainNameLength() const
 {
@@ -124,7 +118,7 @@ size_t tLogDomainRegistry::GetMaxDomainNameLength() const
 }
 
 //----------------------------------------------------------------------
-// class tLogDomainRegistry SetDomainConfiguresSubTree
+// tLogDomainRegistry SetDomainConfiguresSubTree
 //----------------------------------------------------------------------
 void tLogDomainRegistry::SetDomainConfiguresSubTree(const std::string &name, bool value)
 {
@@ -134,7 +128,7 @@ void tLogDomainRegistry::SetDomainConfiguresSubTree(const std::string &name, boo
 }
 
 //----------------------------------------------------------------------
-// class tLogDomainRegistry SetDomainPrintsTime
+// tLogDomainRegistry SetDomainPrintsTime
 //----------------------------------------------------------------------
 void tLogDomainRegistry::SetDomainPrintsTime(const std::string &name, bool value)
 {
@@ -144,7 +138,7 @@ void tLogDomainRegistry::SetDomainPrintsTime(const std::string &name, bool value
 }
 
 //----------------------------------------------------------------------
-// class tLogDomainRegistry SetDomainPrintsName
+// tLogDomainRegistry SetDomainPrintsName
 //----------------------------------------------------------------------
 void tLogDomainRegistry::SetDomainPrintsName(const std::string &name, bool value)
 {
@@ -154,7 +148,7 @@ void tLogDomainRegistry::SetDomainPrintsName(const std::string &name, bool value
 }
 
 //----------------------------------------------------------------------
-// class tLogDomainRegistry SetDomainPrintsLevel
+// tLogDomainRegistry SetDomainPrintsLevel
 //----------------------------------------------------------------------
 void tLogDomainRegistry::SetDomainPrintsLevel(const std::string &name, bool value)
 {
@@ -164,7 +158,7 @@ void tLogDomainRegistry::SetDomainPrintsLevel(const std::string &name, bool valu
 }
 
 //----------------------------------------------------------------------
-// class tLogDomainRegistry SetDomainPrintsLocation
+// tLogDomainRegistry SetDomainPrintsLocation
 //----------------------------------------------------------------------
 void tLogDomainRegistry::SetDomainPrintsLocation(const std::string &name, bool value)
 {
@@ -174,7 +168,7 @@ void tLogDomainRegistry::SetDomainPrintsLocation(const std::string &name, bool v
 }
 
 //----------------------------------------------------------------------
-// class tLogDomainRegistry SetDomainMaxMessageLevel
+// tLogDomainRegistry SetDomainMaxMessageLevel
 //----------------------------------------------------------------------
 void tLogDomainRegistry::SetDomainMaxMessageLevel(const std::string &name, tLogLevel value)
 {
@@ -190,7 +184,7 @@ void tLogDomainRegistry::SetDomainMaxMessageLevel(const std::string &name, tLogL
 }
 
 //----------------------------------------------------------------------
-// class tLogDomainRegistry SetDomainSink
+// tLogDomainRegistry SetDomainSink
 //----------------------------------------------------------------------
 void tLogDomainRegistry::SetDomainSink(const std::string &name, tLogSink sink_1, tLogSink sink_2, tLogSink sink_3, tLogSink sink_4)
 {
@@ -203,7 +197,7 @@ void tLogDomainRegistry::SetDomainSink(const std::string &name, tLogSink sink_1,
 }
 
 //----------------------------------------------------------------------
-// class tLogDomainRegistry SetDomainSinkMask
+// tLogDomainRegistry SetDomainSinkMask
 //----------------------------------------------------------------------
 void tLogDomainRegistry::SetDomainSinkMask(const std::string &name, int mask)
 {
@@ -213,7 +207,7 @@ void tLogDomainRegistry::SetDomainSinkMask(const std::string &name, int mask)
 }
 
 //----------------------------------------------------------------------
-// class tLogDomainRegistry GetDomainIndexByName
+// tLogDomainRegistry GetDomainIndexByName
 //----------------------------------------------------------------------
 const size_t tLogDomainRegistry::GetDomainIndexByName(const std::string &name) const
 {
@@ -228,7 +222,7 @@ const size_t tLogDomainRegistry::GetDomainIndexByName(const std::string &name) c
 }
 
 //----------------------------------------------------------------------
-// class tLogDomainRegistry GetConfigurationByName
+// tLogDomainRegistry GetConfigurationByName
 //----------------------------------------------------------------------
 tLogDomainConfigurationSharedPointer tLogDomainRegistry::GetConfigurationByName(const std::string &name)
 {
@@ -244,7 +238,7 @@ tLogDomainConfigurationSharedPointer tLogDomainRegistry::GetConfigurationByName(
 }
 
 //----------------------------------------------------------------------
-// class tLogDomainRegistry PropagateDomainConfigurationToChildren
+// tLogDomainRegistry PropagateDomainConfigurationToChildren
 //----------------------------------------------------------------------
 void tLogDomainRegistry::PropagateDomainConfigurationToChildren(const std::string &name)
 {
@@ -261,7 +255,7 @@ void tLogDomainRegistry::PropagateDomainConfigurationToChildren(const std::strin
 #ifdef _RRLIB_XML2_WRAPPER_PRESENT_
 
 //----------------------------------------------------------------------
-// class tLogDomainRegistry ConfigureFromFile
+// tLogDomainRegistry ConfigureFromFile
 //----------------------------------------------------------------------
 bool tLogDomainRegistry::ConfigureFromFile(const std::string &file_name)
 {
@@ -278,7 +272,7 @@ bool tLogDomainRegistry::ConfigureFromFile(const std::string &file_name)
 }
 
 //----------------------------------------------------------------------
-// class tLogDomainRegistry ConfigureFromXMLNode
+// tLogDomainRegistry ConfigureFromXMLNode
 //----------------------------------------------------------------------
 bool tLogDomainRegistry::ConfigureFromXMLNode(const tXMLNode &node)
 {
@@ -311,7 +305,7 @@ bool tLogDomainRegistry::ConfigureFromXMLNode(const tXMLNode &node)
 }
 
 //----------------------------------------------------------------------
-// class tLogDomainRegistry AddConfigurationFromXMLNode
+// tLogDomainRegistry AddConfigurationFromXMLNode
 //----------------------------------------------------------------------
 bool tLogDomainRegistry::AddConfigurationFromXMLNode(const tXMLNode &node, const std::string &parent_name)
 {
