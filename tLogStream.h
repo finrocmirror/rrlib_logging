@@ -186,6 +186,45 @@ public:
     return *this;
   }
 
+  /*! Streaming operator for bool values
+   *
+   * This method implements more appropriate log streaming for bool values,
+   * printing "<true>" and "<false>" instead of 1 and 0.
+   *
+   * \param value   The bool value to put into the stream
+   *
+   * \returns A reference to the altered stream (in this case the proxy)
+   */
+  inline tLogStream &operator << (bool value)
+  {
+    this->stream_context->GetStream() << (value ? "<true>" : "<false>");
+    return *this;
+  }
+
+  /*! Streaming operator for pointers
+   *
+   * This method implements more appropriate log streaming for pointer
+   * types, printing "<nullptr>" instead of segfaulting in case of char *.
+   * Also with other pointer types, seeing the string "<nullptr>" can be
+   * easily understood.
+   *
+   * \param exception   The pointer to put into the stream
+   *
+   * \returns A reference to the altered stream (in this case the proxy)
+   */
+  template <typename T>
+  inline tLogStream &operator << (const T *pointer)
+  {
+    if (pointer == 0)
+    {
+      this->stream_context->GetStream() << "<nullptr>";
+      return *this;
+    }
+    this->stream_context->GetStream() << pointer;
+    return *this;
+  }
+
+
   /*! Streaming operator for functions (forwarder)
    *
    * This method enables manipulators like std::endl, etc. for
@@ -211,6 +250,27 @@ public:
   {
     return *this;
   }
+
+  // FIXME: with -std=gnu++0x the following set of methods can be replaces by a proper variadic template implementation like this:
+//  template <typename THead, typename ... TRest>
+//  inline tLogStream &Evaluate(const THead &head, TRest... rest)
+//  {
+//    *this << head;
+//    this->Evaluate(rest...);
+//    return *this;
+//  }
+//
+//  template <typename THead, typename ... TRest>
+//  inline tLogStream &Evaluate(tLogDomainSharedPointer (&)(), const THead &head, TRest... rest)
+//  {
+//    return this->Evaluate(head, rest...);
+//  }
+//
+//  template <typename THead>
+//  inline tLogStream &Evaluate(const THead &head)
+//  {
+//    return *this << head;
+//  }
 
   template <typename T1>
   inline tLogStream &Evaluate(const T1 &arg1)
