@@ -55,8 +55,53 @@
 
 #undef _rrlib_logging_include_guard_
 
-// macros for internal use
+//----------------------------------------------------------------------
+// Namespace declaration
+//----------------------------------------------------------------------
+namespace rrlib
+{
+namespace logging
+{
 
+//----------------------------------------------------------------------
+// Implementation
+//----------------------------------------------------------------------
+//! The default description for global debugging. Can be set to whatever string the user like to set it to
+extern char *default_log_description;
+
+inline rrlib::logging::tLogDomainSharedPointer GetLogDomain(rrlib::logging::tLogDomainSharedPointer(&default_domain)(), ...)
+{
+  return default_domain();
+}
+inline rrlib::logging::tLogDomainSharedPointer GetLogDomain(rrlib::logging::tLogDomainSharedPointer(&default_domain)(), rrlib::logging::tLogDomainSharedPointer(&named_domain)())
+{
+  return named_domain();
+}
+
+//----------------------------------------------------------------------
+// End of namespace declaration
+//----------------------------------------------------------------------
+}
+}
+
+//----------------------------------------------------------------------
+// Implementation of the global logging domain
+//----------------------------------------------------------------------
+// The default global scoped logging domain
+inline rrlib::logging::tLogDomainSharedPointer default_log()
+{
+  return rrlib::logging::tLogDomainRegistry::GetDefaultDomain();
+}
+
+// The default global GetLogDescription definition
+inline const char *GetLogDescription()
+{
+  return rrlib::logging::default_log_description;
+}
+
+//----------------------------------------------------------------------
+// Macros for internal use
+//----------------------------------------------------------------------
 #define RRLIB_LOG_GET_DOMAIN_I(domain...) \
   rrlib::logging::GetLogDomain(default_log, ## domain) \
    
@@ -67,11 +112,17 @@
   ((level) <= RRLIB_LOG_GET_DOMAIN(args)->GetMaxMessageLevel() ? RRLIB_LOG_GET_DOMAIN(args)->GetMessageStream(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level).Evaluate(args) : RRLIB_LOG_GET_DOMAIN(args)->GetMessageStream(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level)) \
    
 #define RRLIB_LOG_MESSAGE_CALL(level, args...) \
-  if ((level) <= RRLIB_LOG_GET_DOMAIN(args)->GetMaxMessageLevel()) \
+  do \
   { \
-    RRLIB_LOG_GET_DOMAIN(args)->PrintMessage(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level, args); \
-  } \
-   
+    if ((level) <= RRLIB_LOG_GET_DOMAIN(args)->GetMaxMessageLevel()) \
+    { \
+      RRLIB_LOG_GET_DOMAIN(args)->PrintMessage(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level, args); \
+    } \
+  } while (0) \
+     
+//----------------------------------------------------------------------
+// The macro interface to the logging library
+//----------------------------------------------------------------------
 #ifdef _RRLIB_LOGGING_LESS_OUTPUT_
 
 /*! Macro to get a stream for messages using operator <<
@@ -91,11 +142,14 @@
  * \param args     The format string for printf and the optional arguments to be printed.
  */
 #define RRLIB_LOG_MESSAGE(level, args...) \
-  if ((level) <= rrlib::logging::eLL_DEBUG) \
+  do \
   { \
-    RRLIB_LOG_MESSAGE_CALL(level, args) \
-  } \
-   
+    if ((level) <= rrlib::logging::eLL_DEBUG) \
+    { \
+      RRLIB_LOG_MESSAGE_CALL(level, args) \
+    } \
+  } while (0) \
+     
 #else
 
 /*! Macro to get a stream for messages using operator <<
@@ -118,7 +172,6 @@
   RRLIB_LOG_MESSAGE_CALL(level, args) \
    
 #endif
-
 
 /*! Macro for creation of a default domain for the current scope
  *
@@ -178,38 +231,5 @@
     return symbolic_name ## _struct::GetDomain(); \
   } \
    
-
-
-
-namespace rrlib
-{
-namespace logging
-{
-
-extern char *default_log_description;
-
-inline rrlib::logging::tLogDomainSharedPointer GetLogDomain(rrlib::logging::tLogDomainSharedPointer(&default_domain)(), ...)
-{
-  return default_domain();
-}
-inline rrlib::logging::tLogDomainSharedPointer GetLogDomain(rrlib::logging::tLogDomainSharedPointer(&default_domain)(), rrlib::logging::tLogDomainSharedPointer(&named_domain)())
-{
-  return named_domain();
-}
-
-}
-}
-
-// The default global scoped logging domain
-inline rrlib::logging::tLogDomainSharedPointer default_log()
-{
-  return rrlib::logging::tLogDomainRegistry::GetDefaultDomain();
-}
-
-// The default global GetLogDescription definition
-inline const char *GetLogDescription()
-{
-  return rrlib::logging::default_log_description;
-}
 
 #endif

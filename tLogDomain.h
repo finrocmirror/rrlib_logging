@@ -42,8 +42,8 @@
 #error Invalid include directive. Try #include "logging/definitions.h" instead.
 #endif
 
-#ifndef rrlib_logging_tLogDomain_h_
-#define rrlib_logging_tLogDomain_h_
+#ifndef _rrlib_logging_tLogDomain_h_
+#define _rrlib_logging_tLogDomain_h_
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
