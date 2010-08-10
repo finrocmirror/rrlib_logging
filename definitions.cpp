@@ -57,4 +57,4 @@
 // Implementation
 //----------------------------------------------------------------------
 
-char *rrlib::logging::default_log_description = const_cast<char *>("<Description not defined>");
+char *rrlib::logging::default_log_description = const_cast<char *>("<Log description not defined>");

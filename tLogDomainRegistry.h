@@ -301,7 +301,6 @@ public:
    */
   void SetDomainSink(const std::string &name, tLogSink sink_1, tLogSink sink_2 = eLS_DIMENSION, tLogSink sink_3 = eLS_DIMENSION, tLogSink sink_4 = eLS_DIMENSION);
 
-#ifdef _RRLIB_XML2_WRAPPER_PRESENT_
   /*! Read domain configuration from a given XML file
    *
    * The overall configuration of the logging domains tends to be
@@ -315,6 +314,7 @@ public:
    */
   bool ConfigureFromFile(const std::string &file_name);
 
+#ifdef _RRLIB_XML2_WRAPPER_PRESENT_
   /*! Read domain configuration from a given XML node
    *
    * Instead of reading and parsing an XML file dedicated to configure

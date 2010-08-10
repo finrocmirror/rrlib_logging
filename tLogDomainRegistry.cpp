@@ -252,13 +252,12 @@ void tLogDomainRegistry::PropagateDomainConfigurationToChildren(const std::strin
   }
 }
 
-#ifdef _RRLIB_XML2_WRAPPER_PRESENT_
-
 //----------------------------------------------------------------------
 // tLogDomainRegistry ConfigureFromFile
 //----------------------------------------------------------------------
 bool tLogDomainRegistry::ConfigureFromFile(const std::string &file_name)
 {
+#ifdef _RRLIB_XML2_WRAPPER_PRESENT_
   try
   {
     tXMLDocument document(file_name);
@@ -269,7 +268,12 @@ bool tLogDomainRegistry::ConfigureFromFile(const std::string &file_name)
     std::cerr << "RRLib Logging: tLogDomainRegistry::ConfigureFromFile >> " << e.what() << std::endl;
     return false;
   }
+#else
+  std::cerr << "RRLib Logging: tLogDomainRegistry::ConfigureFromFile >> XML support not available due to missing rrlib_mca2_wrapper." << std::endl;
+#endif
 }
+
+#ifdef _RRLIB_XML2_WRAPPER_PRESENT_
 
 //----------------------------------------------------------------------
 // tLogDomainRegistry ConfigureFromXMLNode
