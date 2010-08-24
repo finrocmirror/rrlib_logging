@@ -8,6 +8,7 @@
     <!ATTLIST domain print_time (true|false) "false">
     <!ATTLIST domain print_name (true|false) "false">
     <!ATTLIST domain print_level (true|false) "false">
+    <!ATTLIST domain print_location (true|false) "true">
     <!ATTLIST domain max_level (error|warning|debug_warning|debug|debug_verbose_1|debug_verbose_2|debug_verbose_3) #IMPLIED>
     <!ATTLIST domain sink (stdout|stderr|file|combined_file) #IMPLIED>
 <!ELEMENT sink EMPTY>
