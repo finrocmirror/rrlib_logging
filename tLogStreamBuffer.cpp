@@ -44,6 +44,7 @@ extern "C"
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
+#include "tLogDomainRegistry.h"
 #include "logging/fileno.h"
 
 //----------------------------------------------------------------------
@@ -68,6 +69,22 @@ using namespace rrlib::logging;
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
+// tLogStreamBuffer WriteCharacterToBuffers
+//----------------------------------------------------------------------
+int tLogStreamBuffer::WriteCharacterToBuffers(int c)
+{
+  int result = c;
+  for (std::vector<std::streambuf *>::iterator it = this->buffers.begin(); it != this->buffers.end(); ++it)
+  {
+    if ((*it)->sputc(c) == EOF)
+    {
+      result = EOF;
+    }
+  }
+  return result;
+}
+
+//----------------------------------------------------------------------
 // tLogStreamBuffer overflow
 //----------------------------------------------------------------------
 int tLogStreamBuffer::overflow(int c)
@@ -80,13 +97,29 @@ int tLogStreamBuffer::overflow(int c)
   this->ends_with_newline = c == '\n';
 
   int result = c;
-  for (std::vector<std::streambuf *>::iterator it = this->buffers.begin(); it != this->buffers.end(); ++it)
+  if (this->pad_before_next_character)
   {
-    if ((*it)->sputc(c) == EOF)
+    for (size_t i = 0; i < this->multi_line_pad_width; ++i)
     {
-      result = EOF;
+      result = this->WriteCharacterToBuffers(' ');
     }
+    this->pad_before_next_character = false;
   }
+
+  if (result != EOF)
+  {
+    result = this->WriteCharacterToBuffers(c);
+  }
+
+  if (this->collect_multi_line_pad_width)
+  {
+    this->multi_line_pad_width = this->ends_with_newline ? 0 : this->multi_line_pad_width + 1;
+  }
+  else
+  {
+    this->pad_before_next_character = this->ends_with_newline;
+  }
+
   return result;
 }
 
@@ -146,3 +179,26 @@ void tLogStreamBuffer::ResetColor()
     }
   }
 }
+
+//----------------------------------------------------------------------
+// tLogStreamBuffer InitializeMultiLinePadding
+//----------------------------------------------------------------------
+void tLogStreamBuffer::InitializeMultiLinePadding()
+{
+  if (!tLogDomainRegistry::GetInstance()->GetPadMultiLineMessages())
+  {
+    return;
+  }
+  this->multi_line_pad_width = 0;
+  this->collect_multi_line_pad_width = true;
+  this->pad_before_next_character = false;
+}
+
+//----------------------------------------------------------------------
+// tLogStreamBuffer MarkEndOfPrefixForMultiLinePadding
+//----------------------------------------------------------------------
+void tLogStreamBuffer::MarkEndOfPrefixForMultiLinePadding()
+{
+  this->collect_multi_line_pad_width = false;
+}
+

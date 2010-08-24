@@ -175,7 +175,7 @@ const std::string tLogDomain::GetTimeString() const
 const std::string tLogDomain::GetNameString() const
 {
   char name_string_buffer[128];
-  snprintf(name_string_buffer, sizeof(name_string_buffer), "%-*s ", tLogDomainRegistry::GetInstance()->GetMaxDomainNameLength(), this->GetName().c_str());
+  snprintf(name_string_buffer, sizeof(name_string_buffer), "%-*s ", (tLogDomainRegistry::GetInstance()->GetPadPrefixColumns() ? tLogDomainRegistry::GetInstance()->GetMaxDomainNameLength() : 0), this->GetName().c_str());
   return name_string_buffer;
 }
 
@@ -184,25 +184,37 @@ const std::string tLogDomain::GetNameString() const
 //----------------------------------------------------------------------
 const std::string tLogDomain::GetLevelString(tLogLevel level) const
 {
+  const char *level_name = 0;
   switch (level)
   {
   case eLL_ERROR:
-    return "[error]   ";
+    level_name = "[error]";
+    break;
   case eLL_WARNING:
-    return "[warning] ";
+    level_name = "[warning]";
+    break;
   case eLL_DEBUG_WARNING:
-    return "[debug]   ";
+    level_name = "[debug]";
+    break;
   case eLL_DEBUG:
-    return "[debug]   ";
+    level_name = "[debug]";
+    break;
   case eLL_DEBUG_VERBOSE_1:
-    return "[verbose] ";
+    level_name = "[verbose]";
+    break;
   case eLL_DEBUG_VERBOSE_2:
-    return "[verbose] ";
+    level_name = "[verbose]";
+    break;
   case eLL_DEBUG_VERBOSE_3:
-    return "[verbose] ";
+    level_name = "[verbose]";
+    break;
   default:
-    return "          ";
+    level_name = "";
+    break;
   }
+  char name_string_buffer[128];
+  snprintf(name_string_buffer, sizeof(name_string_buffer), "%-*s ", (tLogDomainRegistry::GetInstance()->GetPadPrefixColumns() ? 9 : 0), level_name);
+  return name_string_buffer;
 }
 
 //----------------------------------------------------------------------

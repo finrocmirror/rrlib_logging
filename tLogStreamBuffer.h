@@ -117,11 +117,17 @@ class tLogStreamBuffer : public std::streambuf
 {
   std::vector<std::streambuf *> buffers;
 
+  bool ends_with_newline;
+
+  size_t multi_line_pad_width;
+  bool collect_multi_line_pad_width;
+  bool pad_before_next_character;
+
+  int WriteCharacterToBuffers(int c);
+
   virtual int overflow(int c);
 
   virtual int sync();
-
-  bool ends_with_newline;
 
 //----------------------------------------------------------------------
 // Public methods
@@ -132,7 +138,10 @@ public:
    *
    */
   tLogStreamBuffer()
-      : ends_with_newline(false)
+      : ends_with_newline(false),
+      multi_line_pad_width(0),
+      collect_multi_line_pad_width(false),
+      pad_before_next_character(false)
   {}
 
   /*! Add a target output stream to this buffer
@@ -171,6 +180,10 @@ public:
   void SetColor(tLogStreamBufferEffect effect, tLogStreamBufferColor color);
 
   void ResetColor();
+
+  void InitializeMultiLinePadding();
+
+  void MarkEndOfPrefixForMultiLinePadding();
 
 };
 

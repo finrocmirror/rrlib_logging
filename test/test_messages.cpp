@@ -142,5 +142,8 @@ int main(int argc, char **argv)
 
   RRLIB_LOG_STREAM(eLL_WARNING) << std::hex << 324 << std::endl;
 
+  RRLIB_LOG_STREAM(eLL_ERROR) << "Das hier ist ein mehrzeiliger\nFehler.";
+  RRLIB_LOG_STREAM(eLL_USER) << "Und das hier ein mehrzeiliger\nText fuer den lieben Benutzer.";
+
   return EXIT_SUCCESS;
 }

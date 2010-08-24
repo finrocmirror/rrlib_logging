@@ -96,6 +96,9 @@ class tLogDomainRegistry
   std::string file_name_prefix;
   std::vector<std::tr1::shared_ptr<tLogDomain> > domains;
   std::vector<tLogDomainConfigurationSharedPointer> domain_configurations;
+  std::string::size_type max_domain_name_length;
+  bool pad_prefix_columns;
+  bool pad_multi_line_messages;
 
   /*! Ctor of tLogDomainRegistry
    *
@@ -217,11 +220,63 @@ public:
    *
    * Get the file name prefix that was configured
    *
-   * \returns the stored prefeix
+   * \returns The stored prefix
    */
   inline const std::string &GetOutputFileNamePrefix() const
   {
     return this->file_name_prefix;
+  }
+
+  /*! Set if columns in prefix output should be padded or not
+   *
+   * If the prefix output columns should be aligned, the fields for the
+   * domain name and message level are padded with spaces to the right.
+   *
+   * \param value   The new value of this flag
+   */
+  inline void SetPadPrefixColumns(bool value)
+  {
+    this->pad_prefix_columns = value;
+  }
+
+  /*! Get if columns in prefix output should be padded or not
+   *
+   * If the prefix output columns should be aligned, the fields for the
+   * domain name and message level are padded with spaces to the right.
+   *
+   * \returns Whether the columns in prefix output should be padded or not
+   */
+  inline const bool GetPadPrefixColumns() const
+  {
+    return this->pad_prefix_columns;
+  }
+
+  /*! Set if rows in output should be padded to start after the prefix or not
+   *
+   * For multiline output following line do not have a prefix. Thus, they start
+   * in the first column whearas the first row started right after the prefix.
+   * This flag allows to choose if subsequent lines should be padded to match the
+   * first row or not.
+   *
+   * \param value   The new value of this flag
+   */
+  inline void SetPadMultiLineMessages(bool value)
+  {
+    this->pad_multi_line_messages = value;
+  }
+
+  /*! Get if rows in output should be padded to start after the prefix or not
+   *
+   * For multiline output following line do not have a prefix. Thus, they start
+   * in the first column whearas the first row started right after the prefix.
+   * This flag allows to choose if subsequent lines should be padded to match the
+   * first row or not.
+   *
+   * \returns Whether the rows should be padded or not
+   */
+  inline const bool GetPadMultiLineMessages() const
+  {
+    return this->pad_multi_line_messages;
   }
 
   /*! Get the length of the longest full qualified domain name
@@ -230,7 +285,10 @@ public:
    *
    * \returns The length of the longest domain name
    */
-  size_t GetMaxDomainNameLength() const;
+  std::string::size_type GetMaxDomainNameLength() const
+  {
+    return this->max_domain_name_length;
+  }
 
   /*! Set if the domain configures its subtree or not
    *

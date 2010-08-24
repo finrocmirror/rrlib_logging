@@ -72,6 +72,9 @@ using namespace rrlib::xml2;
 // tLogDomainRegistry constructors
 //----------------------------------------------------------------------
 tLogDomainRegistry::tLogDomainRegistry()
+    : max_domain_name_length(0),
+    pad_prefix_columns(true),
+    pad_multi_line_messages(true)
 {
   this->domain_configurations.push_back(tLogDomainConfigurationSharedPointer(new tLogDomainConfiguration(".")));
   this->domains.push_back(std::tr1::shared_ptr<tLogDomain>(new tLogDomain(this->domain_configurations.back())));
@@ -102,19 +105,6 @@ tLogDomainSharedPointer tLogDomainRegistry::GetSubDomain(const std::string &name
     return this->domains.back();
   }
   return this->domains[i];
-}
-
-//----------------------------------------------------------------------
-// tLogDomainRegistry GetMaxDomainNameLength
-//----------------------------------------------------------------------
-size_t tLogDomainRegistry::GetMaxDomainNameLength() const
-{
-  size_t result = 0;
-  for (std::vector<tLogDomainConfigurationSharedPointer>::const_iterator it = this->domain_configurations.begin(); it != this->domain_configurations.end(); ++it)
-  {
-    result = std::max(result, (*it)->name.length());
-  }
-  return result;
 }
 
 //----------------------------------------------------------------------
@@ -234,6 +224,7 @@ tLogDomainConfigurationSharedPointer tLogDomainRegistry::GetConfigurationByName(
     }
   }
   this->domain_configurations.push_back(tLogDomainConfigurationSharedPointer(new tLogDomainConfiguration(name)));
+  this->max_domain_name_length = std::max(this->max_domain_name_length, name.length());
   return this->domain_configurations.back();
 }
 
@@ -288,6 +279,15 @@ bool tLogDomainRegistry::ConfigureFromXMLNode(const tXMLNode &node)
 
   try
   {
+    if (node.HasAttribute("pad_prefix_columns"))
+    {
+      this->pad_prefix_columns = node.GetBoolAttribute("pad_prefix_columns");
+    }
+    if (node.HasAttribute("pad_multi_line_messages"))
+    {
+      this->pad_multi_line_messages = node.GetBoolAttribute("pad_multi_line_messages");
+    }
+
     for (std::vector<tXMLNode>::const_iterator it = node.GetChildren().begin(); it != node.GetChildren().end(); ++it)
     {
       if (it->GetName() == "domain")

@@ -51,6 +51,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <iomanip>
 #include <ctime>
 #include <cstdarg>
 #include <cassert>
@@ -316,6 +317,7 @@ public:
   {
     tLogStream stream_proxy(std::tr1::shared_ptr<tLogStreamContext>(new tLogStreamContext(this->stream_buffer, mutex.get())));
     this->stream_buffer.Clear();
+    this->stream_buffer.InitializeMultiLinePadding();
     if (level > this->GetMaxMessageLevel())
     {
       return stream_proxy;
@@ -365,6 +367,8 @@ public:
     default:
       ;
     }
+
+    this->stream_buffer.MarkEndOfPrefixForMultiLinePadding();
 
     return stream_proxy;
   }

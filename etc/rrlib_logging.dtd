@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!ELEMENT rrlib_logging (domain+)>
+    <!ATTLIST rrlib_logging pad_prefix_columns (true|false) "true">
+    <!ATTLIST rrlib_logging pad_multi_line_messages (true|false) "true">
 <!ELEMENT domain (domain|sink)*>
     <!ATTLIST domain name CDATA #REQUIRED>
     <!ATTLIST domain configures_sub_tree (true|false) "false">
