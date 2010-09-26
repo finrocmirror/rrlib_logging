@@ -45,7 +45,7 @@ extern "C"
 // Internal includes with ""
 //----------------------------------------------------------------------
 #include "tLogDomainRegistry.h"
-#include "logging/fileno.h"
+#include "util/fstream/fileno.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -149,7 +149,7 @@ void tLogStreamBuffer::SetColor(tLogStreamBufferEffect effect, tLogStreamBufferC
   const size_t length = strlen(control_sequence);
   for (std::vector<std::streambuf *>::iterator it = this->buffers.begin(); it != this->buffers.end(); ++it)
   {
-    int file_descriptor = fileno(*it);
+    int file_descriptor = rrlib::util::GetFileDescriptor(*it);
     if (file_descriptor > 0 && isatty(file_descriptor))
     {
       for (size_t i = 0; i < length; ++i)
@@ -169,7 +169,7 @@ void tLogStreamBuffer::ResetColor()
   const size_t length = strlen(control_sequence);
   for (std::vector<std::streambuf *>::iterator it = this->buffers.begin(); it != this->buffers.end(); ++it)
   {
-    int file_descriptor = fileno(*it);
+    int file_descriptor = rrlib::util::GetFileDescriptor(*it);
     if (file_descriptor > 0 && isatty(file_descriptor))
     {
       for (size_t i = 0; i < length; ++i)

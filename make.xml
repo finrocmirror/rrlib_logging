@@ -1,12 +1,12 @@
 <targets>
 
-  <rrlib name="logging" libs="boost boost_thread" optionallibs="rrlib_xml2_wrapper">
+  <rrlib name="logging" libs="boost boost_thread">
     <sources>
       *.cpp
     </sources>
   </rrlib>
 
-  <testprogram name="messages" libs="rrlib_logging">
+  <testprogram name="messages">
     <sources>
       test/*.cpp
     </sources>
