@@ -29,7 +29,7 @@
  */
 //----------------------------------------------------------------------
 #define _rrlib_logging_include_guard_
-#include "tLogDomain.h"
+#include "logging/tLogDomain.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")

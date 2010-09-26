@@ -28,7 +28,7 @@
  */
 //----------------------------------------------------------------------
 #define _rrlib_logging_include_guard_
-#include "tLogDomainRegistry.h"
+#include "logging/tLogDomainRegistry.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")

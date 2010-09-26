@@ -27,7 +27,7 @@
  *
  */
 //----------------------------------------------------------------------
-#include "definitions.h"
+#include "logging/definitions.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")

@@ -44,7 +44,7 @@ extern "C"
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "tLogDomainRegistry.h"
+#include "logging/tLogDomainRegistry.h"
 #include "util/fstream/fileno.h"
 
 //----------------------------------------------------------------------
