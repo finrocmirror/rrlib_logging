@@ -1,12 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE targets PUBLIC "-//RRLIB//DTD make 1.0" "http://finroc.org/xml/rrlib/1.0/make.dtd">
 <targets>
 
-  <rrlib name="logging" libs="boost boost_thread">
+  <rrlib name="logging"
+        libs="boost boost_thread">
     <sources>
       *.cpp
     </sources>
   </rrlib>
 
-  <testprogram name="messages">
+  <testprogram name="program">
     <sources>
       test/*.cpp
     </sources>
