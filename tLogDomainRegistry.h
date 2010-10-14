@@ -41,7 +41,7 @@
  */
 //----------------------------------------------------------------------
 #ifndef _rrlib_logging_include_guard_
-#error Invalid include directive. Try #include "logging/definitions.h" instead.
+#error Invalid include directive. Try #include "rrlib/logging/definitions.h" instead.
 #endif
 
 #ifndef _rrlib_logging_tLogDomainRegistry_h_
@@ -55,13 +55,13 @@
 #include <tr1/memory>
 
 #ifdef _RRLIB_XML2_WRAPPER_PRESENT_
-#include "xml2_wrapper/tXMLNode.h"
+#include "rrlib/xml2_wrapper/tXMLNode.h"
 #endif
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "logging/tLogDomain.h"
-#include "logging/tLogDomainConfiguration.h"
+#include "rrlib/logging/tLogDomain.h"
+#include "rrlib/logging/tLogDomainConfiguration.h"
 
 //----------------------------------------------------------------------
 // Debugging

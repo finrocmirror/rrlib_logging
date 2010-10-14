@@ -28,7 +28,7 @@
  */
 //----------------------------------------------------------------------
 #define _rrlib_logging_include_guard_
-#include "logging/tLogStreamBuffer.h"
+#include "rrlib/logging/tLogStreamBuffer.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -44,8 +44,8 @@ extern "C"
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "logging/tLogDomainRegistry.h"
-#include "util/fstream/fileno.h"
+#include "rrlib/logging/tLogDomainRegistry.h"
+#include "rrlib/util/fstream/fileno.h"
 
 //----------------------------------------------------------------------
 // Debugging

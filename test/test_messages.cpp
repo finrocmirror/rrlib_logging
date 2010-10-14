@@ -43,13 +43,13 @@ extern "C"
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "logging/test/libA/libA.h"
-#include "logging/test/libB/libB.h"
+#include "rrlib/logging/test/libA/libA.h"
+#include "rrlib/logging/test/libB/libB.h"
 
 //----------------------------------------------------------------------
 // Debugging
 //----------------------------------------------------------------------
-#include "logging/test/debugging.h"
+#include "rrlib/logging/test/debugging.h"
 
 //----------------------------------------------------------------------
 // Namespace usage

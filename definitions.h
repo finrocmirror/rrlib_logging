@@ -50,8 +50,8 @@
 //----------------------------------------------------------------------
 #define _rrlib_logging_include_guard_
 
-#include "logging/tLogDomain.h"
-#include "logging/tLogDomainRegistry.h"
+#include "rrlib/logging/tLogDomain.h"
+#include "rrlib/logging/tLogDomainRegistry.h"
 
 #undef _rrlib_logging_include_guard_
 

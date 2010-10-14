@@ -54,7 +54,7 @@
  */
 //----------------------------------------------------------------------
 #ifndef _rrlib_logging_include_guard_
-#error Invalid include directive. Try #include "logging/definitions.h" instead.
+#error Invalid include directive. Try #include "rrlib/logging/definitions.h" instead.
 #endif
 
 #ifndef _rrlib_logging_tLogDomainConfiguration_h_

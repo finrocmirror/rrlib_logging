@@ -28,20 +28,20 @@
  */
 //----------------------------------------------------------------------
 #define _rrlib_logging_include_guard_
-#include "logging/tLogDomainRegistry.h"
+#include "rrlib/logging/tLogDomainRegistry.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
 #ifdef _RRLIB_XML2_WRAPPER_PRESENT_
 #include <iostream>
-#include "xml2_wrapper/tXMLDocument.h"
+#include "rrlib/xml2_wrapper/tXMLDocument.h"
 #endif
 
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "logging/tLogDomain.h"
+#include "rrlib/logging/tLogDomain.h"
 
 //----------------------------------------------------------------------
 // Debugging

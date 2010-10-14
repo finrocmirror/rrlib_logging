@@ -48,7 +48,7 @@
  */
 //----------------------------------------------------------------------
 #ifndef _rrlib_logging_include_guard_
-#error Invalid include directive. Try #include "logging/definitions.h" instead.
+#error Invalid include directive. Try #include "rrlib/logging/definitions.h" instead.
 #endif
 
 #ifndef _rrlib_logging_tLogStream_h_
@@ -66,7 +66,7 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "logging/tLogStreamContext.h"
+#include "rrlib/logging/tLogStreamContext.h"
 
 //----------------------------------------------------------------------
 // Debugging

@@ -27,7 +27,7 @@
  *
  */
 //----------------------------------------------------------------------
-#include "logging/definitions.h"
+#include "rrlib/logging/definitions.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")

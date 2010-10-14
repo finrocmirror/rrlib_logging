@@ -1,7 +1,7 @@
 #ifndef LIBA_H_
 #define LIBA_H_
 
-#include "logging/definitions.h"
+#include "rrlib/logging/definitions.h"
 
 namespace libA
 {
