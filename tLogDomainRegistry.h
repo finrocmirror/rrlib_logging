@@ -54,7 +54,7 @@
 #include <string>
 #include <tr1/memory>
 
-#ifdef _RRLIB_XML2_WRAPPER_PRESENT_
+#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
 #include "rrlib/xml2_wrapper/tXMLNode.h"
 #endif
 //----------------------------------------------------------------------
@@ -145,7 +145,7 @@ class tLogDomainRegistry
    */
   void SetDomainSinkMask(const std::string &name, int mask);
 
-#ifdef _RRLIB_XML2_WRAPPER_PRESENT_
+#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
   /*! Add a domain configuration from a given XML node
    *
    * This method configures a logging domain using the values specified in
@@ -372,7 +372,7 @@ public:
    */
   bool ConfigureFromFile(const std::string &file_name);
 
-#ifdef _RRLIB_XML2_WRAPPER_PRESENT_
+#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
   /*! Read domain configuration from a given XML node
    *
    * Instead of reading and parsing an XML file dedicated to configure

@@ -33,7 +33,7 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
-#ifdef _RRLIB_XML2_WRAPPER_PRESENT_
+#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
 #include <iostream>
 #include "rrlib/xml2_wrapper/tXMLDocument.h"
 #endif
@@ -52,7 +52,7 @@
 //----------------------------------------------------------------------
 using namespace rrlib::logging;
 
-#ifdef _RRLIB_XML2_WRAPPER_PRESENT_
+#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
 using namespace rrlib::xml2;
 #endif
 
@@ -248,7 +248,7 @@ void tLogDomainRegistry::PropagateDomainConfigurationToChildren(const std::strin
 //----------------------------------------------------------------------
 bool tLogDomainRegistry::ConfigureFromFile(const std::string &file_name)
 {
-#ifdef _RRLIB_XML2_WRAPPER_PRESENT_
+#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
   try
   {
     tXMLDocument document(file_name);
@@ -264,7 +264,7 @@ bool tLogDomainRegistry::ConfigureFromFile(const std::string &file_name)
 #endif
 }
 
-#ifdef _RRLIB_XML2_WRAPPER_PRESENT_
+#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
 
 //----------------------------------------------------------------------
 // tLogDomainRegistry ConfigureFromXMLNode
