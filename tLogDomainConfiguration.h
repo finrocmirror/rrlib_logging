@@ -110,22 +110,6 @@ enum tLogSink
   eLS_DIMENSION        //!< Endmarker and dimension of eLogStream
 };
 
-#ifdef _RRLIB_LOGGING_LESS_OUTPUT_
-const bool cDEFAULT_PRINT_TIME = false;                 //!< Default print time setting for reduced output mode
-const bool cDEFAULT_PRINT_NAME = false;                 //!< Default print name setting for reduced output mode
-const bool cDEFAULT_PRINT_LEVEL = false;                //!< Default print level setting for reduced output mode
-const bool cDEFAULT_PRINT_LOCATION = false;             //!< Default print location setting for reduced output mode
-const tLogLevel cDEFAULT_MAX_LOG_LEVEL = eLL_WARNING;   //!< Default max log level for reduced output mode
-const int cDEFAULT_SINK_MASK = 1 << eLS_STDOUT;         //!< Default output stream mask
-#else
-const bool cDEFAULT_PRINT_TIME = false;               //!< Default print time setting for normal output mode
-const bool cDEFAULT_PRINT_NAME = false;               //!< Default print name setting for normal output mode
-const bool cDEFAULT_PRINT_LEVEL = false;              //!< Default print level setting for normal output mode
-const bool cDEFAULT_PRINT_LOCATION = true;            //!< Default print location setting for normal output mode
-const tLogLevel cDEFAULT_MAX_LOG_LEVEL = eLL_DEBUG;   //!< Default max log level for normal output mode
-const int cDEFAULT_SINK_MASK = 1 << eLS_STDOUT;       //!< Default output stream mask
-#endif
-
 //----------------------------------------------------------------------
 // Class declaration
 //----------------------------------------------------------------------
@@ -153,38 +137,12 @@ class tLogDomainConfiguration
   tLogLevel max_message_level;
   int sink_mask;
 
-  explicit tLogDomainConfiguration(const std::string &name)
-      : name(name),
-      configure_sub_tree(false),
-      print_time(cDEFAULT_PRINT_TIME),
-      print_name(cDEFAULT_PRINT_NAME),
-      print_level(cDEFAULT_PRINT_LEVEL),
-      print_location(cDEFAULT_PRINT_LOCATION),
-      max_message_level(cDEFAULT_MAX_LOG_LEVEL),
-      sink_mask(cDEFAULT_SINK_MASK)
-  {}
+  explicit tLogDomainConfiguration(const std::string &name);
 
-  tLogDomainConfiguration(const tLogDomainConfiguration &other)
-      : configure_sub_tree(other.configure_sub_tree),
-      print_time(other.print_time),
-      print_name(other.print_name),
-      print_level(other.print_level),
-      print_location(other.print_location),
-      max_message_level(other.max_message_level),
-      sink_mask(other.sink_mask)
-  {}
+  tLogDomainConfiguration(const tLogDomainConfiguration &other);
 
-  tLogDomainConfiguration &operator = (const tLogDomainConfiguration other)
-  {
-    this->configure_sub_tree = other.configure_sub_tree;
-    this->print_time = other.print_time;
-    this->print_name = other.print_name;
-    this->print_level = other.print_level;
-    this->print_location = other.print_location;
-    this->max_message_level = other.max_message_level;
-    this->sink_mask = other.sink_mask;
-    return *this;
-  }
+  tLogDomainConfiguration &operator = (const tLogDomainConfiguration other);
+
 };
 
 //! Shared pointer to instances of tLogDomainConfiguration

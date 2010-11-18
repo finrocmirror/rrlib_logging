@@ -36,7 +36,7 @@
  *
  * By returning a proxy for each output stream the logging domain creates
  * creates a temporary object that lives as long as consecutive streaming
- * operations are performed. Afterwards, the proxy will be desctructed
+ * operations are performed. Afterwards, the proxy will be destructed
  * immediately. Hence, the correct times for acquiring and releasing the
  * lock are defined.
  *

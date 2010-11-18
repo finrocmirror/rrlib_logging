@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE rrlib_logging PUBLIC "-//RRLIB//DTD logging 1.0" "http://finroc.org/xml/rrlib/1.0/logging.dtd">
+<!DOCTYPE rrlib_logging PUBLIC "-//RRLIB//DTD logging 1.0" "http://rrlib.org/xml/1.0/logging.dtd">
 <rrlib_logging>
   <domain name="global" configures_sub_tree="true" print_time="true" print_name="true" print_level="true" max_level="debug_verbose_3">
     <sink output="stdout" />
