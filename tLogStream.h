@@ -60,7 +60,6 @@
 #include <exception>
 #include <boost/type_traits/is_base_of.hpp>
 #include <boost/utility/enable_if.hpp>
-#include <boost/thread/recursive_mutex.hpp>
 #include <tr1/memory>
 
 //----------------------------------------------------------------------
@@ -251,7 +250,7 @@ public:
     return *this;
   }
 
-  // FIXME: with -std=gnu++0x the following set of methods can be replaces by a proper variadic template implementation like this:
+  // FIXME: with -std=gnu++0x the following set of methods can be replaced by a proper variadic template implementation like this:
 //  template <typename THead, typename ... TRest>
 //  inline tLogStream &Evaluate(const THead &head, TRest... rest)
 //  {
