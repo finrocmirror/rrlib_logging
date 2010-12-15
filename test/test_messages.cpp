@@ -34,6 +34,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <stdexcept>
+#include <iterator>
 
 extern "C"
 {
@@ -144,6 +145,9 @@ int main(int argc, char **argv)
 
   RRLIB_LOG_STREAM(eLL_ERROR) << "Das hier ist ein mehrzeiliger\nFehler.";
   RRLIB_LOG_STREAM(eLL_USER) << "Und das hier ein mehrzeiliger\nText fuer den lieben Benutzer.";
+
+  const char* texts[] = {"Dies", "ist", "ein", "kleiner", "Text."};
+  std::copy(&texts[0], &texts[0] + 5, std::ostream_iterator<const char*>(RRLIB_LOG_STREAM(eLL_DEBUG), " "));
 
   return EXIT_SUCCESS;
 }
