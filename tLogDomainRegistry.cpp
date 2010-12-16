@@ -261,6 +261,7 @@ bool tLogDomainRegistry::ConfigureFromFile(const std::string &file_name)
   }
 #else
   std::cerr << "RRLib Logging: tLogDomainRegistry::ConfigureFromFile >> XML support not available due to missing rrlib_mca2_wrapper." << std::endl;
+  return false;
 #endif
 }
 
