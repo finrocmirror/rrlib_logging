@@ -289,7 +289,7 @@ bool tLogDomainRegistry::ConfigureFromXMLNode(const tXMLNode &node)
       this->pad_multi_line_messages = node.GetBoolAttribute("pad_multi_line_messages");
     }
 
-    for (std::vector<tXMLNode>::const_iterator it = node.GetChildren().begin(); it != node.GetChildren().end(); ++it)
+    for (tXMLNode::const_iterator it = node.GetChildrenBegin(); it != node.GetChildrenEnd(); ++it)
     {
       if (it->GetName() == "domain")
       {
@@ -366,7 +366,7 @@ bool tLogDomainRegistry::AddConfigurationFromXMLNode(const tXMLNode &node, const
   }
 
   int sink_mask = 0;
-  for (std::vector<tXMLNode>::const_iterator it = node.GetChildren().begin(); it != node.GetChildren().end(); ++it)
+  for (tXMLNode::const_iterator it = node.GetChildrenBegin(); it != node.GetChildrenEnd(); ++it)
   {
     if (it->GetName() == "sink")
     {
@@ -383,7 +383,7 @@ bool tLogDomainRegistry::AddConfigurationFromXMLNode(const tXMLNode &node, const
     this->SetDomainSinkMask(name, sink_mask);
   }
 
-  for (std::vector<tXMLNode>::const_iterator it = node.GetChildren().begin(); it != node.GetChildren().end(); ++it)
+  for (tXMLNode::const_iterator it = node.GetChildrenBegin(); it != node.GetChildrenEnd(); ++it)
   {
     if (it->GetName() == "domain")
     {
