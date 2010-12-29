@@ -201,7 +201,7 @@ inline const char *GetLogDescription()
    
 /*! Macro for creation of a new named domain for the current scope
  *
- *  A named logging domain can exists in parallel to the deault
+ *  A named logging domain can exist in parallel to the default
  *  domain in the same scope. It then has a symbolic name that can
  *  be specified in RRLIB_LOG_STREAM or RRLIB_LOG_MESSAGE. Thus, it
  *  is possible to define more specific domains for one scope for
