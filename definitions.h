@@ -102,8 +102,10 @@ inline const char *GetLogDescription()
 //----------------------------------------------------------------------
 // Macros for internal use
 //----------------------------------------------------------------------
+#define RRLIB_DEFAULT_LOG_DOMAIN_NAME default_log
+
 #define RRLIB_LOG_GET_DOMAIN_I(domain...) \
-  rrlib::logging::GetLogDomain(default_log, ## domain) \
+  rrlib::logging::GetLogDomain(RRLIB_DEFAULT_LOG_DOMAIN_NAME, ## domain) \
    
 #define RRLIB_LOG_GET_DOMAIN(domain, args...) \
   RRLIB_LOG_GET_DOMAIN_I(domain)
