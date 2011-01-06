@@ -99,6 +99,215 @@ class tLogDomain
 {
   friend class tLogDomainRegistry;
 
+//----------------------------------------------------------------------
+// Public methods and typedefs
+//----------------------------------------------------------------------
+public:
+
+  /*! The dtor of tLogDomain
+   */
+  ~tLogDomain();
+
+  /*! Get the full qualified name of this domain
+   *
+   * Each domain has a full qualified name consisting of its parent's name
+   * and the local part that was given at creation time.
+   *
+   * \returns The full qualified domain name
+   */
+  inline const std::string GetName() const
+  {
+    return this->configuration->name;
+  }
+
+  /*! Get configuration status of this domain's print_time flag
+   *
+   * The current time is prepended to messages of this domain if the
+   * print_time flag is set.
+   *
+   * \returns Whether the print_time flag is set or not.
+   */
+  inline const bool GetPrintTime() const
+  {
+    return this->configuration->print_time;
+  }
+
+  /*! Get configuration status of this domain's print_name flag
+   *
+   * The name of this domain prepended to messages of this domain if its
+   * print_name flag is set.
+   *
+   * \returns Whether the print_name flag is set or not.
+   */
+  inline const bool GetPrintName() const
+  {
+    return this->configuration->print_name;
+  }
+
+  /*! Get configuration status of this domain's print_level flag
+   *
+   * The level of each message is contained in the output of this domain
+   * if the print_level flag is set.
+   *
+   * \returns Whether the print_level flag is set or not.
+   */
+  inline const bool GetPrintLevel() const
+  {
+    return this->configuration->print_level;
+  }
+
+  /*! Get configuration status of this domain's print_location flag
+   *
+   * The location given to each message is contained in the output of this
+   * domain if the print_location flag is set.
+   *
+   * \returns Whether the print_location flag is set or not.
+   */
+  inline const bool GetPrintLocation() const
+  {
+    return this->configuration->print_location;
+  }
+
+  /*! Get the maximal log level a message must have to be processed
+   *
+   * Each message has a log level that must not be above the configured limit to be processed.
+   *
+   * \returns The configured maximal log level
+   */
+  inline const tLogLevel GetMaxMessageLevel() const
+  {
+    return this->configuration->max_message_level;
+  }
+
+  /*! Get a message stream from this domain
+   *
+   * This method is the streaming interface to this logging domain.
+   * It must be used for every output using operator <<.
+   * The method then depending on the domain's configuration chooses
+   * a stream, prints the prefix that should be prepended to every
+   * message and returns the stream to process further input given as
+   * operator << cascade in the user's program.
+   * To properly specify the arguments of this method consider using
+   * the macros defined in rrlib/logging/definitions.h
+   *
+   * \param description   A string that describes the global context of the message
+   * \param function      The name of the function that contains the message (__FUNCTION__)
+   * \param file          The file that contains the message
+   * \param line          The line that contains the message
+   * \param level         The log level of the message
+   *
+   * \returns A reference to the stream that can be used for the remaining message parts
+   */
+  template <typename TDescription>
+  inline tLogStream GetMessageStream(const TDescription &description, const char *function, const char *file, unsigned int line, tLogLevel level) const
+  {
+    tLogStream stream_proxy(std::tr1::shared_ptr<tLogStreamContext>(new tLogStreamContext(this->stream_buffer, mutex.get())));
+    this->stream_buffer.Clear();
+    this->stream_buffer.InitializeMultiLinePadding();
+    if (level > this->GetMaxMessageLevel())
+    {
+      return stream_proxy;
+    }
+    this->SetupOutputStream(this->configuration->sink_mask);
+    if (level == eLL_USER)
+    {
+      return stream_proxy;
+    }
+    if (this->GetPrintTime())
+    {
+      stream_proxy << this->GetTimeString();
+    }
+    this->SetupOutputStreamColor(level);
+#ifndef _RRLIB_LOGGING_LESS_OUTPUT_
+    if (this->GetPrintName())
+    {
+      stream_proxy << this->GetNameString();
+    }
+    if (this->GetPrintLevel())
+    {
+      stream_proxy << this->GetLevelString(level);
+    }
+#endif
+    stream_proxy << description << "::" << function << " ";
+#ifndef _RRLIB_LOGGING_LESS_OUTPUT_
+    if (this->GetPrintLocation())
+    {
+      stream_proxy << this->GetLocationString(file, line);
+    }
+#endif
+    stream_proxy << ">> ";
+    this->stream_buffer.ResetColor();
+
+    switch (level)
+    {
+    case eLL_ERROR:
+      stream_proxy << "ERROR: ";
+      break;
+    case eLL_WARNING:
+    case eLL_DEBUG_WARNING:
+      stream_proxy << "WARNING: ";
+      break;
+    default:
+      ;
+    }
+
+    this->stream_buffer.MarkEndOfPrefixForMultiLinePadding();
+
+    return stream_proxy;
+  }
+
+  /*! A printf like variant of using logging domains for message output
+   *
+   * Instead of using operator << to output messages this method can be
+   * used. It then itself uses printf to format the given message and
+   * streams the result through the result obtained from GetMessageStream.
+   * That way the message prefix is only generated in one place and - more
+   * important - the underlying technique is the more sane one from
+   * iostreams instead of file descriptors.
+   * Apart from that: iostreams and file descriptors can not be mixed. So
+   * a decision had to be made.
+   *
+   * \param description   A string that describes the global context of the message
+   * \param function      The name of the function that contains the message (__FUNCTION__)
+   * \param file          The file that contains the message
+   * \param line          The line that contains the message
+   * \param level         The log level of the message
+   * \param fmt           The format string for printf
+   * \param ...           The remaining arguments for printf
+   */
+  template <typename TDescription>
+  inline void PrintMessage(const TDescription &description, const char *function, const char *file, int line, tLogLevel level, const char *fmt, ...) const
+  {
+    if (level > this->GetMaxMessageLevel())
+    {
+      return;
+    }
+
+    va_list printf_args;
+    va_start(printf_args, fmt);
+    this->VPrintMessage(description, function, file, line, level, fmt, printf_args);
+    va_end(printf_args);
+  }
+
+  template <typename TDescription>
+  inline void PrintMessage(const TDescription &description, const char *function, const char *file, int line, tLogLevel level, tLogDomainSharedPointer(&)(), const char *fmt, ...) const
+  {
+    if (level > this->GetMaxMessageLevel())
+    {
+      return;
+    }
+
+    va_list printf_args;
+    va_start(printf_args, fmt);
+    this->VPrintMessage(description, function, file, line, level, fmt, printf_args);
+    va_end(printf_args);
+  }
+
+//----------------------------------------------------------------------
+// Private fields and methods
+//----------------------------------------------------------------------
+private:
+
   tLogDomain *parent;
   std::vector<tLogDomain *> children;
 
@@ -213,217 +422,17 @@ class tLogDomain
    */
   void SetupOutputStreamColor(tLogLevel level) const;
 
-//----------------------------------------------------------------------
-// Public methods
-//----------------------------------------------------------------------
-public:
-
-  /*! The dtor of tLogDomain
-   */
-  ~tLogDomain();
-
-  /*! Get the full qualified name of this domain
-   *
-   * Each domain has a full qualified name consisting of its parent's name
-   * and the local part that was given at creation time.
-   *
-   * \returns The full qualified domain name
-   */
-  inline const std::string GetName() const
-  {
-    return this->configuration->name;
-  }
-
-  /*! Get configuration status of this domain's print_time flag
-   *
-   * The current time is prepended to messages of this domain if the
-   * print_time flag is set.
-   *
-   * \returns Whether the print_time flag is set or not.
-   */
-  inline const bool GetPrintTime() const
-  {
-    return this->configuration->print_time;
-  }
-
-  /*! Get configuration status of this domain's print_name flag
-   *
-   * The name of this domain prepended to messages of this domain if its
-   * print_name flag is set.
-   *
-   * \returns Whether the print_name flag is set or not.
-   */
-  inline const bool GetPrintName() const
-  {
-    return this->configuration->print_name;
-  }
-
-  /*! Get configuration status of this domain's print_level flag
-   *
-   * The level of each message is contained in the output of this domain
-   * if the print_level flag is set.
-   *
-   * \returns Whether the print_level flag is set or not.
-   */
-  inline const bool GetPrintLevel() const
-  {
-    return this->configuration->print_level;
-  }
-
-  /*! Get configuration status of this domain's print_location flag
-   *
-   * The location given to each message is contained in the output of this
-   * domain if the print_location flag is set.
-   *
-   * \returns Whether the print_location flag is set or not.
-   */
-  inline const bool GetPrintLocation() const
-  {
-    return this->configuration->print_location;
-  }
-
-  /*! Get the maximal log level a message must have to be processed
-   *
-   * Each message has a log level that must not be above the configured limit to be processed.
-   *
-   * \returns The configured maximal log level
-   */
-  inline const tLogLevel GetMaxMessageLevel() const
-  {
-    return this->configuration->max_message_level;
-  }
-
-  /*! Get a message stream from this domain
-   *
-   * This method is the streaming interface to this logging domain.
-   * It must be used for every output using operator <<.
-   * The method then depending on the domain's configuration chooses
-   * a stream, prints the prefix that should be prepended to every
-   * message and returns the stream to process further input given as
-   * operator << cascade in the user's program.
-   * To properly specify the arguments of this method consider using
-   * the macros defined in rrlib/logging/definitions.h
-   *
-   * \param description   A string that describes the global context of the message
-   * \param function      The name of the function that contains the message (__FUNCTION__)
-   * \param file          The file that contains the message
-   * \param line          The line that contains the message
-   * \param level         The log level of the message
-   *
-   * \returns A reference to the stream that can be used for the remaining message parts
-   */
   template <typename TDescription>
-  inline tLogStream GetMessageStream(const TDescription &description, const char *function, const char *file, unsigned int line, tLogLevel level) const
+  inline void VPrintMessage(const TDescription &description, const char *function, const char *file, int line, tLogLevel level, const char *fmt,  va_list printf_args) const
   {
-    tLogStream stream_proxy(std::tr1::shared_ptr<tLogStreamContext>(new tLogStreamContext(this->stream_buffer, mutex.get())));
-    this->stream_buffer.Clear();
-    this->stream_buffer.InitializeMultiLinePadding();
-    if (level > this->GetMaxMessageLevel())
+    char temp;
+    int needed_buffer_size = vsnprintf(&temp, 1, fmt, printf_args);
+    if (needed_buffer_size > 0)
     {
-      return stream_proxy;
+      char formatted_string_buffer[needed_buffer_size + 1];
+      vsnprintf(formatted_string_buffer, sizeof(formatted_string_buffer), fmt, printf_args);
+      this->GetMessageStream(description, function, file, line, level) << formatted_string_buffer;
     }
-    this->SetupOutputStream(this->configuration->sink_mask);
-
-    if (level == eLL_USER)
-    {
-      return stream_proxy;
-    }
-
-    if (this->GetPrintTime())
-    {
-      stream_proxy << this->GetTimeString();
-    }
-    this->SetupOutputStreamColor(level);
-
-#ifndef _RRLIB_LOGGING_LESS_OUTPUT_
-    if (this->GetPrintName())
-    {
-      stream_proxy << this->GetNameString();
-    }
-    if (this->GetPrintLevel())
-    {
-      stream_proxy << this->GetLevelString(level);
-    }
-#endif
-    stream_proxy << description << "::" << function << " ";
-#ifndef _RRLIB_LOGGING_LESS_OUTPUT_
-    if (this->GetPrintLocation())
-    {
-      stream_proxy << this->GetLocationString(file, line);
-    }
-#endif
-    stream_proxy << ">> ";
-    this->stream_buffer.ResetColor();
-
-    switch (level)
-    {
-    case eLL_ERROR:
-      stream_proxy << "ERROR: ";
-      break;
-    case eLL_WARNING:
-    case eLL_DEBUG_WARNING:
-      stream_proxy << "WARNING: ";
-      break;
-    default:
-      ;
-    }
-
-    this->stream_buffer.MarkEndOfPrefixForMultiLinePadding();
-
-    return stream_proxy;
-  }
-
-  /*! A printf like variant of using logging domains for message output
-   *
-   * Instead of using operator << to output messages this method can be
-   * used. It then itself uses printf to format the given message and
-   * streams the result through the result obtained from GetMessageStream.
-   * That way the message prefix is only generated in one place and - more
-   * important - the underlying technique is the more sane one from
-   * iostreams instead of file descriptors.
-   * Apart from that: iostreams and file descriptors can not be mixed. So
-   * a decision had to be made.
-   *
-   * \param description   A string that describes the global context of the message
-   * \param function      The name of the function that contains the message (__FUNCTION__)
-   * \param file          The file that contains the message
-   * \param line          The line that contains the message
-   * \param level         The log level of the message
-   * \param fmt           The format string for printf
-   * \param ...           The remaining arguments for printf
-   */
-  template <typename TDescription>
-  inline void PrintMessage(const TDescription &description, const char *function, const char *file, int line, tLogLevel level, const char *fmt, ...) const
-  {
-    if (level > this->GetMaxMessageLevel())
-    {
-      return;
-    }
-    char formatted_string_buffer[1024];
-
-    va_list printf_args;
-    va_start(printf_args, fmt);
-    vsnprintf(formatted_string_buffer, sizeof(formatted_string_buffer), fmt, printf_args);
-    va_end(printf_args);
-
-    this->GetMessageStream(description, function, file, line, level) << formatted_string_buffer;
-  }
-
-  template <typename TDescription>
-  inline void PrintMessage(const TDescription &description, const char *function, const char *file, int line, tLogLevel level, tLogDomainSharedPointer(&)(), const char *fmt, ...) const
-  {
-    if (level > this->GetMaxMessageLevel())
-    {
-      return;
-    }
-    char formatted_string_buffer[1024];
-
-    va_list printf_args;
-    va_start(printf_args, fmt);
-    vsnprintf(formatted_string_buffer, sizeof(formatted_string_buffer), fmt, printf_args);
-    va_end(printf_args);
-
-    this->GetMessageStream(description, function, file, line, level) << formatted_string_buffer;
   }
 
 };
