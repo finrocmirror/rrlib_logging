@@ -283,9 +283,15 @@ public:
       return;
     }
 
+    va_list printf_args0;
+    va_start(printf_args0, fmt);
+    char temp;
+    int needed_buffer_size = vsnprintf(&temp, 1, fmt, printf_args0);
+    va_end(printf_args0);
+
     va_list printf_args;
     va_start(printf_args, fmt);
-    this->VPrintMessage(description, function, file, line, level, fmt, printf_args);
+    this->VPrintMessage(description, function, file, line, level, fmt, needed_buffer_size, printf_args);
     va_end(printf_args);
   }
 
@@ -297,9 +303,15 @@ public:
       return;
     }
 
+    va_list printf_args0;
+    va_start(printf_args0, fmt);
+    char temp;
+    int needed_buffer_size = vsnprintf(&temp, 1, fmt, printf_args0);
+    va_end(printf_args0);
+
     va_list printf_args;
     va_start(printf_args, fmt);
-    this->VPrintMessage(description, function, file, line, level, fmt, printf_args);
+    this->VPrintMessage(description, function, file, line, level, fmt, needed_buffer_size, printf_args);
     va_end(printf_args);
   }
 
@@ -423,10 +435,8 @@ private:
   void SetupOutputStreamColor(tLogLevel level) const;
 
   template <typename TDescription>
-  inline void VPrintMessage(const TDescription &description, const char *function, const char *file, int line, tLogLevel level, const char *fmt,  va_list printf_args) const
+  inline void VPrintMessage(const TDescription &description, const char *function, const char *file, int line, tLogLevel level, const char *fmt, int needed_buffer_size, va_list printf_args) const
   {
-    char temp;
-    int needed_buffer_size = vsnprintf(&temp, 1, fmt, printf_args);
     if (needed_buffer_size > 0)
     {
       char formatted_string_buffer[needed_buffer_size + 1];
