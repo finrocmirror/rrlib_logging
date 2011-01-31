@@ -42,12 +42,12 @@
  *
  */
 //----------------------------------------------------------------------
-#ifndef _rrlib_logging_include_guard_
+#ifndef __rrlib__logging__include_guard__
 #error Invalid include directive. Try #include "rrlib/logging/definitions.h" instead.
 #endif
 
-#ifndef _rrlib_logging_tLogStreamBuffer_h_
-#define _rrlib_logging_tLogStreamBuffer_h_
+#ifndef __rrlib__logging__tLogStreamBuffer_h__
+#define __rrlib__logging__tLogStreamBuffer_h__
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -115,22 +115,9 @@ enum tLogStreamBufferColor
  */
 class tLogStreamBuffer : public std::streambuf
 {
-  std::vector<std::streambuf *> buffers;
-
-  bool ends_with_newline;
-
-  size_t multi_line_pad_width;
-  bool collect_multi_line_pad_width;
-  bool pad_before_next_character;
-
-  int WriteCharacterToBuffers(int c);
-
-  virtual int overflow(int c);
-
-  virtual int sync();
 
 //----------------------------------------------------------------------
-// Public methods
+// Public methods and typedefs
 //----------------------------------------------------------------------
 public:
 
@@ -184,6 +171,25 @@ public:
   void InitializeMultiLinePadding();
 
   void MarkEndOfPrefixForMultiLinePadding();
+
+//----------------------------------------------------------------------
+// Private fields and methods
+//----------------------------------------------------------------------
+private:
+
+  std::vector<std::streambuf *> buffers;
+
+  bool ends_with_newline;
+
+  size_t multi_line_pad_width;
+  bool collect_multi_line_pad_width;
+  bool pad_before_next_character;
+
+  int WriteCharacterToBuffers(int c);
+
+  virtual int overflow(int c);
+
+  virtual int sync();
 
 };
 

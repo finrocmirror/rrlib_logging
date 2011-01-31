@@ -27,7 +27,7 @@
  *
  */
 //----------------------------------------------------------------------
-#define _rrlib_logging_include_guard_
+#define __rrlib__logging__include_guard__
 #include "rrlib/logging/tLogStreamBuffer.h"
 
 //----------------------------------------------------------------------

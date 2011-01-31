@@ -47,12 +47,12 @@
  *
  */
 //----------------------------------------------------------------------
-#ifndef _rrlib_logging_include_guard_
+#ifndef __rrlib__logging__include_guard__
 #error Invalid include directive. Try #include "rrlib/logging/definitions.h" instead.
 #endif
 
-#ifndef _rrlib_logging_tLogStream_h_
-#define _rrlib_logging_tLogStream_h_
+#ifndef __rrlib__logging__tLogStream_h__
+#define __rrlib__logging__tLogStream_h__
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -107,16 +107,9 @@ typedef std::tr1::shared_ptr<const tLogDomain> tLogDomainSharedPointer;
  */
 class tLogStream
 {
-  std::tr1::shared_ptr<tLogStreamContext> stream_context;
-
-  // Prohibit assignment
-  tLogStream &operator = (const tLogStream &other);
-
-  // Prohibit creation on heap
-  void *operator new(size_t size);
 
 //----------------------------------------------------------------------
-// Public methods
+// Public methods and typedefs
 //----------------------------------------------------------------------
 public:
 
@@ -462,6 +455,20 @@ public:
   {
     return *this << arg1 << arg2 << arg3 << arg4 << arg5 << arg6 << arg7 << arg8 << arg9 << arg10 << arg11 << arg12 << arg13 << arg14 << arg15 << arg16;
   }
+
+
+//----------------------------------------------------------------------
+// Private fields and methods
+//----------------------------------------------------------------------
+private:
+
+  std::tr1::shared_ptr<tLogStreamContext> stream_context;
+
+  // Prohibit assignment
+  tLogStream &operator = (const tLogStream &other);
+
+  // Prohibit creation on heap
+  void *operator new(size_t size);
 
 };
 

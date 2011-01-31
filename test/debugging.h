@@ -33,8 +33,8 @@
  *
  */
 //----------------------------------------------------------------------
-#ifndef _rrlib_logging_test_debugging_h_
-#define _rrlib_logging_test_debugging_h_
+#ifndef __rrlib_logging__test__debugging_h__
+#define __rrlib_logging__test__debugging_h__
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")

@@ -1,5 +1,5 @@
-#ifndef LIBB_H_
-#define LIBB_H_
+#ifndef _LIBB_H_
+#define _LIBB_H_
 
 #include "rrlib/logging/definitions.h"
 

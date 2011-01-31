@@ -38,12 +38,12 @@
  *
  */
 //----------------------------------------------------------------------
-#ifndef _rrlib_logging_include_guard_
+#ifndef __rrlib__logging__include_guard__
 #error Invalid include directive. Try #include "rrlib/logging/definitions.h" instead.
 #endif
 
-#ifndef _rrlib_logging_tLogDomain_h_
-#define _rrlib_logging_tLogDomain_h_
+#ifndef __rrlib__logging__tLogDomain_h__
+#define __rrlib__logging__tLogDomain_h__
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")

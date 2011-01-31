@@ -53,12 +53,12 @@
  *
  */
 //----------------------------------------------------------------------
-#ifndef _rrlib_logging_include_guard_
+#ifndef __rrlib__logging__include_guard__
 #error Invalid include directive. Try #include "rrlib/logging/definitions.h" instead.
 #endif
 
-#ifndef _rrlib_logging_tLogDomainConfiguration_h_
-#define _rrlib_logging_tLogDomainConfiguration_h_
+#ifndef __rrlib__logging__tLogDomainConfiguration_h__
+#define __rrlib__logging__tLogDomainConfiguration_h__
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -126,6 +126,11 @@ class tLogDomainConfiguration
 {
   friend class tLogDomainRegistry;
   friend class tLogDomain;
+
+//----------------------------------------------------------------------
+// Private fields and methods
+//----------------------------------------------------------------------
+private:
 
   std::string name;
   bool configure_sub_tree;

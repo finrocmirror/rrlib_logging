@@ -40,12 +40,12 @@
  *
  */
 //----------------------------------------------------------------------
-#ifndef _rrlib_logging_include_guard_
+#ifndef __rrlib__logging__include_guard__
 #error Invalid include directive. Try #include "rrlib/logging/definitions.h" instead.
 #endif
 
-#ifndef _rrlib_logging_tLogDomainRegistry_h_
-#define _rrlib_logging_tLogDomainRegistry_h_
+#ifndef __rrlib__logging__tLogDomainRegistry_h__
+#define __rrlib__logging__tLogDomainRegistry_h__
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -93,75 +93,9 @@ namespace logging
  */
 class tLogDomainRegistry
 {
-  std::string file_name_prefix;
-  std::vector<std::tr1::shared_ptr<tLogDomain> > domains;
-  std::vector<tLogDomainConfigurationSharedPointer> domain_configurations;
-  std::string::size_type max_domain_name_length;
-  bool pad_prefix_columns;
-  bool pad_multi_line_messages;
-
-  /*! Ctor of tLogDomainRegistry
-   *
-   * Private default ctor for singleton pattern
-   */
-  tLogDomainRegistry();
-
-  /*! Get the index of the domain with the given name
-   *
-   * Helper method that implements the lookup for existing domains
-   *
-   * \param name   The name of the wanted domain
-   *
-   * \returns The index of the domain if found. If not, the methods returns the size of the domain vector.
-   */
-  const size_t GetDomainIndexByName(const std::string &name) const;
-
-  /*! Get a configuration object for a domain with the given name
-   *
-   * This methods implements the lookup for existing domain names and
-   * creates a new configuration object for new names.
-   *
-   * \param name   The name of the domain to be configured
-   *
-   * \returns The wanted domain configuration as a shared pointer
-   */
-  tLogDomainConfigurationSharedPointer GetConfigurationByName(const std::string &name);
-
-  /*! Update configuration the subtree of a domain for recursion
-   *
-   * If the configuration of one domain is changed start update of its
-   * subtree. This method should always be called because the decision
-   * about recursive configuration is done within its call.
-   * That keeps update methods simpler.
-   *
-   * \param name   The name of the updated domain
-   */
-  void PropagateDomainConfigurationToChildren(const std::string &name);
-
-  /*! Set the output streams that should be used by the given domain
-   *
-   * \param name   The full qualified name of the domain
-   * \param mask   The mask that represents the streams to be used as sink
-   */
-  void SetDomainSinkMask(const std::string &name, int mask);
-
-#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
-  /*! Add a domain configuration from a given XML node
-   *
-   * This method configures a logging domain using the values specified in
-   * the given XML node. It also implements recursive configuration in case
-   * of nested nodes.
-   *
-   * \param node          The XML node that contains the configuration
-   * \param parent_name   For recursive calls the current domain name is build from parent_name and domain_name
-   *
-   * \returns Whether the domain was successfully configured or not
-   */
-  bool AddConfigurationFromXMLNode(const xml2::tXMLNode &node, const std::string &parent_name = "");
-#endif
 
 //----------------------------------------------------------------------
-// Public methods
+// Public methods and typedefs
 //----------------------------------------------------------------------
 public:
 
@@ -385,6 +319,78 @@ public:
    * \returns Whether the configuration could be applied or not
    */
   bool ConfigureFromXMLNode(const xml2::tXMLNode &node);
+#endif
+
+//----------------------------------------------------------------------
+// Private fields and methods
+//----------------------------------------------------------------------
+private:
+
+  std::string file_name_prefix;
+  std::vector<std::tr1::shared_ptr<tLogDomain> > domains;
+  std::vector<tLogDomainConfigurationSharedPointer> domain_configurations;
+  std::string::size_type max_domain_name_length;
+  bool pad_prefix_columns;
+  bool pad_multi_line_messages;
+
+  /*! Ctor of tLogDomainRegistry
+   *
+   * Private default ctor for singleton pattern
+   */
+  tLogDomainRegistry();
+
+  /*! Get the index of the domain with the given name
+   *
+   * Helper method that implements the lookup for existing domains
+   *
+   * \param name   The name of the wanted domain
+   *
+   * \returns The index of the domain if found. If not, the methods returns the size of the domain vector.
+   */
+  const size_t GetDomainIndexByName(const std::string &name) const;
+
+  /*! Get a configuration object for a domain with the given name
+   *
+   * This methods implements the lookup for existing domain names and
+   * creates a new configuration object for new names.
+   *
+   * \param name   The name of the domain to be configured
+   *
+   * \returns The wanted domain configuration as a shared pointer
+   */
+  tLogDomainConfigurationSharedPointer GetConfigurationByName(const std::string &name);
+
+  /*! Update configuration the subtree of a domain for recursion
+   *
+   * If the configuration of one domain is changed start update of its
+   * subtree. This method should always be called because the decision
+   * about recursive configuration is done within its call.
+   * That keeps update methods simpler.
+   *
+   * \param name   The name of the updated domain
+   */
+  void PropagateDomainConfigurationToChildren(const std::string &name);
+
+  /*! Set the output streams that should be used by the given domain
+   *
+   * \param name   The full qualified name of the domain
+   * \param mask   The mask that represents the streams to be used as sink
+   */
+  void SetDomainSinkMask(const std::string &name, int mask);
+
+#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
+  /*! Add a domain configuration from a given XML node
+   *
+   * This method configures a logging domain using the values specified in
+   * the given XML node. It also implements recursive configuration in case
+   * of nested nodes.
+   *
+   * \param node          The XML node that contains the configuration
+   * \param parent_name   For recursive calls the current domain name is build from parent_name and domain_name
+   *
+   * \returns Whether the domain was successfully configured or not
+   */
+  bool AddConfigurationFromXMLNode(const xml2::tXMLNode &node, const std::string &parent_name = "");
 #endif
 
 };

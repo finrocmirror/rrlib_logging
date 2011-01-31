@@ -46,12 +46,12 @@
  *
  */
 //----------------------------------------------------------------------
-#ifndef _rrlib_logging_include_guard_
+#ifndef __rrlib__logging__include_guard__
 #error Invalid include directive. Try #include "rrlib/logging/definitions.h" instead.
 #endif
 
-#ifndef rrlib_logging_tLogStreamContext_h_
-#define rrlib_logging_tLogStreamContext_h_
+#ifndef __rrlib__logging__tLogStreamContext_h__
+#define __rrlib__logging__tLogStreamContext_h__
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -101,15 +101,6 @@ namespace logging
  */
 class tLogStreamContext
 {
-  std::ostream stream;
-
-  boost::recursive_mutex *mutex;
-
-  // Prohibit copy
-  tLogStreamContext(const tLogStreamContext &other);
-
-  // Prohibit assignment
-  tLogStreamContext &operator = (const tLogStreamContext &other);
 
 //----------------------------------------------------------------------
 // Public methods
@@ -153,6 +144,21 @@ public:
   {
     return this->stream;
   }
+
+//----------------------------------------------------------------------
+// Private fields and methods
+//----------------------------------------------------------------------
+private:
+
+  std::ostream stream;
+
+  boost::recursive_mutex *mutex;
+
+  // Prohibit copy
+  tLogStreamContext(const tLogStreamContext &other);
+
+  // Prohibit assignment
+  tLogStreamContext &operator = (const tLogStreamContext &other);
 
 };
 

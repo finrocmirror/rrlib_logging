@@ -38,8 +38,8 @@
  *
  */
 //----------------------------------------------------------------------
-#ifndef _rrlib_logging_definitions_h_
-#define _rrlib_logging_definitions_h_
+#ifndef __rrlib__logging__definitions_h__
+#define __rrlib__logging__definitions_h__
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -48,12 +48,12 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#define _rrlib_logging_include_guard_
+#define __rrlib__logging__include_guard__
 
 #include "rrlib/logging/tLogDomain.h"
 #include "rrlib/logging/tLogDomainRegistry.h"
 
-#undef _rrlib_logging_include_guard_
+#undef __rrlib__logging__include_guard__
 
 //----------------------------------------------------------------------
 // Namespace declaration
