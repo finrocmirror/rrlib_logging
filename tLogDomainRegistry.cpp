@@ -77,15 +77,15 @@ tLogDomainRegistry::tLogDomainRegistry()
     pad_multi_line_messages(true)
 {
   this->domain_configurations.push_back(tLogDomainConfigurationSharedPointer(new tLogDomainConfiguration(".")));
-  this->domains.push_back(std::tr1::shared_ptr<tLogDomain>(new tLogDomain(this->domain_configurations.back())));
+  this->domains.push_back(std::shared_ptr<tLogDomain>(new tLogDomain(this->domain_configurations.back())));
 }
 
 //----------------------------------------------------------------------
 // tLogDomainRegistry GetInstance
 //----------------------------------------------------------------------
-std::tr1::shared_ptr<tLogDomainRegistry> tLogDomainRegistry::GetInstance()
+std::shared_ptr<tLogDomainRegistry> tLogDomainRegistry::GetInstance()
 {
-  static std::tr1::shared_ptr<tLogDomainRegistry> instance(new tLogDomainRegistry());
+  static std::shared_ptr<tLogDomainRegistry> instance(new tLogDomainRegistry());
   return instance;
 }
 
@@ -101,7 +101,7 @@ tLogDomainSharedPointer tLogDomainRegistry::GetSubDomain(const std::string &name
   if (i == this->domains.size())
   {
     tLogDomainConfigurationSharedPointer configuration(this->GetConfigurationByName(full_qualified_domain_name));
-    this->domains.push_back(std::tr1::shared_ptr<tLogDomain>(new tLogDomain(configuration, *const_cast<tLogDomain *>(parent.get()))));
+    this->domains.push_back(std::shared_ptr<tLogDomain>(new tLogDomain(configuration, *const_cast<tLogDomain *>(parent.get()))));
     return this->domains.back();
   }
   return this->domains[i];

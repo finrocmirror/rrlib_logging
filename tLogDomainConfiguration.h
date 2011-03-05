@@ -64,7 +64,7 @@
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
 #include <string>
-#include <tr1/memory>
+#include <memory>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -151,7 +151,7 @@ private:
 };
 
 //! Shared pointer to instances of tLogDomainConfiguration
-typedef std::tr1::shared_ptr<tLogDomainConfiguration> tLogDomainConfigurationSharedPointer;
+typedef std::shared_ptr<tLogDomainConfiguration> tLogDomainConfigurationSharedPointer;
 
 //----------------------------------------------------------------------
 // End of namespace declaration

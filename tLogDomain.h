@@ -55,7 +55,7 @@
 #include <ctime>
 #include <cstdarg>
 #include <cassert>
-#include <tr1/memory>
+#include <memory>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -82,7 +82,7 @@ namespace logging
 //----------------------------------------------------------------------
 //! Shared pointer to instances of tLogDomain for user space
 class tLogDomain;
-typedef std::tr1::shared_ptr<const tLogDomain> tLogDomainSharedPointer;
+typedef std::shared_ptr<const tLogDomain> tLogDomainSharedPointer;
 
 //----------------------------------------------------------------------
 // Class declaration
@@ -201,7 +201,7 @@ public:
   template <typename TDescription>
   inline tLogStream GetMessageStream(const TDescription &description, const char *function, const char *file, unsigned int line, tLogLevel level) const
   {
-    tLogStream stream_proxy(std::tr1::shared_ptr<tLogStreamContext>(new tLogStreamContext(this->stream_buffer, mutex.get())));
+    tLogStream stream_proxy(std::shared_ptr<tLogStreamContext>(new tLogStreamContext(this->stream_buffer, mutex.get())));
     this->stream_buffer.Clear();
     this->stream_buffer.InitializeMultiLinePadding();
     if (level > this->GetMaxMessageLevel())
@@ -328,7 +328,7 @@ private:
   mutable tLogStreamBuffer stream_buffer;
   mutable std::ofstream file_stream;
 
-  std::tr1::shared_ptr<boost::recursive_mutex> mutex;
+  std::shared_ptr<boost::recursive_mutex> mutex;
 
   /*! The ctor of a top level domain
    *
@@ -352,9 +352,9 @@ private:
   /*!
    * \returns Shared Pointer to output mutex that is shared by all logging domains
    */
-  static std::tr1::shared_ptr<boost::recursive_mutex> GetMutex()
+  static std::shared_ptr<boost::recursive_mutex> GetMutex()
   {
-    static std::tr1::shared_ptr<boost::recursive_mutex> mutex(new boost::recursive_mutex());
+    static std::shared_ptr<boost::recursive_mutex> mutex(new boost::recursive_mutex());
     return mutex;
   }
 

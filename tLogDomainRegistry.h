@@ -52,7 +52,7 @@
 //----------------------------------------------------------------------
 #include <vector>
 #include <string>
-#include <tr1/memory>
+#include <memory>
 
 #ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
 #include "rrlib/xml2_wrapper/tXMLNode.h"
@@ -106,7 +106,7 @@ public:
    *
    * \returns The only instance of this class that should exist
    */
-  static std::tr1::shared_ptr<tLogDomainRegistry> GetInstance();
+  static std::shared_ptr<tLogDomainRegistry> GetInstance();
 
   /*! Get the default domain
    *
@@ -327,7 +327,7 @@ public:
 private:
 
   std::string file_name_prefix;
-  std::vector<std::tr1::shared_ptr<tLogDomain> > domains;
+  std::vector<std::shared_ptr<tLogDomain> > domains;
   std::vector<tLogDomainConfigurationSharedPointer> domain_configurations;
   std::string::size_type max_domain_name_length;
   bool pad_prefix_columns;

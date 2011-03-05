@@ -60,7 +60,7 @@
 #include <exception>
 #include <boost/type_traits/is_base_of.hpp>
 #include <boost/utility/enable_if.hpp>
-#include <tr1/memory>
+#include <memory>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -84,7 +84,7 @@ namespace logging
 //----------------------------------------------------------------------
 //! Shared pointer to instances of tLogDomain for user space
 class tLogDomain;
-typedef std::tr1::shared_ptr<const tLogDomain> tLogDomainSharedPointer;
+typedef std::shared_ptr<const tLogDomain> tLogDomainSharedPointer;
 
 //----------------------------------------------------------------------
 // Class declaration
@@ -121,7 +121,7 @@ public:
    * \param stream   The std::ostream that is used via this proxy
    * \param mutex    Mutex to acquire while this proxy is used
    */
-  explicit tLogStream(std::tr1::shared_ptr<tLogStreamContext> stream_context)
+  explicit tLogStream(std::shared_ptr<tLogStreamContext> stream_context)
       : stream_context(stream_context)
   {}
 
@@ -462,7 +462,7 @@ public:
 //----------------------------------------------------------------------
 private:
 
-  std::tr1::shared_ptr<tLogStreamContext> stream_context;
+  std::shared_ptr<tLogStreamContext> stream_context;
 
   // Prohibit assignment
   tLogStream &operator = (const tLogStream &other);
