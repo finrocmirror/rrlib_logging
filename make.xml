@@ -9,9 +9,15 @@
     </sources>
   </rrlib>
 
-  <testprogram name="program">
+  <testprogram name="messages">
     <sources>
-      test/*.cpp
+      test/test_messages.cpp
+    </sources>
+  </testprogram>
+
+  <testprogram name="logging">
+    <sources>
+      test/test_logging.cpp
     </sources>
   </testprogram>
 
