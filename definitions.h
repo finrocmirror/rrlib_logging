@@ -192,7 +192,7 @@ inline const char *GetLogDescription()
   { \
     static rrlib::logging::tLogDomainSharedPointer GetDomain() \
     { \
-      static rrlib::logging::tLogDomainSharedPointer instance(rrlib::logging::tLogDomainRegistry::GetInstance()->GetSubDomain(domain_name, default_log())); \
+      static rrlib::logging::tLogDomainSharedPointer instance(rrlib::logging::tLogDomainRegistry::GetInstance()->GetSubDomain(domain_name, RRLIB_DEFAULT_LOG_DOMAIN_NAME())); \
       return instance; \
     } \
   }; \
@@ -224,7 +224,7 @@ inline const char *GetLogDescription()
   { \
     static rrlib::logging::tLogDomainSharedPointer GetDomain() \
     { \
-      static rrlib::logging::tLogDomainSharedPointer instance(rrlib::logging::tLogDomainRegistry::GetInstance()->GetSubDomain(domain_name, default_log())); \
+      static rrlib::logging::tLogDomainSharedPointer instance(rrlib::logging::tLogDomainRegistry::GetInstance()->GetSubDomain(domain_name, RRLIB_DEFAULT_LOG_DOMAIN_NAME())); \
       return instance; \
     } \
   }; \
