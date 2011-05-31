@@ -113,12 +113,24 @@ inline const char *GetLogDescription()
 #define RRLIB_LOG_STREAM_CALL(level, args...) \
   ((level) <= RRLIB_LOG_GET_DOMAIN(args)->GetMaxMessageLevel() ? RRLIB_LOG_GET_DOMAIN(args)->GetMessageStream(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level).Evaluate(args) : RRLIB_LOG_GET_DOMAIN(args)->GetMessageStream(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level)) \
    
+#define RRLIB_LOG_STREAM_CALL_STATIC(level, args...) \
+  ((level) <= RRLIB_LOG_GET_DOMAIN(args)->GetMaxMessageLevel() ? RRLIB_LOG_GET_DOMAIN(args)->GetMessageStream("<static>", __FUNCTION__, __FILE__, __LINE__, level).Evaluate(args) : RRLIB_LOG_GET_DOMAIN(args)->GetMessageStream(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level)) \
+   
 #define RRLIB_LOG_MESSAGE_CALL(level, args...) \
   do \
   { \
     if ((level) <= RRLIB_LOG_GET_DOMAIN(args)->GetMaxMessageLevel()) \
     { \
       RRLIB_LOG_GET_DOMAIN(args)->PrintMessage(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level, args); \
+    } \
+  } while (0) \
+     
+#define RRLIB_LOG_MESSAGE_CALL_STATIC(level, args...) \
+  do \
+  { \
+    if ((level) <= RRLIB_LOG_GET_DOMAIN(args)->GetMaxMessageLevel()) \
+    { \
+      RRLIB_LOG_GET_DOMAIN(args)->PrintMessage("<static>", __FUNCTION__, __FILE__, __LINE__, level, args); \
     } \
   } while (0) \
      
@@ -137,6 +149,16 @@ inline const char *GetLogDescription()
 #define RRLIB_LOG_STREAM(level, args...) \
   RRLIB_LOG_STREAM_CALL(level, args) \
    
+/*! Macro to get a stream for messages using operator << from static context
+ *
+ * \param level    The level of the message
+ * \param domain   The domain the message should be processed in
+ *
+ * \returns The stream for message output
+ */
+#define RRLIB_LOG_STREAM_STATIC(level, args...) \
+  RRLIB_LOG_STREAM_CALL_STATIC(level, args) \
+   
 /*! Macro for messages using printf syntax
  *
  * \param level    The level of the message
@@ -152,6 +174,21 @@ inline const char *GetLogDescription()
     } \
   } while (0) \
      
+/*! Macro for messages using printf syntax from static context
+ *
+ * \param level    The level of the message
+ * \param domain   The domain the message should be processed in
+ * \param args     The format string for printf and the optional arguments to be printed.
+ */
+#define RRLIB_LOG_MESSAGE_STATIC(level, args...) \
+  do \
+  { \
+    if ((level) <= rrlib::logging::eLL_DEBUG) \
+    { \
+      RRLIB_LOG_MESSAGE_CALL_STATIC(level, args); \
+    } \
+  } while (0) \
+     
 #else
 
 /*! Macro to get a stream for messages using operator <<
@@ -164,6 +201,16 @@ inline const char *GetLogDescription()
 #define RRLIB_LOG_STREAM(level, args...) \
   RRLIB_LOG_STREAM_CALL(level, args) \
    
+/*! Macro to get a stream for messages using operator << from static context
+ *
+ * \param level    The level of the message
+ * \param domain   The domain the message should be processed in
+ *
+ * \returns The stream for message output
+ */
+#define RRLIB_LOG_STREAM_STATIC(level, args...) \
+  RRLIB_LOG_STREAM_CALL_STATIC(level, args) \
+   
 /*! Macro for messages using printf syntax
  *
  * \param level    The level of the message
@@ -172,6 +219,15 @@ inline const char *GetLogDescription()
  */
 #define RRLIB_LOG_MESSAGE(level, args...) \
   RRLIB_LOG_MESSAGE_CALL(level, args) \
+   
+/*! Macro for messages using printf syntax from static context
+ *
+ * \param level    The level of the message
+ * \param domain   The domain the message should be processed in
+ * \param args     The format string for printf and the optional arguments to be printed.
+ */
+#define RRLIB_LOG_MESSAGE_STATIC(level, args...) \
+  RRLIB_LOG_MESSAGE_CALL_STATIC(level, args) \
    
 #endif
 
