@@ -93,6 +93,24 @@ struct Test
 
 }
 
+struct TestStatic
+{
+  const char *GetLogDescription()
+  {
+    return "TestStatic";
+  }
+
+  static void StaticMethod()
+  {
+    RRLIB_LOG_STREAM_STATIC(eLL_USER, "From static method");
+  }
+
+  void NonStaticMethod()
+  {
+    RRLIB_LOG_STREAM(eLL_USER, "From non-static method");
+  }
+};
+
 
 int main(int argc, char **argv)
 {
@@ -148,6 +166,10 @@ int main(int argc, char **argv)
 
   const char* texts[] = {"Dies", "ist", "ein", "kleiner", "Text."};
   std::copy(&texts[0], &texts[0] + 5, std::ostream_iterator<const char*>(RRLIB_LOG_STREAM(eLL_DEBUG), " "));
+
+  TestStatic test_static;
+  test_static.StaticMethod();
+  test_static.NonStaticMethod();
 
   return EXIT_SUCCESS;
 }
