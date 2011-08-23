@@ -41,6 +41,8 @@ extern "C"
 #include <libgen.h>
 }
 
+#include "rrlib/util/stl_container/join.h"
+
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
@@ -80,13 +82,13 @@ struct Test
 
   static void function()
   {
-    RRLIB_LOG_STREAM(eLL_DEBUG_WARNING, my_domain, "this ", "is a ") << "local class test";
+    RRLIB_LOG_PRINT(eLL_DEBUG_WARNING, my_domain, "this ", "is a ", "local class test");
 
-    RRLIB_LOG_STREAM(eLL_WARNING) << "foo" << std::endl;
-    RRLIB_LOG_STREAM(eLL_ERROR, my_domain) << "foo2" << std::endl;
+    RRLIB_LOG_PRINT(eLL_WARNING, "foo");
+    RRLIB_LOG_PRINT(eLL_ERROR, my_domain, "foo2");
     if (true)
     {
-      RRLIB_LOG_MESSAGE(eLL_DEBUG, my_domain, "%s\n", "FOO");
+      RRLIB_LOG_PRINTF(eLL_DEBUG, my_domain, "%s\n", "FOO");
     }
   }
 };
@@ -102,12 +104,12 @@ struct TestStatic
 
   static void StaticMethod()
   {
-    RRLIB_LOG_STREAM_STATIC(eLL_USER, "From static method");
+    RRLIB_LOG_PRINT_STATIC(eLL_USER, "From static method");
   }
 
   void NonStaticMethod()
   {
-    RRLIB_LOG_STREAM(eLL_USER, "From non-static method");
+    RRLIB_LOG_PRINT(eLL_USER, "From non-static method");
   }
 };
 
@@ -144,7 +146,7 @@ int main(int argc, char **argv)
 //  tLogDomainRegistry::GetInstance()->SetDomainStreamID(".example", eLS_COMBINED_FILE);
 
 
-  RRLIB_LOG_STREAM(eLL_WARNING) << "foo" << std::endl;
+  RRLIB_LOG_PRINT(eLL_WARNING, "foo");
 
   libA::Test();
   libB::Test();
@@ -157,15 +159,16 @@ int main(int argc, char **argv)
   ERRORMSG("blablabla Error");
   USERMSG("blablabla User");
 
-  RRLIB_LOG_STREAM(eLL_ERROR) << std::runtime_error("runtime_error");
+  RRLIB_LOG_PRINT(eLL_ERROR, std::runtime_error("runtime_error"));
 
-  RRLIB_LOG_STREAM(eLL_WARNING) << std::hex << 324 << std::endl;
+  RRLIB_LOG_PRINT(eLL_WARNING, std::hex, 324);
 
-  RRLIB_LOG_STREAM(eLL_ERROR) << "Das hier ist ein mehrzeiliger\nFehler.";
-  RRLIB_LOG_STREAM(eLL_USER) << "Und das hier ein mehrzeiliger\nText fuer den lieben Benutzer.";
+  RRLIB_LOG_PRINT(eLL_ERROR, "Das hier ist ein mehrzeiliger\nFehler.");
+  RRLIB_LOG_PRINT(eLL_USER, "Und das hier ein mehrzeiliger\nText fuer den lieben Benutzer.");
 
   const char* texts[] = {"Dies", "ist", "ein", "kleiner", "Text."};
-  std::copy(&texts[0], &texts[0] + 5, std::ostream_iterator<const char*>(RRLIB_LOG_STREAM(eLL_DEBUG), " "));
+  //std::copy(&texts[0], &texts[0] + 5, std::ostream_iterator<const char*>(RRLIB_LOG_PRINT(eLL_DEBUG), " "));   that is not pretty. use the following line....
+  RRLIB_LOG_PRINT(eLL_DEBUG, rrlib::util::Join(texts, texts + 5, " "));
 
   TestStatic test_static;
   test_static.StaticMethod();

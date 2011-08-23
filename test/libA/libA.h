@@ -9,7 +9,7 @@ RRLIB_LOG_CREATE_DEFAULT_DOMAIN("libA");
 
 void Test()
 {
-  RRLIB_LOG_STREAM(rrlib::logging::eLL_DEBUG) << "Test in libA";
+  RRLIB_LOG_PRINT(rrlib::logging::eLL_DEBUG, "Test in libA");
 }
 }
 
