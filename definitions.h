@@ -69,7 +69,8 @@ namespace logging
 //! The default description for global debugging. Can be set to whatever string the user like to set it to
 extern char *default_log_description;
 
-inline rrlib::logging::tLogDomainSharedPointer GetLogDomain(rrlib::logging::tLogDomainSharedPointer(&default_domain)(), ...)
+template <typename ... Types>
+inline rrlib::logging::tLogDomainSharedPointer GetLogDomain(rrlib::logging::tLogDomainSharedPointer(&default_domain)(), const Types &...)
 {
   return default_domain();
 }
