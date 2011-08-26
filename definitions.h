@@ -192,7 +192,7 @@ inline const char *GetLogDescription()
     { \
       if ((level) <= rrlib::logging::eLL_DEBUG) \
       { \
-        RRLIB_LOG_PRINT_CALL(level, args); \
+        RRLIB_LOG_PRINT_CALL_STATIC(level, args); \
       } \
     } while (0) \
 
