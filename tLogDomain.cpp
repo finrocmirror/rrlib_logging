@@ -175,7 +175,7 @@ const std::string tLogDomain::GetTimeString() const
 const std::string tLogDomain::GetNameString() const
 {
   char name_string_buffer[128];
-  snprintf(name_string_buffer, sizeof(name_string_buffer), "%-*s ", (tLogDomainRegistry::GetInstance()->GetPadPrefixColumns() ? tLogDomainRegistry::GetInstance()->GetMaxDomainNameLength() : 0), this->GetName().c_str());
+  snprintf(name_string_buffer, sizeof(name_string_buffer), "%-*s ", static_cast<int>((tLogDomainRegistry::GetInstance()->GetPadPrefixColumns() ? tLogDomainRegistry::GetInstance()->GetMaxDomainNameLength() : 0)), this->GetName().c_str());
   return name_string_buffer;
 }
 
