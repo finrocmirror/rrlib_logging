@@ -2,7 +2,7 @@
 // You received this file as part of RRLib
 // Robotics Research Library
 //
-// Copyright (C) AG Robotersysteme TU Kaiserslautern
+// Copyright (C) Finroc GbR (finroc.org)
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -107,16 +107,16 @@ inline const char *GetLogDescription()
 
 #define RRLIB_LOG_GET_DOMAIN_I(domain...) \
   rrlib::logging::GetLogDomain(RRLIB_DEFAULT_LOG_DOMAIN_NAME, ## domain) \
-
+   
 #define RRLIB_LOG_GET_DOMAIN(domain, args...) \
   RRLIB_LOG_GET_DOMAIN_I(domain)
 
 #define RRLIB_LOG_STREAM_CALL(level, args...) \
   ((level) <= RRLIB_LOG_GET_DOMAIN(args)->GetMaxMessageLevel() ? RRLIB_LOG_GET_DOMAIN(args)->GetMessageStream(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level).Evaluate(args) : RRLIB_LOG_GET_DOMAIN(args)->GetMessageStream(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level)) \
-
+   
 #define RRLIB_LOG_STREAM_CALL_STATIC(level, args...) \
   ((level) <= RRLIB_LOG_GET_DOMAIN(args)->GetMaxMessageLevel() ? RRLIB_LOG_GET_DOMAIN(args)->GetMessageStream("<static>", __FUNCTION__, __FILE__, __LINE__, level).Evaluate(args) : RRLIB_LOG_GET_DOMAIN(args)->GetMessageStream("<static>", __FUNCTION__, __FILE__, __LINE__, level)) \
-
+   
 #define RRLIB_LOG_PRINT_CALL(level, args...) \
   do \
   { \
@@ -125,7 +125,7 @@ inline const char *GetLogDescription()
       RRLIB_LOG_GET_DOMAIN(args)->GetMessageStream(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level).Evaluate(args); \
     } \
   } while (0) \
-
+     
 #define RRLIB_LOG_PRINT_CALL_STATIC(level, args...) \
   do \
   { \
@@ -134,7 +134,7 @@ inline const char *GetLogDescription()
       RRLIB_LOG_GET_DOMAIN(args)->GetMessageStream("<static>", __FUNCTION__, __FILE__, __LINE__, level).Evaluate(args); \
     } \
   } while (0) \
-
+     
 #define RRLIB_LOG_PRINTF_CALL(level, args...) \
   do \
   { \
@@ -143,7 +143,7 @@ inline const char *GetLogDescription()
       RRLIB_LOG_GET_DOMAIN(args)->PrintMessage(GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level, args); \
     } \
   } while (0) \
-
+     
 #define RRLIB_LOG_PRINTF_CALL_STATIC(level, args...) \
   do \
   { \
@@ -152,7 +152,7 @@ inline const char *GetLogDescription()
       RRLIB_LOG_GET_DOMAIN(args)->PrintMessage("<static>", __FUNCTION__, __FILE__, __LINE__, level, args); \
     } \
   } while (0) \
-
+     
 //----------------------------------------------------------------------
 // The macro interface to the logging library
 //----------------------------------------------------------------------
@@ -167,16 +167,16 @@ inline const char *GetLogDescription()
  */
 #define RRLIB_LOG_STREAM(level, args...) \
   RRLIB_LOG_STREAM_CALL(level, args) \
-
+   
 #define RRLIB_LOG_PRINT(level, args...) \
-    do \
+  do \
+  { \
+    if ((level) <= rrlib::logging::eLL_DEBUG) \
     { \
-      if ((level) <= rrlib::logging::eLL_DEBUG) \
-      { \
-        RRLIB_LOG_PRINT_CALL(level, args); \
-      } \
-    } while (0) \
-
+      RRLIB_LOG_PRINT_CALL(level, args); \
+    } \
+  } while (0) \
+     
 /*! Macro to get a stream for messages using operator << from static context
  *
  * \param level    The level of the message
@@ -186,16 +186,16 @@ inline const char *GetLogDescription()
  */
 #define RRLIB_LOG_STREAM_STATIC(level, args...) \
   RRLIB_LOG_STREAM_CALL_STATIC(level, args) \
-
+   
 #define RRLIB_LOG_PRINT_STATIC(level, args...) \
-    do \
+  do \
+  { \
+    if ((level) <= rrlib::logging::eLL_DEBUG) \
     { \
-      if ((level) <= rrlib::logging::eLL_DEBUG) \
-      { \
-        RRLIB_LOG_PRINT_CALL_STATIC(level, args); \
-      } \
-    } while (0) \
-
+      RRLIB_LOG_PRINT_CALL_STATIC(level, args); \
+    } \
+  } while (0) \
+     
 /*! Macro for messages using printf syntax
  *
  * \param level    The level of the message
@@ -210,7 +210,7 @@ inline const char *GetLogDescription()
       RRLIB_LOG_PRINTF_CALL(level, args); \
     } \
   } while (0) \
-
+     
 #define RRLIB_LOG_PRINTF(level, args...) \
   do \
   { \
@@ -219,7 +219,7 @@ inline const char *GetLogDescription()
       RRLIB_LOG_PRINTF_CALL(level, args); \
     } \
   } while (0) \
-
+     
 /*! Macro for messages using printf syntax from static context
  *
  * \param level    The level of the message
@@ -234,7 +234,7 @@ inline const char *GetLogDescription()
       RRLIB_LOG_PRINTF_CALL_STATIC(level, args); \
     } \
   } while (0) \
-
+     
 #define RRLIB_LOG_PRINTF_STATIC(level, args...) \
   do \
   { \
@@ -243,7 +243,7 @@ inline const char *GetLogDescription()
       RRLIB_LOG_PRINTF_CALL_STATIC(level, args); \
     } \
   } while (0) \
-
+     
 #else
 
 /*! Macro to get a stream for messages using operator <<
@@ -255,10 +255,10 @@ inline const char *GetLogDescription()
  */
 #define RRLIB_LOG_STREAM(level, args...) \
   RRLIB_LOG_STREAM_CALL(level, args) \
-
+   
 #define RRLIB_LOG_PRINT(level, args...) \
   RRLIB_LOG_PRINT_CALL(level, args) \
-
+   
 /*! Macro to get a stream for messages using operator << from static context
  *
  * \param level    The level of the message
@@ -268,10 +268,10 @@ inline const char *GetLogDescription()
  */
 #define RRLIB_LOG_STREAM_STATIC(level, args...) \
   RRLIB_LOG_STREAM_CALL_STATIC(level, args) \
-
+   
 #define RRLIB_LOG_PRINT_STATIC(level, args...) \
   RRLIB_LOG_PRINT_CALL_STATIC(level, args) \
-
+   
 /*! Macro for messages using printf syntax
  *
  * \param level    The level of the message
@@ -280,10 +280,10 @@ inline const char *GetLogDescription()
  */
 #define RRLIB_LOG_MESSAGE(level, args...) \
   RRLIB_LOG_PRINTF_CALL(level, args) \
-
+   
 #define RRLIB_LOG_PRINTF(level, args...) \
   RRLIB_LOG_PRINTF_CALL(level, args) \
-
+   
 /*! Macro for messages using printf syntax from static context
  *
  * \param level    The level of the message
@@ -292,10 +292,10 @@ inline const char *GetLogDescription()
  */
 #define RRLIB_LOG_MESSAGE_STATIC(level, args...) \
   RRLIB_LOG_PRINTF_CALL_STATIC(level, args) \
-
+   
 #define RRLIB_LOG_PRINTF_STATIC(level, args...) \
   RRLIB_LOG_PRINTF_CALL_STATIC(level, args) \
-
+   
 #endif
 
 /*! Macro for creation of a default domain for the current scope
@@ -323,7 +323,7 @@ inline const char *GetLogDescription()
   { \
     return default_log_struct::GetDomain(); \
   } \
-
+   
 /*! Macro for creation of a new named domain for the current scope
  *
  *  A named logging domain can exist in parallel to the default
@@ -355,6 +355,6 @@ inline const char *GetLogDescription()
   { \
     return symbolic_name ## _struct::GetDomain(); \
   } \
-
+   
 
 #endif
