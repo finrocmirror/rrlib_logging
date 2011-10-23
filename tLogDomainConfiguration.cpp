@@ -33,7 +33,7 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
-#ifdef _RRLIB_XML2_WRAPPER_PRESENT_
+#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
 #include <iostream>
 #include "rrlib/xml2_wrapper/tXMLDocument.h"
 #endif
