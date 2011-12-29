@@ -19,17 +19,17 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    tLogDomainConfiguration.h
+/*!\file    tConfiguration.h
  *
  * \author  Tobias Foehst
  *
  * \date    2010-06-20
  *
- * \brief Contains tLogDomainConfiguration and corresponding enumerations eLogLevel, eLogStream, eLogStreamMask
+ * \brief Contains tConfiguration and corresponding enumerations eLogLevel, eLogStream, eLogStreamMask
  *
- * \b tLogDomainConfiguration
+ * \b tConfiguration
  *
- * tLogDomainConfiguration encapsulates the configuration of logging
+ * tConfiguration encapsulates the configuration of logging
  * domains in the RRLib logging facility. It therefore stores settings
  * like enabled output fields, max. message level, etc.
  *
@@ -54,21 +54,22 @@
  */
 //----------------------------------------------------------------------
 #ifndef __rrlib__logging__include_guard__
-#error Invalid include directive. Try #include "rrlib/logging/definitions.h" instead.
+#error Invalid include directive. Try #include "rrlib/logging/configuration.h" instead.
 #endif
 
-#ifndef __rrlib__logging__tLogDomainConfiguration_h__
-#define __rrlib__logging__tLogDomainConfiguration_h__
+#ifndef __rrlib__logging__configuration__tConfiguration_h__
+#define __rrlib__logging__configuration__tConfiguration_h__
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
 #include <string>
-#include <memory>
+#include <list>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
+#include "rrlib/logging/log_levels.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -85,19 +86,6 @@ namespace logging
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
-//! Enumeration type that contains the available message levels
-enum tLogLevel
-{
-  eLL_USER,             //!< Information for user (including end-users). Is always shown.
-  eLL_ERROR,            //!< Error message. Used to inform about _certain_ malfunction of application. Is always shown.
-  eLL_WARNING,          //!< Critical warning. Warns about possible application malfunction and invalid (and therefore discarded) user input. (default max level with _RRLIB_LOGGING_LESS_OUTPUT_)
-  eLL_DEBUG_WARNING,    //!< Debug info with warning character (e.g. "Parameter x not set - using default y")
-  eLL_DEBUG,            //!< Debug info about coarse program flow (default max level without _RRLIB_LOGGING_LESS_OUTPUT_) - information possibly relevant to developers outside of respective domain
-  eLL_DEBUG_VERBOSE_1,  //!< Higher detail debug info (not available in release mode) - only relevant to developers in respective domain
-  eLL_DEBUG_VERBOSE_2,  //!< Higher detail debug info (not available in release mode) - only relevant to developers in respective domain
-  eLL_DEBUG_VERBOSE_3,  //!< Higher detail debug info (not available in release mode) - only relevant to developers in respective domain
-  eLL_DIMENSION         //!< Endmarker and dimension of eLogLevel
-};
 
 
 //! Enumeration type that contains the available sinks for message domains
@@ -122,36 +110,82 @@ enum tLogSink
  *  with the mentioned classes as friends.
  *
  */
-class tLogDomainConfiguration
+class tConfiguration
 {
-  friend class tLogDomainRegistry;
-  friend class tLogDomain;
+  friend class tLogDomainRegistryImplementation;
+
+//----------------------------------------------------------------------
+// Public methods and typedefs
+//----------------------------------------------------------------------
+public:
+
+  ~tConfiguration();
+
+  inline const std::string &Name() const
+  {
+    return this->name;
+  }
+
+  inline const std::string GetFullQualifiedName() const
+  {
+    return (this->parent && this->parent->parent ? this->parent->GetFullQualifiedName() : "") + "." + this->Name();
+  }
+
+  inline bool PrintsTime() const
+  {
+    return this->prints_time;
+  }
+
+  inline bool PrintsName() const
+  {
+    return this->prints_name;
+  }
+
+  inline bool PrintsLevel() const
+  {
+    return this->prints_level;
+  }
+
+  inline bool PrintsLocation() const
+  {
+    return this->prints_location;
+  }
+
+  inline const tLogLevel MaxMessageLevel() const
+  {
+    return this->max_message_level;
+  }
+
+  const tConfiguration &GetConfigurationByName(const char *domain_name) const;
 
 //----------------------------------------------------------------------
 // Private fields and methods
 //----------------------------------------------------------------------
 private:
 
+  const tConfiguration *parent;
   std::string name;
-  bool configure_sub_tree;
 
-  bool print_time;
-  bool print_name;
-  bool print_level;
-  bool print_location;
+  bool prints_time;
+  bool prints_name;
+  bool prints_level;
+  bool prints_location;
+
   tLogLevel max_message_level;
-  int sink_mask;
+//  int sink_mask;
 
-  explicit tLogDomainConfiguration(const std::string &name);
+  mutable std::list<tConfiguration *> children;
 
-  tLogDomainConfiguration(const tLogDomainConfiguration &other);
+  tConfiguration(const tConfiguration *parent, const std::string &name);
 
-  tLogDomainConfiguration &operator = (const tLogDomainConfiguration other);
+  tConfiguration(const tConfiguration &other);
+  tConfiguration &operator = (const tConfiguration other);
+
+  const tConfiguration &GetConfigurationByFilename(const char *filename) const;
+
+  const tConfiguration &LookupChild(const char *name, size_t length) const;
 
 };
-
-//! Shared pointer to instances of tLogDomainConfiguration
-typedef std::shared_ptr<tLogDomainConfiguration> tLogDomainConfigurationSharedPointer;
 
 //----------------------------------------------------------------------
 // End of namespace declaration

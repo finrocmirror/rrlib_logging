@@ -33,7 +33,7 @@
  * The RRLib logging system is structured into hierarchical domains that
  * can be created and configured via tLogDomainRegistry. That given,
  * in the program implementation instances of the class tLogDomain
- * wrap the stream that can be access either in C++ iostream style via
+ * wrap the stream that can be accessed either in C++ iostream style via
  * operator << or in good old-fashioned C style using printf formatting.
  *
  */

@@ -19,7 +19,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    definitions.cpp
+/*!\file    default_log_description.cpp
  *
  * \author  Tobias Foehst
  *
@@ -27,7 +27,6 @@
  *
  */
 //----------------------------------------------------------------------
-#include "rrlib/logging/definitions.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -57,4 +56,10 @@
 // Implementation
 //----------------------------------------------------------------------
 
-char *rrlib::logging::default_log_description = const_cast<char *>("<Log description not defined>");
+namespace rrlib
+{
+namespace logging
+{
+char *default_log_description = const_cast<char *>("<Log description not defined>");
+}
+}

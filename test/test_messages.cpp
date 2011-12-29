@@ -52,7 +52,6 @@ extern "C"
 //----------------------------------------------------------------------
 // Debugging
 //----------------------------------------------------------------------
-#include "rrlib/logging/test/debugging.h"
 
 //----------------------------------------------------------------------
 // Namespace usage
@@ -74,21 +73,17 @@ using namespace rrlib::logging;
 namespace local
 {
 
-RRLIB_LOG_CREATE_DEFAULT_DOMAIN("local");
-
 struct Test
 {
-  RRLIB_LOG_CREATE_NAMED_DOMAIN(my_domain, "class");
-
   static void function()
   {
-    RRLIB_LOG_PRINT(eLL_DEBUG_WARNING, my_domain, "this ", "is a ", "local class test");
+    RRLIB_LOG_PRINT_EXPLICIT(eLL_DEBUG_WARNING, "my_domain", "this ", "is a ", "local class test");
 
     RRLIB_LOG_PRINT(eLL_WARNING, "foo");
-    RRLIB_LOG_PRINT(eLL_ERROR, my_domain, "foo2");
+    RRLIB_LOG_PRINT_EXPLICIT(eLL_ERROR, "my_domain", "foo2");
     if (true)
     {
-      RRLIB_LOG_PRINTF(eLL_DEBUG, my_domain, "%s\n", "FOO");
+      RRLIB_LOG_PRINTF_EXPLICIT(eLL_DEBUG, "my_domain", "%s\n", "FOO");
     }
   }
 };
@@ -126,7 +121,7 @@ int main(int argc, char **argv)
   }
 #endif
 
-  tLogDomainRegistry::GetInstance()->SetOutputFileNamePrefix(basename(argv[0]));
+//  tLogDomainRegistry::GetInstance()->SetOutputFileNamePrefix(basename(argv[0]));
 
 
 //  std::cout << tLogDomainRegistry::GetInstance() << std::endl;
@@ -153,13 +148,7 @@ int main(int argc, char **argv)
 
   local::Test::function();
 
-  DEBUGMSG("blablabla Debug");
-  INFOMSG("blablabla Info");
-  WARNINGMSG("blablabla Warning");
-  ERRORMSG("blablabla Error");
-  USERMSG("blablabla User");
-
-  RRLIB_LOG_PRINT(eLL_ERROR, std::runtime_error("runtime_error"));
+//  RRLIB_LOG_PRINT(eLL_ERROR, std::runtime_error("runtime_error"));
 
   RRLIB_LOG_PRINT(eLL_WARNING, std::hex, 324);
 
@@ -167,7 +156,6 @@ int main(int argc, char **argv)
   RRLIB_LOG_PRINT(eLL_USER, "Und das hier ein mehrzeiliger\nText fuer den lieben Benutzer.");
 
   const char* texts[] = {"Dies", "ist", "ein", "kleiner", "Text."};
-  //std::copy(&texts[0], &texts[0] + 5, std::ostream_iterator<const char*>(RRLIB_LOG_PRINT(eLL_DEBUG), " "));   that is not pretty. use the following line....
   RRLIB_LOG_PRINT(eLL_DEBUG, rrlib::util::Join(texts, texts + 5, " "));
 
   TestStatic test_static;

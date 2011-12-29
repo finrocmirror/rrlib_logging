@@ -144,7 +144,7 @@ const bool tLogDomain::OpenFileOutputStream() const
   if (file_name_prefix.length() == 0)
   {
     std::cerr << "RRLib Logging >> Prefix for file names not set. Can not use eMS_FILE." << std::endl
-              << "                 Consider calling tMessageDomainRegistry::GetInstance()->SetOutputFileNamePrefix(basename(argv[0])) for example." << std::endl;
+              << "                 Consider calling tLogDomainRegistry::GetInstance()->SetOutputFileNamePrefix(basename(argv[0])) for example." << std::endl;
     return false;
   }
   std::string file_name(file_name_prefix + this->GetName() + ".log");
