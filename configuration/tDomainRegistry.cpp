@@ -134,6 +134,23 @@ tDomainRegistryImplementation::~tDomainRegistryImplementation()
 }
 
 //----------------------------------------------------------------------
+// tDomainRegistryImplementation GetConfiguration
+//----------------------------------------------------------------------
+const tConfiguration &tDomainRegistryImplementation::GetConfiguration(const char *filename, const char *domain_name) const
+{
+  if (domain_name)
+  {
+    if (domain_name[0] == '.')
+    {
+      assert(this->global_configuration);
+      this->global_configuration->GetConfigurationByName(domain_name + 1);
+    }
+    return tDomainRegistry::Instance().GetConfigurationByFilename(filename).GetConfigurationByName(domain_name);
+  }
+  return tDomainRegistry::Instance().GetConfigurationByFilename(filename);
+}
+
+//----------------------------------------------------------------------
 // tDomainRegistryImplementation GetConfigurationByFilename
 //----------------------------------------------------------------------
 const tConfiguration &tDomainRegistryImplementation::GetConfigurationByFilename(const char *filename) const

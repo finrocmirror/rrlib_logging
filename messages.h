@@ -53,7 +53,7 @@
 //----------------------------------------------------------------------
 // Namespace declaration
 //----------------------------------------------------------------------
-// The macro interface and defaul GetLogDescription function must live
+// The macro interface and default GetLogDescription function must live
 // within the global namespace
 
 //----------------------------------------------------------------------
@@ -96,16 +96,16 @@
      
 /*! Macro to print messages to explicitly specified domain using stream semantics
  *
- * \param level    The level of the message
  * \param domain   The domain the message should be printed to
+ * \param level    The level of the message
  * \param args     The data to be put into the underlying stream
  */
-#define RRLIB_LOG_PRINT(level, domain_name, args...) \
+#define RRLIB_LOG_PRINT_TO(domain_name, level, args...) \
   do \
   { \
     if ((level) <= rrlib::logging::eLL_DEBUG) \
     { \
-      __RRLIB_LOG_PRINT__(rrlib::logging::GetConfiguration(__FILE__, domain_name), level, args) \
+      __RRLIB_LOG_PRINT__(rrlib::logging::GetConfiguration(__FILE__, #domain_name), level, args) \
     } \
   } while (0) \
      
@@ -125,16 +125,16 @@
      
 /*! Macro to print messages to explicitly specified domain using stream semantics from static context
  *
- * \param level    The level of the message
  * \param domain   The domain the message should be printed to
+ * \param level    The level of the message
  * \param args     The data to be put into the underlying stream
  */
-#define RRLIB_LOG_PRINT_STATIC(level, domain_name, args...) \
+#define RRLIB_LOG_PRINT_STATIC_TO(domain_name, level, args...) \
   do \
   { \
     if ((level) <= rrlib::logging::eLL_DEBUG) \
     { \
-      __RRLIB_LOG_PRINT_STATIC__(rrlib::logging::GetConfiguration(__FILE__, domain_name), level, args) \
+      __RRLIB_LOG_PRINT_STATIC__(rrlib::logging::GetConfiguration(__FILE__, #domain_name), level, args) \
     } \
   } while (0) \
      
@@ -154,16 +154,16 @@
      
 /*! Macro to print messages to explicitly specified domain using printf semantics
  *
- * \param level    The level of the message
  * \param domain   The domain the message should be printed to
+ * \param level    The level of the message
  * \param args     The format string for printf and the optional arguments to be printed
  */
-#define RRLIB_LOG_PRINTF(level, domain_name, args...) \
+#define RRLIB_LOG_PRINTF_TO(domain_name, level, args...) \
   do \
   { \
     if ((level) <= rrlib::logging::eLL_DEBUG) \
     { \
-      __RRLIB_LOG_PRINTF__(rrlib::logging::GetConfiguration(__FILE__, domain_name), level, args) \
+      __RRLIB_LOG_PRINTF__(rrlib::logging::GetConfiguration(__FILE__, #domain_name), level, args) \
     } \
   } while (0) \
      
@@ -183,16 +183,16 @@
      
 /*! Macro to print messages to explicitly specified domain using printf semantics from static context
  *
- * \param level    The level of the message
  * \param domain   The domain the message should be printed to
+ * \param level    The level of the message
  * \param args     The format string for printf and the optional arguments to be printed
  */
-#define RRLIB_LOG_PRINTF_STATIC(level, domain_name, args...) \
+#define RRLIB_LOG_PRINTF_STATIC_TO(domain_name, level, args...) \
   do \
   { \
     if ((level) <= rrlib::logging::eLL_DEBUG) \
     { \
-      __RRLIB_LOG_PRINTF_STATIC__(rrlib::logging::GetConfiguration(__FILE__, domain_name), level, args) \
+      __RRLIB_LOG_PRINTF_STATIC__(rrlib::logging::GetConfiguration(__FILE__, #domain_name), level, args) \
     } \
   } while (0) \
      
@@ -208,12 +208,12 @@
    
 /*! Macro to print messages to explicitly specified domain using stream semantics
  *
- * \param level    The level of the message
  * \param domain   The domain the message should be printed to
+ * \param level    The level of the message
  * \param args     The data to be put into the underlying stream
  */
-#define RRLIB_LOG_PRINT_EXPLICIT(level, domain_name, args...) \
-  __RRLIB_LOG_PRINT__(rrlib::logging::GetConfiguration(__FILE__, domain_name), level, args) \
+#define RRLIB_LOG_PRINT_TO(domain_name, level, args...) \
+  __RRLIB_LOG_PRINT__(rrlib::logging::GetConfiguration(__FILE__, #domain_name), level, args) \
    
 /*! Macro to print messages using stream semantics static context
  *
@@ -225,12 +225,12 @@
    
 /*! Macro to print messages to explicitly specified using stream semantics static context
  *
- * \param level    The level of the message
  * \param domain   The domain the message should be printed to
+ * \param level    The level of the message
  * \param args     The data to be put into the underlying stream
  */
-#define RRLIB_LOG_PRINT_STATIC_EXPLICIT(level, domain_name, args...) \
-  __RRLIB_LOG_PRINT_STATIC__(rrlib::logging::GetConfiguration(__FILE__, domain_name), level, args) \
+#define RRLIB_LOG_PRINT_STATIC_TO(domain_name, level, args...) \
+  __RRLIB_LOG_PRINT_STATIC__(rrlib::logging::GetConfiguration(__FILE__, #domain_name), level, args) \
    
 /*! Macro to print messages using printf semantics
  *
@@ -242,12 +242,12 @@
    
 /*! Macro to print messages to explicitly specified using printf semantics
  *
- * \param level    The level of the message
  * \param domain   The domain the message should be printed to
+ * \param level    The level of the message
  * \param args     The format string for printf and the optional arguments to be printed
  */
-#define RRLIB_LOG_PRINTF_EXPLICIT(level, domain_name, args...) \
-  __RRLIB_LOG_PRINTF__(rrlib::logging::GetConfiguration(__FILE__, domain_name), level, args) \
+#define RRLIB_LOG_PRINTF_TO(domain_name, level, args...) \
+  __RRLIB_LOG_PRINTF__(rrlib::logging::GetConfiguration(__FILE__, #domain_name), level, args) \
    
 /*! Macro to print messages using printf semantics from static context
  *
@@ -259,12 +259,12 @@
    
 /*! Macro to print messages to explicitly specified using printf semantics from static context
  *
- * \param level    The level of the message
  * \param domain   The domain the message should be printed to
+ * \param level    The level of the message
  * \param args     The format string for printf and the optional arguments to be printed
  */
-#define RRLIB_LOG_PRINTF_STATIC_EXPLICIT(level, domain_name, args...) \
-  __RRLIB_LOG_PRINTF_STATIC__(rrlib::logging::GetConfiguration(__FILE__, domain_name), level, args) \
+#define RRLIB_LOG_PRINTF_STATIC_TO(domain_name, level, args...) \
+  __RRLIB_LOG_PRINTF_STATIC__(rrlib::logging::GetConfiguration(__FILE__, #domain_name), level, args) \
    
 #endif
 

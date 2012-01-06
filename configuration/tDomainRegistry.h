@@ -114,11 +114,7 @@ public:
    */
   ~tDomainRegistryImplementation();
 
-  inline const tConfiguration &GetGlobalConfiguration() const
-  {
-    assert(this->global_configuration);
-    return *this->global_configuration;
-  }
+  const tConfiguration &GetConfiguration(const char *filename, const char *domain_name = 0) const;
 
   const tConfiguration &GetConfigurationByFilename(const char *filename) const;
 
@@ -244,6 +240,8 @@ private:
   size_t max_domain_name_length;
   bool pad_prefix_columns;
   bool pad_multi_line_messages;
+
+  const tConfiguration &GetConfigurationByFilename(const char *filename) const;
 
 //#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
 //  /*! Add a domain configuration from a given XML node
