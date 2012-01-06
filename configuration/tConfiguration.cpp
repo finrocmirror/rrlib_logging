@@ -186,7 +186,7 @@ const tConfiguration &tConfiguration::LookupChild(const char *name, size_t lengt
       full_name_length += parent->Name().length() + 1;
       parent = parent->parent;
     }
-    tDomainRegistry::GetInstance().UpdateMaxDomainNameLength(full_name_length + configuration->Name().length());
+    tDomainRegistry::Instance().UpdateMaxDomainNameLength(full_name_length + configuration->Name().length());
     this->children.insert(insertion_point, configuration);
   }
 

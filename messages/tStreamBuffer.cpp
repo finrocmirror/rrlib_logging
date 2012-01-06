@@ -202,7 +202,7 @@ void tStreamBuffer::ResetColor()
 //----------------------------------------------------------------------
 void tStreamBuffer::InitializeMultiLinePadding()
 {
-  if (!tDomainRegistry::GetInstance().GetPadMultiLineMessages())
+  if (!tDomainRegistry::Instance().GetPadMultiLineMessages())
   {
     return;
   }

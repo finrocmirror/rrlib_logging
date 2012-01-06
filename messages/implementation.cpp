@@ -74,15 +74,7 @@ namespace logging
 //----------------------------------------------------------------------
 const tConfiguration &GetConfiguration(const char *filename, const char *domain_name)
 {
-  if (domain_name)
-  {
-    if (domain_name[0] == '.')
-    {
-      return tDomainRegistry::GetInstance().GetGlobalConfiguration().GetConfigurationByName(domain_name + 1);
-    }
-    return tDomainRegistry::GetInstance().GetConfigurationByFilename(filename).GetConfigurationByName(domain_name);
-  }
-  return tDomainRegistry::GetInstance().GetConfigurationByFilename(filename);
+  return tDomainRegistry::Instance().GetConfiguration(filename, domain_name);
 }
 
 //----------------------------------------------------------------------
@@ -138,7 +130,7 @@ void SetColor(tStreamBuffer &stream_buffer, tLogLevel level)
 void SendFormattedDomainNameToStream(tStream &stream, const std::string &domain_name)
 {
   char name_string_buffer[128];
-  snprintf(name_string_buffer, sizeof(name_string_buffer), "%-*s ", static_cast<int>((tDomainRegistry::GetInstance().GetPadPrefixColumns() ? tDomainRegistry::GetInstance().MaxDomainNameLength() : 0)), domain_name.c_str());
+  snprintf(name_string_buffer, sizeof(name_string_buffer), "%-*s ", static_cast<int>((tDomainRegistry::Instance().GetPadPrefixColumns() ? tDomainRegistry::Instance().MaxDomainNameLength() : 0)), domain_name.c_str());
   stream << name_string_buffer;
 }
 
@@ -176,7 +168,7 @@ void SendFormattedLevelToStream(tStream &stream, tLogLevel level)
     break;
   }
   char name_string_buffer[128];
-  snprintf(name_string_buffer, sizeof(name_string_buffer), "%-*s ", (tDomainRegistry::GetInstance().GetPadPrefixColumns() ? 9 : 0), level_name);
+  snprintf(name_string_buffer, sizeof(name_string_buffer), "%-*s ", (tDomainRegistry::Instance().GetPadPrefixColumns() ? 9 : 0), level_name);
   stream << name_string_buffer;
 }
 

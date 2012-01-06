@@ -73,7 +73,7 @@ typedef util::tSingletonHolder<std::mutex, util::singleton::NoDestruction> tStre
 //----------------------------------------------------------------------
 tStream::tStream(tStreamBuffer &stream_buffer)
     : stream(&stream_buffer),
-    lock(tStreamMutex::GetInstance())
+    lock(tStreamMutex::Instance())
 {}
 
 //----------------------------------------------------------------------
