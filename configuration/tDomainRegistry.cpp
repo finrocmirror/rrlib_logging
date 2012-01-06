@@ -19,7 +19,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    tLogDomainRegistry.cpp
+/*!\file    tDomainRegistry.cpp
  *
  * \author  Tobias Foehst
  *
@@ -28,7 +28,7 @@
  */
 //----------------------------------------------------------------------
 #define __rrlib__logging__include_guard__
-#include "rrlib/logging/configuration/tLogDomainRegistry.h"
+#include "rrlib/logging/configuration/tDomainRegistry.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -80,13 +80,13 @@ namespace logging
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-// tLogDomainRegistryImplementation constructors
+// tDomainRegistryImplementation constructors
 //----------------------------------------------------------------------
-tLogDomainRegistryImplementation::tLogDomainRegistryImplementation()
-    : global_configuration(new tConfiguration(0, ""))
-//    : max_domain_name_length(0),
-//    pad_prefix_columns(true),
-//    pad_multi_line_messages(true)
+tDomainRegistryImplementation::tDomainRegistryImplementation()
+    : global_configuration(new tConfiguration(0, "")),
+    max_domain_name_length(0),
+    pad_prefix_columns(true),
+    pad_multi_line_messages(true)
 {
   // Create a string literal from the value of RRLIB_LOG_PATH and let p point to its beginning
 #define __RRLIB_LOG_QUOTE_MACRO__(x) #x
@@ -123,24 +123,20 @@ tLogDomainRegistryImplementation::tLogDomainRegistryImplementation()
 //  {
 //    std::cout << *it << " -> " << this->prefix_lengths[*it] << std::endl;
 //  }
-
-
-//  this->domain_configurations.push_back(tConfigurationSharedPointer(new tConfiguration(".")));
-//  this->domains.push_back(std::shared_ptr<tLogDomain>(new tLogDomain(this->domain_configurations.back())));
 }
 
 //----------------------------------------------------------------------
-// tLogDomainRegistryImplementation destructor
+// tDomainRegistryImplementation destructor
 //----------------------------------------------------------------------
-tLogDomainRegistryImplementation::~tLogDomainRegistryImplementation()
+tDomainRegistryImplementation::~tDomainRegistryImplementation()
 {
   delete this->global_configuration;
 }
 
 //----------------------------------------------------------------------
-// tLogDomainRegistryImplementation GetConfigurationByFilename
+// tDomainRegistryImplementation GetConfigurationByFilename
 //----------------------------------------------------------------------
-const tConfiguration &tLogDomainRegistryImplementation::GetConfigurationByFilename(const char *filename) const
+const tConfiguration &tDomainRegistryImplementation::GetConfigurationByFilename(const char *filename) const
 {
   bool found_prefix = false;
 
@@ -175,164 +171,18 @@ const tConfiguration &tLogDomainRegistryImplementation::GetConfigurationByFilena
   return this->global_configuration->GetConfigurationByFilename(filename);
 }
 
+//----------------------------------------------------------------------
+// tDomainRegistryImplementation UpdateMaxDomainNameLength
+//----------------------------------------------------------------------
+void tDomainRegistryImplementation::UpdateMaxDomainNameLength(size_t added_domain_name_length)
+{
+  this->max_domain_name_length = std::max(this->max_domain_name_length, added_domain_name_length);
+}
+
 ////----------------------------------------------------------------------
-//// tLogDomainRegistry GetSubDomain
+//// tDomainRegistry ConfigureFromFile
 ////----------------------------------------------------------------------
-//tLogDomainSharedPointer tLogDomainRegistry::GetSubDomain(const std::string &name, tLogDomainSharedPointer parent)
-//{
-//  assert(name.length() > 0);
-//  assert(parent != tLogDomainSharedPointer());
-//  const std::string full_qualified_domain_name(parent->GetName() + (parent->parent ? "." : "") + name);
-//  size_t i = this->GetDomainIndexByName(full_qualified_domain_name);
-//  if (i == this->domains.size())
-//  {
-//    tConfigurationSharedPointer configuration(this->GetConfigurationByName(full_qualified_domain_name));
-//    this->domains.push_back(std::shared_ptr<tLogDomain>(new tLogDomain(configuration, *const_cast<tLogDomain *>(parent.get()))));
-//    return this->domains.back();
-//  }
-//  return this->domains[i];
-//}
-//
-////----------------------------------------------------------------------
-//// tLogDomainRegistry SetDomainConfiguresSubTree
-////----------------------------------------------------------------------
-//void tLogDomainRegistry::SetDomainConfiguresSubTree(const std::string &name, bool value)
-//{
-//  tConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
-//  configuration->configure_sub_tree = value;
-//  this->PropagateDomainConfigurationToChildren(name);
-//}
-//
-////----------------------------------------------------------------------
-//// tLogDomainRegistry SetDomainPrintsTime
-////----------------------------------------------------------------------
-//void tLogDomainRegistry::SetDomainPrintsTime(const std::string &name, bool value)
-//{
-//  tConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
-//  configuration->print_time = value;
-//  this->PropagateDomainConfigurationToChildren(name);
-//}
-//
-////----------------------------------------------------------------------
-//// tLogDomainRegistry SetDomainPrintsName
-////----------------------------------------------------------------------
-//void tLogDomainRegistry::SetDomainPrintsName(const std::string &name, bool value)
-//{
-//  tConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
-//  configuration->print_name = value;
-//  this->PropagateDomainConfigurationToChildren(name);
-//}
-//
-////----------------------------------------------------------------------
-//// tLogDomainRegistry SetDomainPrintsLevel
-////----------------------------------------------------------------------
-//void tLogDomainRegistry::SetDomainPrintsLevel(const std::string &name, bool value)
-//{
-//  tConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
-//  configuration->print_level = value;
-//  this->PropagateDomainConfigurationToChildren(name);
-//}
-//
-////----------------------------------------------------------------------
-//// tLogDomainRegistry SetDomainPrintsLocation
-////----------------------------------------------------------------------
-//void tLogDomainRegistry::SetDomainPrintsLocation(const std::string &name, bool value)
-//{
-//  tConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
-//  configuration->print_location = value;
-//  this->PropagateDomainConfigurationToChildren(name);
-//}
-//
-////----------------------------------------------------------------------
-//// tLogDomainRegistry SetDomainMaxMessageLevel
-////----------------------------------------------------------------------
-//void tLogDomainRegistry::SetDomainMaxMessageLevel(const std::string &name, tLogLevel value)
-//{
-//  tLogLevel effective_value = std::max(value, eLL_ERROR);
-//
-//#ifdef _RRLIB_LOGGING_LESS_OUTPUT_
-//  effective_value = std::min(value, eLL_DEBUG);
-//#endif
-//
-//  tConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
-//  configuration->max_message_level = effective_value;
-//  this->PropagateDomainConfigurationToChildren(name);
-//}
-//
-////----------------------------------------------------------------------
-//// tLogDomainRegistry SetDomainSink
-////----------------------------------------------------------------------
-//void tLogDomainRegistry::SetDomainSink(const std::string &name, tLogSink sink_1, tLogSink sink_2, tLogSink sink_3, tLogSink sink_4)
-//{
-//  int mask = 0;
-//  mask |= (sink_1 != eLS_DIMENSION) ? (1 << sink_1) : 0;
-//  mask |= (sink_2 != eLS_DIMENSION) ? (1 << sink_2) : 0;
-//  mask |= (sink_3 != eLS_DIMENSION) ? (1 << sink_3) : 0;
-//  mask |= (sink_4 != eLS_DIMENSION) ? (1 << sink_4) : 0;
-//  this->SetDomainSinkMask(name, mask);
-//}
-//
-////----------------------------------------------------------------------
-//// tLogDomainRegistry SetDomainSinkMask
-////----------------------------------------------------------------------
-//void tLogDomainRegistry::SetDomainSinkMask(const std::string &name, int mask)
-//{
-//  tConfigurationSharedPointer configuration(this->GetConfigurationByName(name));
-//  configuration->sink_mask = mask;
-//  this->PropagateDomainConfigurationToChildren(name);
-//}
-//
-////----------------------------------------------------------------------
-//// tLogDomainRegistry GetDomainIndexByName
-////----------------------------------------------------------------------
-//const size_t tLogDomainRegistry::GetDomainIndexByName(const std::string &name) const
-//{
-//  for (size_t i = 0; i < this->domains.size(); ++i)
-//  {
-//    if (this->domains[i]->GetName() == name)
-//    {
-//      return i;
-//    }
-//  }
-//  return this->domains.size();
-//}
-//
-////----------------------------------------------------------------------
-//// tLogDomainRegistry GetConfigurationByName
-////----------------------------------------------------------------------
-//tConfigurationSharedPointer tLogDomainRegistry::GetConfigurationByName(const std::string &name)
-//{
-//  for (std::vector<tConfigurationSharedPointer>::iterator it = this->domain_configurations.begin(); it != this->domain_configurations.end(); ++it)
-//  {
-//    if ((*it)->name == name)
-//    {
-//      return *it;
-//    }
-//  }
-//  this->domain_configurations.push_back(tConfigurationSharedPointer(new tConfiguration(name)));
-//  this->max_domain_name_length = std::max(this->max_domain_name_length, name.length());
-//  return this->domain_configurations.back();
-//}
-//
-////----------------------------------------------------------------------
-//// tLogDomainRegistry PropagateDomainConfigurationToChildren
-////----------------------------------------------------------------------
-//void tLogDomainRegistry::PropagateDomainConfigurationToChildren(const std::string &name)
-//{
-//  size_t i = this->GetDomainIndexByName(name);
-//  if (i != this->domains.size())
-//  {
-//    for (std::vector<tLogDomain *>::iterator it = this->domains[i]->children.begin(); it != this->domains[i]->children.end(); ++it)
-//    {
-//      (*it)->ConfigureSubTree();
-//    }
-//  }
-//}
-//
-////----------------------------------------------------------------------
-//// tLogDomainRegistry ConfigureFromFile
-////----------------------------------------------------------------------
-//bool tLogDomainRegistry::ConfigureFromFile(const std::string &file_name)
+//bool tDomainRegistry::ConfigureFromFile(const std::string &file_name)
 //{
 //#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
 //  try
@@ -342,11 +192,11 @@ const tConfiguration &tLogDomainRegistryImplementation::GetConfigurationByFilena
 //  }
 //  catch (const tXML2WrapperException &e)
 //  {
-//    std::cerr << "RRLib Logging: tLogDomainRegistry::ConfigureFromFile >> " << e.what() << std::endl;
+//    std::cerr << "RRLib Logging: tDomainRegistry::ConfigureFromFile >> " << e.what() << std::endl;
 //    return false;
 //  }
 //#else
-//  std::cerr << "RRLib Logging: tLogDomainRegistry::ConfigureFromFile >> XML support not available due to missing rrlib_mca2_wrapper." << std::endl;
+//  std::cerr << "RRLib Logging: tDomainRegistry::ConfigureFromFile >> XML support not available due to missing rrlib_mca2_wrapper." << std::endl;
 //  return false;
 //#endif
 //}
@@ -354,13 +204,13 @@ const tConfiguration &tLogDomainRegistryImplementation::GetConfigurationByFilena
 //#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
 //
 ////----------------------------------------------------------------------
-//// tLogDomainRegistry ConfigureFromXMLNode
+//// tDomainRegistry ConfigureFromXMLNode
 ////----------------------------------------------------------------------
-//bool tLogDomainRegistry::ConfigureFromXMLNode(const tXMLNode &node)
+//bool tDomainRegistry::ConfigureFromXMLNode(const tXMLNode &node)
 //{
 //  if (node.GetName() != "rrlib_logging")
 //  {
-//    std::cerr << "RRLib Logging: tLogDomainRegistry::ConfigureFromXMLNode >> Unexpected content (Not an rrlib_logging tree)" << std::endl;
+//    std::cerr << "RRLib Logging: tDomainRegistry::ConfigureFromXMLNode >> Unexpected content (Not an rrlib_logging tree)" << std::endl;
 //    return false;
 //  }
 //
@@ -388,7 +238,7 @@ const tConfiguration &tLogDomainRegistryImplementation::GetConfigurationByFilena
 //  }
 //  catch (const tXML2WrapperException &e)
 //  {
-//    std::cerr << "RRLib Logging: tLogDomainRegistry::ConfigureFromXMLNode >> " << e.what() << std::endl;
+//    std::cerr << "RRLib Logging: tDomainRegistry::ConfigureFromXMLNode >> " << e.what() << std::endl;
 //    return false;
 //  }
 //
@@ -396,9 +246,9 @@ const tConfiguration &tLogDomainRegistryImplementation::GetConfigurationByFilena
 //}
 //
 ////----------------------------------------------------------------------
-//// tLogDomainRegistry AddConfigurationFromXMLNode
+//// tDomainRegistry AddConfigurationFromXMLNode
 ////----------------------------------------------------------------------
-//bool tLogDomainRegistry::AddConfigurationFromXMLNode(const tXMLNode &node, const std::string &parent_name)
+//bool tDomainRegistry::AddConfigurationFromXMLNode(const tXMLNode &node, const std::string &parent_name)
 //{
 //  static const char *level_names_init[eLL_DIMENSION - eLL_ERROR] = { "error", "warning", "debug_warning", "debug", "debug_verbose_1", "debug_verbose_2", "debug_verbose_3" };
 //  static const std::vector<std::string> level_names(level_names_init, level_names_init + eLL_DIMENSION - eLL_ERROR);
@@ -458,7 +308,7 @@ const tConfiguration &tLogDomainRegistryImplementation::GetConfigurationByFilena
 //    {
 //      if (sinks_configured)
 //      {
-//        std::cerr << "RRLib Logging: tLogDomainRegistry::AddConfigurationFromXMLNode >> Sink already configured in domain element!" << std::endl;
+//        std::cerr << "RRLib Logging: tDomainRegistry::AddConfigurationFromXMLNode >> Sink already configured in domain element!" << std::endl;
 //        return false;
 //      }
 //      sink_mask |= 1 << it->GetEnumAttribute<tLogSink>("output", sink_names);

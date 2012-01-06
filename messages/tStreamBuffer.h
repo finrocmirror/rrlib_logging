@@ -19,23 +19,22 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    tLogStreamBuffer.h
+/*!\file    tStreamBuffer.h
  *
  * \author  Tobias Foehst
  *
  * \date    2010-06-23
  *
- * \brief Contains tLogStreamBuffer
+ * \brief Contains tStreamBuffer
  *
- * \b tLogStreamBuffer
+ * \b tStreamBuffer
  *
- * tLogStreamBuffer is an implementation for std::ostreams with
- * multiple sinks. Using a std::ostream for output internally uses a
- * std::streambuf for the low level operations necessary to print the
- * stream input to a file or terminal. By specializing std::streambuf in
- * this class it is possible to collect the streambuffers of several
- * ostreams and supply all these streams with own input,  like tee in
- * UNIX shells.
+ * tStreamBuffer is an implementation for std::ostreams with multiple
+ * sinks. Using a std::ostream for output internally uses a std::streambuf
+ * for the low level operations necessary to print stream input to a file
+ * or terminal. By specializing std::streambuf in this class it is possible
+ * to collect the streambuffers of several ostreams and supply all these
+ * streams with own input, like tee in UNIX shells.
  *
  * Having an empty buffer vector also implements a null stream that does
  * not open /dev/null to swallow all input.
@@ -43,11 +42,11 @@
  */
 //----------------------------------------------------------------------
 #ifndef __rrlib__logging__include_guard__
-#error Invalid include directive. Try #include "rrlib/logging/definitions.h" instead.
+#error Invalid include directive. Try #include "rrlib/logging/messages.h" instead.
 #endif
 
-#ifndef __rrlib__logging__tLogStreamBuffer_h__
-#define __rrlib__logging__tLogStreamBuffer_h__
+#ifndef __rrlib__logging__tStreamBuffer_h__
+#define __rrlib__logging__tStreamBuffer_h__
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -75,7 +74,7 @@ namespace logging
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
-enum tLogStreamBufferEffect
+enum tStreamBufferEffect
 {
   eLSBE_REGULAR,
   eLSBE_BOLD,
@@ -87,7 +86,7 @@ enum tLogStreamBufferEffect
   eLSBE_DIMENSION
 };
 
-enum tLogStreamBufferColor
+enum tStreamBufferColor
 {
   eLSBC_DEFAULT,
   eLSBC_RED,
@@ -105,15 +104,16 @@ enum tLogStreamBufferColor
 //----------------------------------------------------------------------
 //! A streambuffer implementation for std::ostreams with multiple sinks
 /*! Using a std::ostream for output internally uses a std::streambuf for
- *  the low level operations necessary to print the stream input to a
- *  file or terminal. By specializing std::streambuf in this class it is
+ *  the low level operations necessary to print stream input to a file
+ *  or terminal. By specializing std::streambuf in this class it is
  *  possible to collect the streambuffers of several ostreams and supply
  *  all these streams with own input, like tee in UNIX shells.
+ *
  *  Having an empty buffer vector also implements a null stream that does
  *  not open /dev/null to swallow all input.
  *
  */
-class tLogStreamBuffer : public std::streambuf
+class tStreamBuffer : public std::streambuf
 {
 
 //----------------------------------------------------------------------
@@ -121,15 +121,10 @@ class tLogStreamBuffer : public std::streambuf
 //----------------------------------------------------------------------
 public:
 
-  /*! The ctor of tLogStreamBuffer
+  /*! The ctor of tStreamBuffer
    *
    */
-  tLogStreamBuffer()
-      : ends_with_newline(false),
-      multi_line_pad_width(0),
-      collect_multi_line_pad_width(false),
-      pad_before_next_character(false)
-  {}
+  tStreamBuffer();
 
   /*! Add a target output stream to this buffer
    *
@@ -164,7 +159,7 @@ public:
     return this->ends_with_newline;
   }
 
-  void SetColor(tLogStreamBufferEffect effect, tLogStreamBufferColor color);
+  void SetColor(tStreamBufferEffect effect, tStreamBufferColor color);
 
   void ResetColor();
 

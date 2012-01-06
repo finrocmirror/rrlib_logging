@@ -35,6 +35,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <iterator>
+#include <iomanip>
 
 extern "C"
 {
@@ -148,9 +149,9 @@ int main(int argc, char **argv)
 
   local::Test::function();
 
-//  RRLIB_LOG_PRINT(eLL_ERROR, std::runtime_error("runtime_error"));
+  RRLIB_LOG_PRINT(eLL_ERROR, std::runtime_error("runtime_error"));
 
-  RRLIB_LOG_PRINT(eLL_WARNING, std::hex, 324);
+  RRLIB_LOG_PRINT(eLL_WARNING, "0x", std::setw(20), std::setfill('0'), std::hex, 324);
 
   RRLIB_LOG_PRINT(eLL_ERROR, "Das hier ist ein mehrzeiliger\nFehler.");
   RRLIB_LOG_PRINT(eLL_USER, "Und das hier ein mehrzeiliger\nText fuer den lieben Benutzer.");
@@ -161,6 +162,13 @@ int main(int argc, char **argv)
   TestStatic test_static;
   test_static.StaticMethod();
   test_static.NonStaticMethod();
+
+  int *a = 0;
+  const int *b = 0;
+  RRLIB_LOG_PRINT(eLL_DEBUG, "Pointer: ", a);
+  RRLIB_LOG_PRINT(eLL_DEBUG, "Const-Pointer: ", b);
+  RRLIB_LOG_PRINT(eLL_DEBUG, "Bool: ", true, false);
+  RRLIB_LOG_PRINT(eLL_DEBUG, "Function: ", main);
 
   return EXIT_SUCCESS;
 }

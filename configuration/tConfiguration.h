@@ -70,6 +70,7 @@
 // Internal includes with ""
 //----------------------------------------------------------------------
 #include "rrlib/logging/log_levels.h"
+#include "rrlib/logging/messages/tStreamBuffer.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -112,7 +113,7 @@ enum tLogSink
  */
 class tConfiguration
 {
-  friend class tLogDomainRegistryImplementation;
+  friend class tDomainRegistryImplementation;
 
 //----------------------------------------------------------------------
 // Public methods and typedefs
@@ -156,6 +157,11 @@ public:
     return this->max_message_level;
   }
 
+  inline tStreamBuffer &StreamBuffer() const
+  {
+    return this->stream_buffer;
+  }
+
   const tConfiguration &GetConfigurationByName(const char *domain_name) const;
 
 //----------------------------------------------------------------------
@@ -173,6 +179,8 @@ private:
 
   tLogLevel max_message_level;
 //  int sink_mask;
+
+  mutable tStreamBuffer stream_buffer;
 
   mutable std::list<tConfiguration *> children;
 

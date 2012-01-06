@@ -41,15 +41,14 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
-#include <iostream>
 #include <cstdarg>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
 #include "rrlib/logging/log_levels.h"
-#include "rrlib/logging/configuration/tLogDomainRegistry.h"
 #include "rrlib/logging/configuration/tConfiguration.h"
+#include "rrlib/logging/messages/tStream.h"
 
 //----------------------------------------------------------------------
 // Namespace declaration
@@ -67,16 +66,97 @@ extern char *default_log_description;
 
 const tConfiguration &GetConfiguration(const char *filename, const char *domain_name = 0);
 
+
+
+void SendFormattedTimeToStream(tStream &stream);
+void SendFormattedDomainNameToStream(tStream &stream, const std::string &domain_name);
+void SetColor(tStreamBuffer &stream_buffer, tLogLevel level);
+void SendFormattedLevelToStream(tStream &stream, tLogLevel level);
+void SendFormattedLocationToStream(tStream &stream, const char *filename, unsigned int line);
+
+
+
+namespace
+{
+template <typename THead>
+void SendDataToStream(tStream &stream, THead head)
+{
+  stream << head;
+}
+
+template <typename THead, typename ... TTail>
+void SendDataToStream(tStream &stream, THead head, TTail ... tail)
+{
+  stream << head;
+  SendDataToStream(stream, tail...);
+}
+}
+
+
+
 template <typename TLogDescription, typename ... TArgs>
-void Print(const tConfiguration &domain_configuration, const TLogDescription &log_description, const char *function, const char *filename, unsigned int line, tLogLevel level, const TArgs &... args)
+void Print(const tConfiguration &domain_configuration, const TLogDescription &log_description, const char *function, const char *filename, unsigned int line, tLogLevel level, TArgs ... args)
 {
   if (level > domain_configuration.MaxMessageLevel())
   {
     return;
   }
 
-  std::cout << domain_configuration.GetFullQualifiedName() << " " << log_description << std::endl;
+  tStream stream(domain_configuration.StreamBuffer());
+  domain_configuration.StreamBuffer().InitializeMultiLinePadding();
 
+  if (level != eLL_USER)
+  {
+
+    if (domain_configuration.PrintsTime())
+    {
+      SendFormattedTimeToStream(stream);
+    }
+
+    SetColor(domain_configuration.StreamBuffer(), level);
+
+#ifndef _RRLIB_LOGGING_LESS_OUTPUT_
+    if (domain_configuration.PrintsName())
+    {
+      SendFormattedDomainNameToStream(stream, domain_configuration.GetFullQualifiedName());
+    }
+    if (domain_configuration.PrintsLevel())
+    {
+      SendFormattedLevelToStream(stream, level);
+    }
+#endif
+
+    stream << log_description << "::" << function << " ";
+
+#ifndef _RRLIB_LOGGING_LESS_OUTPUT_
+    if (domain_configuration.PrintsLocation())
+    {
+      SendFormattedLocationToStream(stream, filename, line);
+    }
+#endif
+
+    stream << ">> ";
+
+    domain_configuration.StreamBuffer().ResetColor();
+
+    switch (level)
+    {
+    case eLL_ERROR:
+      stream << "ERROR: ";
+      break;
+    case eLL_WARNING:
+    case eLL_DEBUG_WARNING:
+      stream << "WARNING: ";
+      break;
+    default:
+      ;
+    }
+
+  }
+
+  domain_configuration.StreamBuffer().MarkEndOfPrefixForMultiLinePadding();
+
+  SendDataToStream(stream, args...);
 }
 
 template <typename TLogDescription>
