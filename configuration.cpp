@@ -19,26 +19,24 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    implementation.cpp
+/*!\file    configuration.cpp
  *
  * \author  Tobias Foehst
  *
- * \date    2011-09-15
+ * \date    2011-01-05
  *
  */
 //----------------------------------------------------------------------
-#define __rrlib__logging__include_guard__
-#include "rrlib/logging/messages/implementation.h"
+#include "rrlib/logging/configuration.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
-#include <cstdio>
-#include <ctime>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
+#define __rrlib__logging__include_guard__
 #include "rrlib/logging/configuration/tDomainRegistry.h"
 
 //----------------------------------------------------------------------
@@ -70,117 +68,53 @@ namespace logging
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-// GetConfiguration
+// SetLogFilenamePrefix
 //----------------------------------------------------------------------
-const tConfiguration &GetConfiguration(const char *filename, const char *domain_name)
+void SetLogFilenamePrefix(const std::string &filename_prefix)
 {
-  return tDomainRegistry::Instance().GetConfiguration(filename, domain_name);
+  tDomainRegistry::Instance().SetLogFilenamePrefix(filename_prefix);
 }
 
 //----------------------------------------------------------------------
-// SendFormattedTimeToStream
+// SetDomainPrintsName
 //----------------------------------------------------------------------
-void SendFormattedTimeToStream(tStream &stream)
+void SetDomainPrintsName(const std::string &domain_name, bool value)
 {
-  char time_string_buffer[9];
-  timespec time;
-  clock_gettime(CLOCK_REALTIME, &time);
-  strftime(time_string_buffer, sizeof(time_string_buffer), "%T", localtime(&time.tv_sec));
-  char nsec_string_buffer[11];
-  snprintf(nsec_string_buffer, sizeof(nsec_string_buffer), ".%09ld", time.tv_nsec);
-  stream << "[ " << time_string_buffer << nsec_string_buffer << " ] ";
+  const_cast<tConfiguration &>(tDomainRegistry::Instance().GetConfiguration(NULL, domain_name.c_str())).SetPrintsName(value);
 }
 
 //----------------------------------------------------------------------
-// SetColor
+// SetDomainPrintsTime
 //----------------------------------------------------------------------
-void SetColor(tStreamBuffer &stream_buffer, tLogLevel level)
+void SetDomainPrintsTime(const std::string &domain_name, bool value)
 {
-  switch (level)
-  {
-  case eLL_ERROR:
-    stream_buffer.SetColor(eSBE_BOLD, eSBC_RED);
-    break;
-  case eLL_WARNING:
-    stream_buffer.SetColor(eSBE_BOLD, eSBC_BLUE);
-    break;
-  case eLL_DEBUG_WARNING:
-    stream_buffer.SetColor(eSBE_DARK, eSBC_YELLOW);
-    break;
-  case eLL_DEBUG:
-    stream_buffer.SetColor(eSBE_DARK, eSBC_GREEN);
-    break;
-  case eLL_DEBUG_VERBOSE_1:
-    stream_buffer.SetColor(eSBE_REGULAR, eSBC_CYAN);
-    break;
-  case eLL_DEBUG_VERBOSE_2:
-    stream_buffer.SetColor(eSBE_REGULAR, eSBC_CYAN);
-    break;
-  case eLL_DEBUG_VERBOSE_3:
-    stream_buffer.SetColor(eSBE_REGULAR, eSBC_CYAN);
-    break;
-  default:
-    ;
-  }
+  const_cast<tConfiguration &>(tDomainRegistry::Instance().GetConfiguration(NULL, domain_name.c_str())).SetPrintsTime(value);
 }
 
 //----------------------------------------------------------------------
-// SendFormattedDomainNameToStream
+// SetDomainPrintsLevel
 //----------------------------------------------------------------------
-void SendFormattedDomainNameToStream(tStream &stream, const std::string &domain_name)
+void SetDomainPrintsLevel(const std::string &domain_name, bool value)
 {
-  char name_string_buffer[128];
-  snprintf(name_string_buffer, sizeof(name_string_buffer), "%-*s ", static_cast<int>((tDomainRegistry::Instance().GetPadPrefixColumns() ? tDomainRegistry::Instance().MaxDomainNameLength() : 0)), domain_name.c_str());
-  stream << name_string_buffer;
+  const_cast<tConfiguration &>(tDomainRegistry::Instance().GetConfiguration(NULL, domain_name.c_str())).SetPrintsLevel(value);
 }
 
 //----------------------------------------------------------------------
-// SendFormattedLevelToStream
+// SetDomainPrintsLocation
 //----------------------------------------------------------------------
-void SendFormattedLevelToStream(tStream &stream, tLogLevel level)
+void SetDomainPrintsLocation(const std::string &domain_name, bool value)
 {
-  const char *level_name = 0;
-  switch (level)
-  {
-  case eLL_ERROR:
-    level_name = "[error]";
-    break;
-  case eLL_WARNING:
-    level_name = "[warning]";
-    break;
-  case eLL_DEBUG_WARNING:
-    level_name = "[debug]";
-    break;
-  case eLL_DEBUG:
-    level_name = "[debug]";
-    break;
-  case eLL_DEBUG_VERBOSE_1:
-    level_name = "[verbose]";
-    break;
-  case eLL_DEBUG_VERBOSE_2:
-    level_name = "[verbose]";
-    break;
-  case eLL_DEBUG_VERBOSE_3:
-    level_name = "[verbose]";
-    break;
-  default:
-    level_name = "";
-    break;
-  }
-  char name_string_buffer[128];
-  snprintf(name_string_buffer, sizeof(name_string_buffer), "%-*s ", (tDomainRegistry::Instance().GetPadPrefixColumns() ? 9 : 0), level_name);
-  stream << name_string_buffer;
+  const_cast<tConfiguration &>(tDomainRegistry::Instance().GetConfiguration(NULL, domain_name.c_str())).SetPrintsLocation(value);
 }
 
 //----------------------------------------------------------------------
-// SendFormattedLocationToStream
+// SetDomainMaxMessageLevel
 //----------------------------------------------------------------------
-void SendFormattedLocationToStream(tStream &stream, const char *filename, unsigned int line)
+void SetDomainMaxMessageLevel(const std::string &domain_name, tLogLevel level)
 {
-  char location_string_buffer[128];
-  snprintf(location_string_buffer, sizeof(location_string_buffer), "[%s:%u] ", filename, line);
-  stream << location_string_buffer;
+  const_cast<tConfiguration &>(tDomainRegistry::Instance().GetConfiguration(NULL, domain_name.c_str())).SetMaxMessageLevel(level);
 }
+
 
 //----------------------------------------------------------------------
 // End of namespace declaration

@@ -76,27 +76,27 @@ namespace logging
 //----------------------------------------------------------------------
 enum tStreamBufferEffect
 {
-  eLSBE_REGULAR,
-  eLSBE_BOLD,
-  eLSBE_DARK,
-  eLSBE_UNDERLINED = 4,
-  eLSBE_BLINKING,
-  eLSBE_INVERTED = 7,
-  eLSBE_CONCEALED,
-  eLSBE_DIMENSION
+  eSBE_REGULAR,
+  eSBE_BOLD,
+  eSBE_DARK,
+  eSBE_UNDERLINED = 4,
+  eSBE_BLINKING,
+  eSBE_INVERTED = 7,
+  eSBE_CONCEALED,
+  eSBE_DIMENSION
 };
 
 enum tStreamBufferColor
 {
-  eLSBC_DEFAULT,
-  eLSBC_RED,
-  eLSBC_GREEN,
-  eLSBC_YELLOW,
-  eLSBC_BLUE,
-  eLSBC_MAGENTA,
-  eLSBC_CYAN,
-  eLSBC_GRAY,
-  eLSBC_DIMENSION
+  eSBC_DEFAULT,
+  eSBC_RED,
+  eSBC_GREEN,
+  eSBC_YELLOW,
+  eSBC_BLUE,
+  eSBC_MAGENTA,
+  eSBC_CYAN,
+  eSBC_GRAY,
+  eSBC_DIMENSION
 };
 
 //----------------------------------------------------------------------

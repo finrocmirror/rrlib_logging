@@ -64,15 +64,15 @@ namespace logging
 // Const values
 //----------------------------------------------------------------------
 #ifdef _RRLIB_LOGGING_LESS_OUTPUT_
-const bool cDEFAULT_PRINTS_TIME = false;                //!< Default prints time setting for reduced output mode
 const bool cDEFAULT_PRINTS_NAME = false;                //!< Default prints name setting for reduced output mode
+const bool cDEFAULT_PRINTS_TIME = false;                //!< Default prints time setting for reduced output mode
 const bool cDEFAULT_PRINTS_LEVEL = false;               //!< Default prints level setting for reduced output mode
 const bool cDEFAULT_PRINTS_LOCATION = false;            //!< Default prints location setting for reduced output mode
 const tLogLevel cDEFAULT_MAX_LOG_LEVEL = eLL_WARNING;   //!< Default max log level for reduced output mode
 const int cDEFAULT_SINK_MASK = 1 << eLS_STDOUT;         //!< Default output stream mask
 #else
-const bool cDEFAULT_PRINTS_TIME = false;                //!< Default prints time setting for normal output mode
 const bool cDEFAULT_PRINTS_NAME = false;                //!< Default prints name setting for normal output mode
+const bool cDEFAULT_PRINTS_TIME = false;                //!< Default prints time setting for normal output mode
 const bool cDEFAULT_PRINTS_LEVEL = false;               //!< Default prints level setting for normal output mode
 const bool cDEFAULT_PRINTS_LOCATION = true;             //!< Default prints location setting for normal output mode
 const tLogLevel cDEFAULT_MAX_LOG_LEVEL = eLL_DEBUG;     //!< Default max log level for normal output mode
@@ -89,11 +89,11 @@ const int cDEFAULT_SINK_MASK = 1 << eLS_STDOUT;         //!< Default output stre
 tConfiguration::tConfiguration(const tConfiguration *parent, const std::string &name)
     : parent(parent),
     name(name),
-    prints_time(cDEFAULT_PRINTS_TIME),
-    prints_name(cDEFAULT_PRINTS_NAME),
-    prints_level(cDEFAULT_PRINTS_LEVEL),
-    prints_location(cDEFAULT_PRINTS_LOCATION),
-    max_message_level(cDEFAULT_MAX_LOG_LEVEL)//,
+    prints_name(parent ? parent->prints_name : cDEFAULT_PRINTS_NAME),
+    prints_time(parent ? parent->prints_time : cDEFAULT_PRINTS_TIME),
+    prints_level(parent ? parent->prints_level : cDEFAULT_PRINTS_LEVEL),
+    prints_location(parent ? parent->prints_location : cDEFAULT_PRINTS_LOCATION),
+    max_message_level(parent ? parent->max_message_level : cDEFAULT_MAX_LOG_LEVEL)//,
 //    sink_mask(cDEFAULT_SINK_MASK)
 {
   this->stream_buffer.AddStream(std::cout);
@@ -107,6 +107,67 @@ tConfiguration::~tConfiguration()
   for (auto it = this->children.begin(); it != this->children.end(); ++it)
   {
     delete *it;
+  }
+}
+
+//----------------------------------------------------------------------
+// tConfiguration SetPrintsName
+//----------------------------------------------------------------------
+void tConfiguration::SetPrintsName(bool value)
+{
+  std::cout << "SetPrintsName: " << value << " in " << this->GetFullQualifiedName() << std::endl;
+  this->prints_name = value;
+  for (auto it = this->children.begin(); it != this->children.end(); ++it)
+  {
+    (*it)->SetPrintsName(value);
+  }
+}
+
+//----------------------------------------------------------------------
+// tConfiguration SetPrintsTime
+//----------------------------------------------------------------------
+void tConfiguration::SetPrintsTime(bool value)
+{
+  this->prints_time = value;
+  for (auto it = this->children.begin(); it != this->children.end(); ++it)
+  {
+    (*it)->SetPrintsTime(value);
+  }
+}
+
+//----------------------------------------------------------------------
+// tConfiguration SetPrintsLevel
+//----------------------------------------------------------------------
+void tConfiguration::SetPrintsLevel(bool value)
+{
+  this->prints_level = value;
+  for (auto it = this->children.begin(); it != this->children.end(); ++it)
+  {
+    (*it)->SetPrintsLevel(value);
+  }
+}
+
+//----------------------------------------------------------------------
+// tConfiguration SetPrintsLocation
+//----------------------------------------------------------------------
+void tConfiguration::SetPrintsLocation(bool value)
+{
+  this->prints_location = value;
+  for (auto it = this->children.begin(); it != this->children.end(); ++it)
+  {
+    (*it)->SetPrintsLocation(value);
+  }
+}
+
+//----------------------------------------------------------------------
+// tConfiguration SetMaxMessageLevel
+//----------------------------------------------------------------------
+void tConfiguration::SetMaxMessageLevel(tLogLevel level)
+{
+  this->max_message_level = level;
+  for (auto it = this->children.begin(); it != this->children.end(); ++it)
+  {
+    (*it)->SetMaxMessageLevel(level);
   }
 }
 

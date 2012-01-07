@@ -44,6 +44,9 @@ extern "C"
 
 #include "rrlib/util/join.h"
 
+#include "rrlib/logging/configuration.h"
+#include "rrlib/logging/messages.h"
+
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
@@ -123,22 +126,15 @@ int main(int argc, char **argv)
 
   rrlib::logging::SetLogFilenamePrefix(basename(argv[0]));
 
-  std::cout << rrlib::logging::tDomainRegistry::Instance().LogFilenamePrefix() << std::endl;
+  rrlib::logging::SetDomainPrintsName(".", true);
+  rrlib::logging::SetDomainPrintsTime(".", true);
+  rrlib::logging::SetDomainPrintsLevel(".", true);
+  rrlib::logging::SetDomainPrintsLocation(".", true);
+  rrlib::logging::SetDomainMaxMessageLevel(".", rrlib::logging::eLL_DEBUG_VERBOSE_3);
+//  rrlib::logging::SetDomainSink(".", rrlib::logging::eLS_FILE);
 
-//  tLogDomainRegistry::GetInstance()->SetDomainConfiguresSubTree("global", true);
-//  tLogDomainRegistry::GetInstance()->SetDomainPrintsName("global", true);
-//  tLogDomainRegistry::GetInstance()->SetDomainPrintsTime("global", true);
-//  tLogDomainRegistry::GetInstance()->SetDomainPrintsLevel("global", true);
-//  tLogDomainRegistry::GetInstance()->SetDomainPrintsLocation("global", true);
-//  tLogDomainRegistry::GetInstance()->SetDomainMinMessageLevel("global", eLL_VERBOSE);
-//  tLogDomainRegistry::GetInstance()->SetDomainStreamID("global", eLS_FILE);
-
-//  tLogDomainRegistry::GetInstance()->SetDomainStreamMask("global", eLSM_STDOUT | eLSM_FILE | eLSM_COMBINED_FILE);
-
-//  tLogDomainRegistry::GetInstance()->SetDomainConfiguresSubTree(".example", true);
-//  tLogDomainRegistry::GetInstance()->SetDomainMinMessageLevel(".example", eLL_VERBOSE);
-//  tLogDomainRegistry::GetInstance()->SetDomainStreamID(".example", eLS_COMBINED_FILE);
-
+  rrlib::logging::SetDomainMaxMessageLevel(".example", rrlib::logging::eLL_DEBUG_VERBOSE_3);
+//  rrlib::logging::SetDomainSink(".example", rrlib::logging::eLS_STDOUT, rrlib::logging::eLS_FILE_SUBTREE);
 
   RRLIB_LOG_PRINT(rrlib::logging::eLL_WARNING, "foo");
 

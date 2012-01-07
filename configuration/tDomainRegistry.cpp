@@ -136,18 +136,48 @@ tDomainRegistryImplementation::~tDomainRegistryImplementation()
 //----------------------------------------------------------------------
 // tDomainRegistryImplementation GetConfiguration
 //----------------------------------------------------------------------
-const tConfiguration &tDomainRegistryImplementation::GetConfiguration(const char *filename, const char *domain_name) const
+const tConfiguration &tDomainRegistryImplementation::GetConfiguration(const char *filename, const char *domain_name)
 {
   if (domain_name)
   {
+    assert(*domain_name && "domain_name must be zero or not empty!");
     if (domain_name[0] == '.')
     {
       assert(this->global_configuration);
-      this->global_configuration->GetConfigurationByName(domain_name + 1);
+      return (domain_name[1] == 0) ? *this->global_configuration : this->global_configuration->GetConfigurationByName(domain_name + 1);
     }
     return tDomainRegistry::Instance().GetConfigurationByFilename(filename).GetConfigurationByName(domain_name);
   }
   return tDomainRegistry::Instance().GetConfigurationByFilename(filename);
+}
+
+//----------------------------------------------------------------------
+// tDomainRegistryImplementation SetLogFilenamePrefix
+//----------------------------------------------------------------------
+void tDomainRegistryImplementation::SetLogFilenamePrefix(const std::string &log_filename_prefix)
+{
+  assert(log_filename_prefix.length() > 0);
+  this->log_filename_prefix = log_filename_prefix;
+}
+
+//----------------------------------------------------------------------
+// tDomainRegistryImplementation LogFilenamePrefix
+//----------------------------------------------------------------------
+const std::string &tDomainRegistryImplementation::LogFilenamePrefix() const
+{
+  if (this->log_filename_prefix.length() == 0)
+  {
+    throw std::logic_error("tDomainRegistryImplementation::LogFilenamePrefix() called before filename prefix was set. Consider calling rrlib::logging::SetLogFilenamePrefix(basename(argv[0])) from your main function.");
+  }
+  return this->log_filename_prefix;
+}
+
+//----------------------------------------------------------------------
+// tDomainRegistryImplementation UpdateMaxDomainNameLength
+//----------------------------------------------------------------------
+void tDomainRegistryImplementation::UpdateMaxDomainNameLength(size_t added_domain_name_length)
+{
+  this->max_domain_name_length = std::max(this->max_domain_name_length, added_domain_name_length);
 }
 
 //----------------------------------------------------------------------
@@ -188,14 +218,6 @@ const tConfiguration &tDomainRegistryImplementation::GetConfigurationByFilename(
   return this->global_configuration->GetConfigurationByFilename(filename);
 }
 
-//----------------------------------------------------------------------
-// tDomainRegistryImplementation UpdateMaxDomainNameLength
-//----------------------------------------------------------------------
-void tDomainRegistryImplementation::UpdateMaxDomainNameLength(size_t added_domain_name_length)
-{
-  this->max_domain_name_length = std::max(this->max_domain_name_length, added_domain_name_length);
-}
-
 ////----------------------------------------------------------------------
 //// tDomainRegistry ConfigureFromFile
 ////----------------------------------------------------------------------
@@ -217,7 +239,9 @@ void tDomainRegistryImplementation::UpdateMaxDomainNameLength(size_t added_domai
 //  return false;
 //#endif
 //}
-//
+
+
+
 //#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
 //
 ////----------------------------------------------------------------------

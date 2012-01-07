@@ -95,7 +95,7 @@ enum tLogSink
   eLS_STDOUT,          //!< Messages are printed to stdout
   eLS_STDERR,          //!< Messages are printed to stderr
   eLS_FILE,            //!< Messages are printed to one file per domain
-  eLS_COMBINED_FILE,   //!< Messages are collected in one file per recursively configured subtree
+  eLS_FILE_SUBTREE,    //!< Messages are collected in one file per subtree
   eLS_DIMENSION        //!< Endmarker and dimension of eLogStream
 };
 
@@ -132,14 +132,20 @@ public:
     return (this->parent && this->parent->parent ? this->parent->GetFullQualifiedName() : "") + "." + this->Name();
   }
 
-  inline bool PrintsTime() const
-  {
-    return this->prints_time;
-  }
+  void SetPrintsName(bool value);
+  void SetPrintsTime(bool value);
+  void SetPrintsLevel(bool value);
+  void SetPrintsLocation(bool value);
+  void SetMaxMessageLevel(tLogLevel level);
 
   inline bool PrintsName() const
   {
     return this->prints_name;
+  }
+
+  inline bool PrintsTime() const
+  {
+    return this->prints_time;
   }
 
   inline bool PrintsLevel() const
@@ -162,8 +168,6 @@ public:
     return this->stream_buffer;
   }
 
-  const tConfiguration &GetConfigurationByName(const char *domain_name) const;
-
 //----------------------------------------------------------------------
 // Private fields and methods
 //----------------------------------------------------------------------
@@ -172,13 +176,13 @@ private:
   const tConfiguration *parent;
   std::string name;
 
-  bool prints_time;
   bool prints_name;
+  bool prints_time;
   bool prints_level;
   bool prints_location;
 
   tLogLevel max_message_level;
-//  int sink_mask;
+  int sink_mask;
 
   mutable tStreamBuffer stream_buffer;
 
@@ -187,7 +191,10 @@ private:
   tConfiguration(const tConfiguration *parent, const std::string &name);
 
   tConfiguration(const tConfiguration &other);
+
   tConfiguration &operator = (const tConfiguration other);
+
+  const tConfiguration &GetConfigurationByName(const char *domain_name) const;
 
   const tConfiguration &GetConfigurationByFilename(const char *filename) const;
 

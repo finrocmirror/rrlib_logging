@@ -114,36 +114,27 @@ public:
    */
   ~tDomainRegistryImplementation();
 
-  const tConfiguration &GetConfiguration(const char *filename, const char *domain_name = 0) const;
+  const tConfiguration &GetConfiguration(const char *filename, const char *domain_name = 0);
 
-  const tConfiguration &GetConfigurationByFilename(const char *filename) const;
+  /*! Set a prefix for filenames that are created as log
+   *
+   * If their output stream is set to eMS_FILE domains create a log
+   * file with their name. Additionally, this name must have a prefix
+   * to distinguish between programs, processes or runs.
+   *
+   * The method could be called with basename(argv[0]) in main, for example.
+   *
+   * \param filename_prefix   The string that should be used as prefix
+   */
+  void SetLogFilenamePrefix(const std::string &filename_prefix);
 
-//  /*! Set a prefix for filenames that are created as log
-//   *
-//   * If their output stream is set to eMS_FILE domains create a log
-//   * file with their name. Additionally, this name must have a prefix
-//   * to distinguish between programs, processes or runs.
-//   *
-//   * The method could be called with basename(argv[0]) in main, for example.
-//   *
-//   * \param file_name_prefix   The string that should be used as prefix
-//   */
-//  inline void SetOutputFileNamePrefix(const std::string &file_name_prefix)
-//  {
-//    assert(file_name_prefix.length() > 0);
-//    this->file_name_prefix = file_name_prefix;
-//  }
-//
-//  /*! Get the configured file name prefix
-//   *
-//   * Get the file name prefix that was configured
-//   *
-//   * \returns The stored prefix
-//   */
-//  inline const std::string &GetOutputFileNamePrefix() const
-//  {
-//    return this->file_name_prefix;
-//  }
+  /*! Get the configured file name prefix
+   *
+   * Get the file name prefix that was configured
+   *
+   * \returns The stored prefix
+   */
+  const std::string &LogFilenamePrefix() const;
 
   /*! Set if columns in prefix output should be padded or not
    *
@@ -236,7 +227,7 @@ private:
 
   mutable tConfiguration *global_configuration;
 
-//  std::string file_name_prefix;
+  std::string log_filename_prefix;
   size_t max_domain_name_length;
   bool pad_prefix_columns;
   bool pad_multi_line_messages;

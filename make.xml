@@ -7,6 +7,7 @@
     <sources>
       configuration/*.cpp
       messages/*.cpp
+      configuration.cpp
       messages.h
       log_levels.h
       default_log_description.cpp
