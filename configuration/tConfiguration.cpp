@@ -115,7 +115,6 @@ tConfiguration::~tConfiguration()
 //----------------------------------------------------------------------
 void tConfiguration::SetPrintsName(bool value)
 {
-  std::cout << "SetPrintsName: " << value << " in " << this->GetFullQualifiedName() << std::endl;
   this->prints_name = value;
   for (auto it = this->children.begin(); it != this->children.end(); ++it)
   {

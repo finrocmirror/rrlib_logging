@@ -44,11 +44,6 @@
 #error Invalid include directive. Try #include "rrlib/logging/configuration.h" instead.
 #endif
 
-#ifndef RRLIB_LOG_PATH
-#warning RRLIB_LOG_PATH not set. Using default path "/usr/include:/usr/include/finroc" which most likely is not sufficient for your setup.
-#define RRLIB_LOG_PATH /usr/include:/usr/include/finroc
-#endif
-
 #ifndef __rrlib__logging__configuration__tDomainRegistry_h__
 #define __rrlib__logging__configuration__tDomainRegistry_h__
 
@@ -221,9 +216,7 @@ public:
 //----------------------------------------------------------------------
 private:
 
-  std::vector<const char *> prefix_pointers;
-  std::vector<size_t> prefix_lengths;
-  std::vector<size_t> prefix_indices_sorted_by_length;
+  std::vector<std::string> rrlib_logging_path_entries;
 
   mutable tConfiguration *global_configuration;
 

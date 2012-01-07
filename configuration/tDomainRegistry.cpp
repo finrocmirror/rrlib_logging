@@ -33,16 +33,14 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
-#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
-#include <iostream>
-#include "rrlib/xml2_wrapper/tXMLDocument.h"
-#endif
-
+#include <cstdlib>
 #include <algorithm>
 #include <cstring>
 #include <sstream>
 
-#include <iostream>
+#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
+#include "rrlib/xml2_wrapper/tXMLDocument.h"
+#endif
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -55,9 +53,6 @@
 //----------------------------------------------------------------------
 // Namespace usage
 //----------------------------------------------------------------------
-#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
-using namespace rrlib::xml2;
-#endif
 
 //----------------------------------------------------------------------
 // Namespace declaration
@@ -88,41 +83,30 @@ tDomainRegistryImplementation::tDomainRegistryImplementation()
     pad_prefix_columns(true),
     pad_multi_line_messages(true)
 {
-  // Create a string literal from the value of RRLIB_LOG_PATH and let p point to its beginning
-#define __RRLIB_LOG_QUOTE_MACRO__(x) #x
-#define __RRLIB_LOG_MAKE_STRING__(macro) __RRLIB_LOG_QUOTE_MACRO__(macro)
-  const char *p = __RRLIB_LOG_MAKE_STRING__(RRLIB_LOG_PATH);
-#undef __RRLIB_LOG_MAKE_STRING__
-#undef __RRLIB_LOG_QUOTE_MACRO__
-
-  // Fill a list of pointers to the components of our immutable RRLIB_LOG_PATH literal (no zero termination)
-  this->prefix_pointers.push_back(p);
-  while (*p)
+  // Look at the environment variable RRLIB_LOGGING_PATH or a default value and let p point to its beginning
+  const char *rrlib_logging_path = std::getenv("RRLIB_LOGGING_PATH");
+  if (rrlib_logging_path == NULL)
   {
-    if (*p == ':')
-    {
-      this->prefix_pointers.push_back(p + 1);
-    }
-    ++p;
+    rrlib_logging_path = "/usr/include";
   }
-  this->prefix_pointers.push_back(p + 1);
 
-  // From the list of pointer calculate the component sizes and a lookup table for sorted access (longest-first)
-  for (size_t i = 0; i < this->prefix_pointers.size() - 1; ++i)
+  // Fill a list of pointers to the components of our immutable rrlib_logging_path (no zero termination)
+  const char *begin_entry = rrlib_logging_path;
+  const char *end_entry = std::strchr(begin_entry, ':');
+  while (end_entry)
   {
-    this->prefix_lengths.push_back(this->prefix_pointers[i + 1] - this->prefix_pointers[i] - 1);
-    this->prefix_indices_sorted_by_length.push_back(i);
+    this->rrlib_logging_path_entries.push_back(std::string(begin_entry, end_entry - begin_entry));
+    begin_entry = end_entry + 1;
+    end_entry = std::strchr(begin_entry, ':');
   }
-  std::sort(this->prefix_indices_sorted_by_length.begin(), this->prefix_indices_sorted_by_length.end(),
-            [this](size_t a, size_t b)
+  this->rrlib_logging_path_entries.push_back(begin_entry);
+
+  // For efficient best-fit lookup sort entries by length (longest-first)
+  std::sort(this->rrlib_logging_path_entries.begin(), this->rrlib_logging_path_entries.end(),
+            [](const std::string &a, const std::string &b)
   {
-    return this->prefix_lengths[a] > this->prefix_lengths[b];
+    return a.length() > b.length();
   });
-
-//  for (auto it = this->prefix_indices_sorted_by_length.begin(); it != this->prefix_indices_sorted_by_length.end(); ++it)
-//  {
-//    std::cout << *it << " -> " << this->prefix_lengths[*it] << std::endl;
-//  }
 }
 
 //----------------------------------------------------------------------
@@ -188,9 +172,9 @@ const tConfiguration &tDomainRegistryImplementation::GetConfigurationByFilename(
   bool found_prefix = false;
 
   // Iterate over sorted list of RRLIB_LOG_PATH components
-  for (auto it = this->prefix_indices_sorted_by_length.begin(); it != this->prefix_indices_sorted_by_length.end(); ++it)
+  for (auto it = this->rrlib_logging_path_entries.begin(); it != this->rrlib_logging_path_entries.end(); ++it)
   {
-    const size_t length = this->prefix_lengths[*it];
+    const size_t length = it->length();
 
     // Skip if prefix length does not fit to path structure
     if (filename[length] != '/')
@@ -199,7 +183,7 @@ const tConfiguration &tDomainRegistryImplementation::GetConfigurationByFilename(
     }
 
     // Due to the longest-first sorted list the first match terminates our search
-    if (length > 0 && std::strncmp(filename, this->prefix_pointers[*it], length) == 0)
+    if (std::strncmp(filename, it->c_str(), length) == 0)
     {
       filename = filename + length + 1;
       found_prefix = true;
@@ -207,7 +191,7 @@ const tConfiguration &tDomainRegistryImplementation::GetConfigurationByFilename(
     }
   }
 
-  if (!found_prefix && this->prefix_lengths[this->prefix_indices_sorted_by_length.back()] > 0)
+  if (!found_prefix && !this->rrlib_logging_path_entries.back().empty())
   {
     std::stringstream message;
     message << "'" << filename << "' is not in RRLIB_LOG_PATH";
