@@ -196,21 +196,6 @@ public:
     return this->max_domain_name_length;
   }
 
-//#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
-//  /*! Read domain configuration from a given XML node
-//   *
-//   * Instead of reading and parsing an XML file dedicated to configure
-//   * logging domains this method can be used after externally parsing
-//   * a document that contains an rrlib_logging node following the DTD
-//   * -//RRLIB//logging
-//   *
-//   * \param node   The XML node containing the configuration
-//   *
-//   * \returns Whether the configuration could be applied or not
-//   */
-//  bool ConfigureFromXMLNode(const xml2::tXMLNode &node);
-//#endif
-
 //----------------------------------------------------------------------
 // Private fields and methods
 //----------------------------------------------------------------------
@@ -226,21 +211,6 @@ private:
   bool pad_multi_line_messages;
 
   const tConfiguration &GetConfigurationByFilename(const char *filename) const;
-
-//#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
-//  /*! Add a domain configuration from a given XML node
-//   *
-//   * This method configures a logging domain using the values specified in
-//   * the given XML node. It also implements recursive configuration in case
-//   * of nested nodes.
-//   *
-//   * \param node          The XML node that contains the configuration
-//   * \param parent_name   For recursive calls the current domain name is build from parent_name and domain_name
-//   *
-//   * \returns Whether the domain was successfully configured or not
-//   */
-//  bool AddConfigurationFromXMLNode(const xml2::tXMLNode &node, const std::string &parent_name = "");
-//#endif
 
 };
 

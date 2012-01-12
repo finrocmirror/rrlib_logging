@@ -96,6 +96,7 @@ tConfiguration::tConfiguration(const tConfiguration *parent, const std::string &
     max_message_level(parent ? parent->max_message_level : cDEFAULT_MAX_LOG_LEVEL)//,
 //    sink_mask(cDEFAULT_SINK_MASK)
 {
+  assert(name.length() || !parent);
   this->stream_buffer.AddStream(std::cout);
 }
 

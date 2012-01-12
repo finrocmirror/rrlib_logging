@@ -115,22 +115,23 @@ struct TestStatic
 int main(int argc, char **argv)
 {
   rrlib::logging::default_log_description = basename(argv[0]);
-
-#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
-  if (!tLogDomainRegistry::GetInstance()->ConfigureFromFile("logging_config.xml"))
-  {
-    std::cout << "Loading configuration failed!";
-    return EXIT_FAILURE;
-  }
-#endif
-
   rrlib::logging::SetLogFilenamePrefix(basename(argv[0]));
 
-  rrlib::logging::SetDomainPrintsName(".", true);
-  rrlib::logging::SetDomainPrintsTime(".", true);
-  rrlib::logging::SetDomainPrintsLevel(".", true);
-  rrlib::logging::SetDomainPrintsLocation(".", true);
-  rrlib::logging::SetDomainMaxMessageLevel(".", rrlib::logging::eLL_DEBUG_VERBOSE_3);
+#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
+  if (!rrlib::logging::ConfigureFromFile("logging_config.xml"))
+  {
+    RRLIB_LOG_PRINT(rrlib::logging::eLL_ERROR, "Loading configuration failed!");
+    return EXIT_FAILURE;
+  }
+
+  rrlib::logging::PrintDomainConfigurations();
+#endif
+
+//  rrlib::logging::SetDomainPrintsName(".", true);
+//  rrlib::logging::SetDomainPrintsTime(".", true);
+//  rrlib::logging::SetDomainPrintsLevel(".", true);
+//  rrlib::logging::SetDomainPrintsLocation(".", true);
+//  rrlib::logging::SetDomainMaxMessageLevel(".", rrlib::logging::eLL_DEBUG_VERBOSE_3);
 //  rrlib::logging::SetDomainSink(".", rrlib::logging::eLS_FILE);
 
   rrlib::logging::SetDomainMaxMessageLevel(".example", rrlib::logging::eLL_DEBUG_VERBOSE_3);
@@ -164,5 +165,6 @@ int main(int argc, char **argv)
   RRLIB_LOG_PRINT(rrlib::logging::eLL_DEBUG, "Bool: ", true, false);
   RRLIB_LOG_PRINT(rrlib::logging::eLL_DEBUG, "Function: ", main);
 
+  rrlib::logging::PrintDomainConfigurations();
   return EXIT_SUCCESS;
 }

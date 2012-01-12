@@ -168,6 +168,11 @@ public:
     return this->stream_buffer;
   }
 
+  inline const std::list<tConfiguration *> &Children() const
+  {
+    return this->children;
+  }
+
 //----------------------------------------------------------------------
 // Private fields and methods
 //----------------------------------------------------------------------
