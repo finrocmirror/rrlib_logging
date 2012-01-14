@@ -61,9 +61,6 @@ namespace logging
 //----------------------------------------------------------------------
 // Implementation
 //----------------------------------------------------------------------
-//! The default description for global debugging. Can be set to whatever string the user likes to set it to
-extern char *default_log_description;
-
 const tConfiguration &GetConfiguration(const char *filename, const char *domain_name = 0);
 
 

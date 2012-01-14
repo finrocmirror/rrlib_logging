@@ -40,6 +40,7 @@
 #define __rrlib__logging__include_guard__
 
 #include "rrlib/logging/log_levels.h"
+#include "rrlib/logging/default_log_description.h"
 #include "rrlib/logging/configuration/tDomainRegistry.h"
 
 #undef __rrlib__logging__include_guard__
