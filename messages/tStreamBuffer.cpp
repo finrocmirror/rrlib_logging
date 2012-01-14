@@ -19,7 +19,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    tLogStreamBuffer.cpp
+/*!\file    tStreamBuffer.cpp
  *
  * \author  Tobias Foehst
  *
@@ -28,7 +28,7 @@
  */
 //----------------------------------------------------------------------
 #define __rrlib__logging__include_guard__
-#include "rrlib/logging/tLogStreamBuffer.h"
+#include "rrlib/logging/messages/tStreamBuffer.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -44,7 +44,7 @@ extern "C"
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "rrlib/logging/tLogDomainRegistry.h"
+#include "rrlib/logging/configuration/tDomainRegistry.h"
 #include "rrlib/util/fstream/fileno.h"
 
 //----------------------------------------------------------------------
@@ -54,7 +54,14 @@ extern "C"
 //----------------------------------------------------------------------
 // Namespace usage
 //----------------------------------------------------------------------
-using namespace rrlib::logging;
+
+//----------------------------------------------------------------------
+// Namespace declaration
+//----------------------------------------------------------------------
+namespace rrlib
+{
+namespace logging
+{
 
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
@@ -69,9 +76,19 @@ using namespace rrlib::logging;
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-// tLogStreamBuffer WriteCharacterToBuffers
+// tStreamBuffer constructors
 //----------------------------------------------------------------------
-int tLogStreamBuffer::WriteCharacterToBuffers(int c)
+tStreamBuffer::tStreamBuffer()
+    : ends_with_newline(false),
+    multi_line_pad_width(0),
+    collect_multi_line_pad_width(false),
+    pad_before_next_character(false)
+{}
+
+//----------------------------------------------------------------------
+// tStreamBuffer WriteCharacterToBuffers
+//----------------------------------------------------------------------
+int tStreamBuffer::WriteCharacterToBuffers(int c)
 {
   int result = c;
   for (std::vector<std::streambuf *>::iterator it = this->buffers.begin(); it != this->buffers.end(); ++it)
@@ -85,9 +102,9 @@ int tLogStreamBuffer::WriteCharacterToBuffers(int c)
 }
 
 //----------------------------------------------------------------------
-// tLogStreamBuffer overflow
+// tStreamBuffer overflow
 //----------------------------------------------------------------------
-int tLogStreamBuffer::overflow(int c)
+int tStreamBuffer::overflow(int c)
 {
   if (c == EOF)
   {
@@ -124,9 +141,9 @@ int tLogStreamBuffer::overflow(int c)
 }
 
 //----------------------------------------------------------------------
-// tLogStreamBuffer sync
+// tStreamBuffer sync
 //----------------------------------------------------------------------
-int tLogStreamBuffer::sync()
+int tStreamBuffer::sync()
 {
   int result = 0;
   for (std::vector<std::streambuf *>::iterator it = this->buffers.begin(); it != this->buffers.end(); ++it)
@@ -140,9 +157,9 @@ int tLogStreamBuffer::sync()
 }
 
 //----------------------------------------------------------------------
-// tLogStreamBuffer SetColor
+// tStreamBuffer SetColor
 //----------------------------------------------------------------------
-void tLogStreamBuffer::SetColor(tLogStreamBufferEffect effect, tLogStreamBufferColor color)
+void tStreamBuffer::SetColor(tStreamBufferEffect effect, tStreamBufferColor color)
 {
   char control_sequence[16];
   snprintf(control_sequence, sizeof(control_sequence), "\033[;%u;3%um", effect, color);
@@ -161,9 +178,9 @@ void tLogStreamBuffer::SetColor(tLogStreamBufferEffect effect, tLogStreamBufferC
 }
 
 //----------------------------------------------------------------------
-// tLogStreamBuffer ResetColor
+// tStreamBuffer ResetColor
 //----------------------------------------------------------------------
-void tLogStreamBuffer::ResetColor()
+void tStreamBuffer::ResetColor()
 {
   const char *control_sequence = "\033[;0m";
   const size_t length = strlen(control_sequence);
@@ -181,11 +198,11 @@ void tLogStreamBuffer::ResetColor()
 }
 
 //----------------------------------------------------------------------
-// tLogStreamBuffer InitializeMultiLinePadding
+// tStreamBuffer InitializeMultiLinePadding
 //----------------------------------------------------------------------
-void tLogStreamBuffer::InitializeMultiLinePadding()
+void tStreamBuffer::InitializeMultiLinePadding()
 {
-  if (!tLogDomainRegistry::GetInstance()->GetPadMultiLineMessages())
+  if (!tDomainRegistry::Instance().GetPadMultiLineMessages())
   {
     return;
   }
@@ -195,10 +212,15 @@ void tLogStreamBuffer::InitializeMultiLinePadding()
 }
 
 //----------------------------------------------------------------------
-// tLogStreamBuffer MarkEndOfPrefixForMultiLinePadding
+// tStreamBuffer MarkEndOfPrefixForMultiLinePadding
 //----------------------------------------------------------------------
-void tLogStreamBuffer::MarkEndOfPrefixForMultiLinePadding()
+void tStreamBuffer::MarkEndOfPrefixForMultiLinePadding()
 {
   this->collect_multi_line_pad_width = false;
 }
 
+//----------------------------------------------------------------------
+// End of namespace declaration
+//----------------------------------------------------------------------
+}
+}

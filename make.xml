@@ -3,21 +3,20 @@
 <targets>
 
   <rrlib name="logging"
-        libs="boost boost_thread">
+        libs="boost_thread">
     <sources>
-      *.cpp
+      configuration/*.cpp
+      messages/*.cpp
+      configuration.cpp
+      messages.h
+      log_levels.h
+      default_log_description.cpp
     </sources>
   </rrlib>
 
   <testprogram name="messages">
     <sources>
       test/test_messages.cpp
-    </sources>
-  </testprogram>
-
-  <testprogram name="logging">
-    <sources>
-      test/test_logging.cpp
     </sources>
   </testprogram>
 

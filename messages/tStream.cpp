@@ -19,19 +19,21 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    definitions.cpp
+/*!\file    tStream.cpp
  *
  * \author  Tobias Foehst
  *
- * \date    2010-07-31
+ * \date    2012-01-05
  *
  */
 //----------------------------------------------------------------------
-#include "rrlib/logging/definitions.h"
+#define __rrlib__logging__include_guard__
+#include "rrlib/logging/messages/tStream.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
+#include "rrlib/util/patterns/singleton.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -46,8 +48,17 @@
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
+// Namespace declaration
+//----------------------------------------------------------------------
+namespace rrlib
+{
+namespace logging
+{
+
+//----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
+typedef util::tSingletonHolder<std::mutex, util::singleton::NoDestruction> tStreamMutex;
 
 //----------------------------------------------------------------------
 // Const values
@@ -57,4 +68,32 @@
 // Implementation
 //----------------------------------------------------------------------
 
-char *rrlib::logging::default_log_description = const_cast<char *>("<Log description not defined>");
+//----------------------------------------------------------------------
+// tStream constructors
+//----------------------------------------------------------------------
+tStream::tStream(tStreamBuffer &stream_buffer)
+    : stream(&stream_buffer),
+    lock(tStreamMutex::Instance())
+{}
+
+//----------------------------------------------------------------------
+// tStream destructor
+//----------------------------------------------------------------------
+tStream::~tStream()
+{
+  tStreamBuffer *buffer = dynamic_cast<tStreamBuffer *>(this->stream.rdbuf());
+  if (buffer && buffer->EndsWithNewline())
+  {
+    this->stream << std::flush;
+  }
+  else
+  {
+    this->stream << std::endl;
+  }
+}
+
+//----------------------------------------------------------------------
+// End of namespace declaration
+//----------------------------------------------------------------------
+}
+}

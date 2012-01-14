@@ -35,6 +35,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <iterator>
+#include <iomanip>
 
 extern "C"
 {
@@ -42,6 +43,9 @@ extern "C"
 }
 
 #include "rrlib/util/join.h"
+
+#include "rrlib/logging/configuration.h"
+#include "rrlib/logging/messages.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -52,12 +56,10 @@ extern "C"
 //----------------------------------------------------------------------
 // Debugging
 //----------------------------------------------------------------------
-#include "rrlib/logging/test/debugging.h"
 
 //----------------------------------------------------------------------
 // Namespace usage
 //----------------------------------------------------------------------
-using namespace rrlib::logging;
 
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
@@ -74,21 +76,17 @@ using namespace rrlib::logging;
 namespace local
 {
 
-RRLIB_LOG_CREATE_DEFAULT_DOMAIN("local");
-
 struct Test
 {
-  RRLIB_LOG_CREATE_NAMED_DOMAIN(my_domain, "class");
-
   static void function()
   {
-    RRLIB_LOG_PRINT(eLL_DEBUG_WARNING, my_domain, "this ", "is a ", "local class test");
+    RRLIB_LOG_PRINT_TO(my_domain, rrlib::logging::eLL_DEBUG_WARNING, "this ", "is a ", "local class test");
 
-    RRLIB_LOG_PRINT(eLL_WARNING, "foo");
-    RRLIB_LOG_PRINT(eLL_ERROR, my_domain, "foo2");
+    RRLIB_LOG_PRINT(rrlib::logging::eLL_WARNING, "foo");
+    RRLIB_LOG_PRINT_TO(my_domain, rrlib::logging::eLL_ERROR, "foo2");
     if (true)
     {
-      RRLIB_LOG_PRINTF(eLL_DEBUG, my_domain, "%s\n", "FOO");
+      RRLIB_LOG_PRINTF_TO(my_domain, rrlib::logging::eLL_DEBUG, "%s\n", "FOO");
     }
   }
 };
@@ -104,75 +102,69 @@ struct TestStatic
 
   static void StaticMethod()
   {
-    RRLIB_LOG_PRINT_STATIC(eLL_USER, "From static method");
+    RRLIB_LOG_PRINT_STATIC(rrlib::logging::eLL_USER, "From static method");
   }
 
   void NonStaticMethod()
   {
-    RRLIB_LOG_PRINT(eLL_USER, "From non-static method");
+    RRLIB_LOG_PRINT(rrlib::logging::eLL_USER, "From non-static method");
   }
 };
 
 
 int main(int argc, char **argv)
 {
-  default_log_description = basename(argv[0]);
+  rrlib::logging::default_log_description = basename(argv[0]);
+  rrlib::logging::SetLogFilenamePrefix(basename(argv[0]));
 
 #ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
-  if (!tLogDomainRegistry::GetInstance()->ConfigureFromFile("logging_config.xml"))
+  if (!rrlib::logging::ConfigureFromFile("logging_config.xml"))
   {
-    std::cout << "Loading configuration failed!";
+    RRLIB_LOG_PRINT(rrlib::logging::eLL_ERROR, "Loading configuration failed!");
     return EXIT_FAILURE;
   }
+
+  rrlib::logging::PrintDomainConfigurations();
 #endif
 
-  tLogDomainRegistry::GetInstance()->SetOutputFileNamePrefix(basename(argv[0]));
+//  rrlib::logging::SetDomainPrintsName(".", true);
+//  rrlib::logging::SetDomainPrintsTime(".", true);
+//  rrlib::logging::SetDomainPrintsLevel(".", true);
+//  rrlib::logging::SetDomainPrintsLocation(".", true);
+//  rrlib::logging::SetDomainMaxMessageLevel(".", rrlib::logging::eLL_DEBUG_VERBOSE_3);
+//  rrlib::logging::SetDomainSink(".", rrlib::logging::eLS_FILE);
 
+  rrlib::logging::SetDomainMaxMessageLevel(".example", rrlib::logging::eLL_DEBUG_VERBOSE_3);
+//  rrlib::logging::SetDomainSink(".example", rrlib::logging::eLS_STDOUT, rrlib::logging::eLS_FILE_SUBTREE);
 
-//  std::cout << tLogDomainRegistry::GetInstance() << std::endl;
-
-//  tLogDomainRegistry::GetInstance()->SetDomainConfiguresSubTree("global", true);
-//  tLogDomainRegistry::GetInstance()->SetDomainPrintsName("global", true);
-//  tLogDomainRegistry::GetInstance()->SetDomainPrintsTime("global", true);
-//  tLogDomainRegistry::GetInstance()->SetDomainPrintsLevel("global", true);
-//  tLogDomainRegistry::GetInstance()->SetDomainPrintsLocation("global", true);
-//  tLogDomainRegistry::GetInstance()->SetDomainMinMessageLevel("global", eLL_VERBOSE);
-//  tLogDomainRegistry::GetInstance()->SetDomainStreamID("global", eLS_FILE);
-
-//  tLogDomainRegistry::GetInstance()->SetDomainStreamMask("global", eLSM_STDOUT | eLSM_FILE | eLSM_COMBINED_FILE);
-
-//  tLogDomainRegistry::GetInstance()->SetDomainConfiguresSubTree(".example", true);
-//  tLogDomainRegistry::GetInstance()->SetDomainMinMessageLevel(".example", eLL_VERBOSE);
-//  tLogDomainRegistry::GetInstance()->SetDomainStreamID(".example", eLS_COMBINED_FILE);
-
-
-  RRLIB_LOG_PRINT(eLL_WARNING, "foo");
+  RRLIB_LOG_PRINT(rrlib::logging::eLL_WARNING, "foo");
 
   libA::Test();
   libB::Test();
 
   local::Test::function();
 
-  DEBUGMSG("blablabla Debug");
-  INFOMSG("blablabla Info");
-  WARNINGMSG("blablabla Warning");
-  ERRORMSG("blablabla Error");
-  USERMSG("blablabla User");
+  RRLIB_LOG_PRINT(rrlib::logging::eLL_ERROR, std::runtime_error("runtime_error"));
 
-  RRLIB_LOG_PRINT(eLL_ERROR, std::runtime_error("runtime_error"));
+  RRLIB_LOG_PRINT(rrlib::logging::eLL_WARNING, "0x", std::setw(20), std::setfill('0'), std::hex, 324);
 
-  RRLIB_LOG_PRINT(eLL_WARNING, std::hex, 324);
-
-  RRLIB_LOG_PRINT(eLL_ERROR, "Das hier ist ein mehrzeiliger\nFehler.");
-  RRLIB_LOG_PRINT(eLL_USER, "Und das hier ein mehrzeiliger\nText fuer den lieben Benutzer.");
+  RRLIB_LOG_PRINT(rrlib::logging::eLL_ERROR, "Das hier ist ein mehrzeiliger\nFehler.");
+  RRLIB_LOG_PRINT(rrlib::logging::eLL_USER, "Und das hier ein mehrzeiliger\nText fuer den lieben Benutzer.");
 
   const char* texts[] = {"Dies", "ist", "ein", "kleiner", "Text."};
-  //std::copy(&texts[0], &texts[0] + 5, std::ostream_iterator<const char*>(RRLIB_LOG_PRINT(eLL_DEBUG), " "));   that is not pretty. use the following line....
-  RRLIB_LOG_PRINT(eLL_DEBUG, rrlib::util::Join(texts, texts + 5, " "));
+  RRLIB_LOG_PRINT(rrlib::logging::eLL_DEBUG, rrlib::util::Join(texts, texts + 5, " "));
 
   TestStatic test_static;
   test_static.StaticMethod();
   test_static.NonStaticMethod();
 
+  int *a = 0;
+  const int *b = 0;
+  RRLIB_LOG_PRINT(rrlib::logging::eLL_DEBUG, "Pointer: ", a);
+  RRLIB_LOG_PRINT(rrlib::logging::eLL_DEBUG, "Const-Pointer: ", b);
+  RRLIB_LOG_PRINT(rrlib::logging::eLL_DEBUG, "Bool: ", true, false);
+  RRLIB_LOG_PRINT(rrlib::logging::eLL_DEBUG, "Function: ", main);
+
+  rrlib::logging::PrintDomainConfigurations();
   return EXIT_SUCCESS;
 }

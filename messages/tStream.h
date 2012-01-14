@@ -19,16 +19,15 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    tLogStream.h
+/*!\file    tStream.h
  *
  * \author  Tobias Foehst
- * \author  Max Reichardt
  *
  * \date    2010-07-06
  *
- * \brief Contains tLogStream
+ * \brief Contains tStream
  *
- * \b tLogStream
+ * \b tStream
  *
  * This proxy class for std::ostream allows synchronized streaming.
  * Streaming typically has the problem that one can not easily determine
@@ -36,8 +35,8 @@
  * stream for synchronized output is not directly possible.
  *
  * By returning a proxy for each output stream the logging domain creates
- * creates a temporary object that lives as long as consecutive streaming
- * operations are performed. Afterwards, the proxy will be desctructed
+ * a temporary object that lives as long as consecutive streaming
+ * operations are performed. Afterwards, the proxy will be destroyed
  * immediately. Hence, the correct times for acquiring and releasing the
  * lock are defined.
  *
@@ -48,24 +47,26 @@
  */
 //----------------------------------------------------------------------
 #ifndef __rrlib__logging__include_guard__
-#error Invalid include directive. Try #include "rrlib/logging/definitions.h" instead.
+#error Invalid include directive. Try #include "rrlib/logging/messages.h" instead.
 #endif
 
-#ifndef __rrlib__logging__tLogStream_h__
-#define __rrlib__logging__tLogStream_h__
+#ifndef __rrlib__logging__tStream_h__
+#define __rrlib__logging__tStream_h__
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
+#include <iostream>
+#include <mutex>
+
 #include <exception>
 #include <boost/type_traits/is_base_of.hpp>
 #include <boost/utility/enable_if.hpp>
-#include <memory>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "rrlib/logging/tLogStreamContext.h"
+#include "rrlib/logging/messages/tStreamBuffer.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -82,9 +83,6 @@ namespace logging
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
-//! Shared pointer to instances of tLogDomain for user space
-class tLogDomain;
-typedef std::shared_ptr<const tLogDomain> tLogDomainSharedPointer;
 
 //----------------------------------------------------------------------
 // Class declaration
@@ -95,8 +93,8 @@ typedef std::shared_ptr<const tLogDomain> tLogDomainSharedPointer;
  *  stream for synchronized output is not directly possible.
  *
  *  By returning a proxy for each output stream the logging domain creates
- *  creates a temporary object that lives as long as consecutive streaming
- *  operations are performed. Afterwards, the proxy will be desctructed
+ *  a temporary object that lives as long as consecutive streaming
+ *  operations are performed. Afterwards, the proxy will be destroyed
  *  immediately. Hence, the correct times for acquiring and releasing the
  *  lock are defined.
  *
@@ -105,7 +103,7 @@ typedef std::shared_ptr<const tLogDomain> tLogDomainSharedPointer;
  *  on the heap is not supported to avoid dangling locks.
  *
  */
-class tLogStream
+class tStream
 {
 
 //----------------------------------------------------------------------
@@ -113,28 +111,20 @@ class tLogStream
 //----------------------------------------------------------------------
 public:
 
-  /*! The ctor of tLogStream
+  /*! The ctor of tStream
    *
    * Acquires a lock for the output.
    * This methods blocks until the lock can be acquired.
    *
    * \param stream   The std::ostream that is used via this proxy
-   * \param mutex    Mutex to acquire while this proxy is used
    */
-  explicit tLogStream(std::shared_ptr<tLogStreamContext> stream_context)
-      : stream_context(stream_context)
-  {}
+  explicit tStream(tStreamBuffer &stream_buffer);
 
-  /*! The copy ctor of tLogStream
+  /*! The ctor of tStream
    *
-   * Copies a tLogStream object and its lock.
-   * This methods blocks until the lock can be re-acquired.
-   *
-   * \param other   The other tLogStream object
+   * Releases the lock for the output and takes care of flushing and trailing newlines.
    */
-  tLogStream(const tLogStream &other)
-      : stream_context(other.stream_context)
-  {}
+  ~tStream();
 
   /*! Implicit conversion to std::ostream for e.g. std::ostream_iterator
    *
@@ -143,9 +133,9 @@ public:
    *
    * \returns A reference to the underlying std::ostream
    */
-  operator std::ostream &()
+  inline operator std::ostream &()
   {
-    return this->stream_context->GetStream();
+    return this->stream;
   }
 
   /*! Streaming operator (forwarder)
@@ -158,9 +148,9 @@ public:
    * \returns A reference to the altered stream (in this case the proxy)
    */
   template <typename T>
-  inline typename boost::disable_if<boost::is_base_of<std::exception, T>, tLogStream &>::type operator << (const T &value)
+  inline typename boost::disable_if<boost::is_base_of<std::exception, T>, tStream>::type &operator << (const T &value)
   {
-    this->stream_context->GetStream() << value;
+    this->stream << value;
     return *this;
   }
 
@@ -172,9 +162,9 @@ public:
    *
    * \returns A reference to the altered stream (in this case the proxy)
    */
-  inline tLogStream &operator << (const std::exception &exception)
+  inline tStream &operator << (std::exception &exception)
   {
-    this->stream_context->GetStream() << "Exception (" << typeid(exception).name() << "): " << exception.what();
+    this->stream << "Exception (" << typeid(exception).name() << "): " << exception.what();
     return *this;
   }
 
@@ -187,9 +177,9 @@ public:
    *
    * \returns A reference to the altered stream (in this case the proxy)
    */
-  inline tLogStream &operator << (bool value)
+  inline tStream &operator << (bool value)
   {
-    this->stream_context->GetStream() << (value ? "<true>" : "<false>");
+    this->stream << (value ? "<true>" : "<false>");
     return *this;
   }
 
@@ -205,17 +195,30 @@ public:
    * \returns A reference to the altered stream (in this case the proxy)
    */
   template <typename T>
-  inline tLogStream &operator << (const T *pointer)
+  inline tStream &operator << (const T *pointer)
   {
     if (pointer == 0)
     {
-      this->stream_context->GetStream() << "<nullptr>";
+      this->stream << "<nullptr>";
       return *this;
     }
-    this->stream_context->GetStream() << pointer;
+    this->stream << pointer;
     return *this;
   }
 
+  template <typename T>
+  inline tStream &operator << (T *pointer)
+  {
+    *this << const_cast<const T *>(pointer);
+    return *this;
+  }
+
+  template <typename T, typename ... Args>
+  inline tStream &operator << (T(*function)(Args...))
+  {
+    *this << reinterpret_cast<void *>(function);
+    return *this;
+  }
 
   /*! Streaming operator for functions (forwarder)
    *
@@ -227,35 +230,9 @@ public:
    *
    * \returns A reference to the altered stream (in this case the proxy)
    */
-  inline tLogStream &operator << (std::ostream &(&manipulator)(std::ostream &))
+  inline tStream &operator << (std::ios_base &(*manipulator)(std::ios_base &))
   {
-    manipulator(this->stream_context->GetStream());
-    return *this;
-  }
-
-  inline tLogStream &Evaluate()
-  {
-    return *this;
-  }
-
-  inline tLogStream &Evaluate(tLogDomainSharedPointer(&)())
-  {
-    return *this;
-  }
-
-  template <typename T1, typename ... TRest>
-  inline tLogStream &Evaluate(const T1 &arg1, const TRest &... args)
-  {
-    *this << arg1;
-    this->Evaluate(args...);
-    return *this;
-  }
-
-  template <typename T1, typename ... TRest>
-  inline tLogStream &Evaluate(tLogDomainSharedPointer(&)(), const T1 &arg1, const TRest &... args)
-  {
-    *this << arg1;
-    this->Evaluate(args...);
+    manipulator(this->stream);
     return *this;
   }
 
@@ -264,10 +241,14 @@ public:
 //----------------------------------------------------------------------
 private:
 
-  std::shared_ptr<tLogStreamContext> stream_context;
+  std::ostream stream;
+  std::unique_lock<std::mutex> lock;
+
+  // Prohibit copy
+  tStream(const tStream &other);
 
   // Prohibit assignment
-  tLogStream &operator = (const tLogStream &other);
+  tStream &operator = (const tStream &other);
 
   // Prohibit creation on heap
   void *operator new(size_t size);
