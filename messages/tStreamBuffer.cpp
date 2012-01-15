@@ -166,7 +166,7 @@ void tStreamBuffer::SetColor(tStreamBufferEffect effect, tStreamBufferColor colo
   const size_t length = strlen(control_sequence);
   for (std::vector<std::streambuf *>::iterator it = this->buffers.begin(); it != this->buffers.end(); ++it)
   {
-    int file_descriptor = rrlib::util::GetFileDescriptor(*it);
+    int file_descriptor = util::GetFileDescriptor(*it);
     if (file_descriptor > 0 && isatty(file_descriptor))
     {
       for (size_t i = 0; i < length; ++i)
@@ -186,7 +186,7 @@ void tStreamBuffer::ResetColor()
   const size_t length = strlen(control_sequence);
   for (std::vector<std::streambuf *>::iterator it = this->buffers.begin(); it != this->buffers.end(); ++it)
   {
-    int file_descriptor = rrlib::util::GetFileDescriptor(*it);
+    int file_descriptor = util::GetFileDescriptor(*it);
     if (file_descriptor > 0 && isatty(file_descriptor))
     {
       for (size_t i = 0; i < length; ++i)
