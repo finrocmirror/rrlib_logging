@@ -183,6 +183,26 @@ public:
     return *this;
   }
 
+  /*! Streaming operator for bool values
+   *
+   * This method implements more appropriate log streaming for bool values,
+   * printing "<true>" and "<false>" instead of 1 and 0.
+   *
+   * \param value   The bool value to put into the stream
+   *
+   * \returns A reference to the altered stream (in this case the proxy)
+   */
+  inline tStream &operator << (char value)
+  {
+    if (value == 0)
+    {
+      this->stream << "<null>";
+      return *this;
+    }
+    this->stream << value;
+    return *this;
+  }
+
   /*! Streaming operator for pointers
    *
    * This method implements more appropriate log streaming for pointer

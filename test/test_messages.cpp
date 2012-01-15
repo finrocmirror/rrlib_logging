@@ -164,6 +164,7 @@ int main(int argc, char **argv)
   RRLIB_LOG_PRINT(rrlib::logging::eLL_DEBUG, "Const-Pointer: ", b);
   RRLIB_LOG_PRINT(rrlib::logging::eLL_DEBUG, "Bool: ", true, false);
   RRLIB_LOG_PRINT(rrlib::logging::eLL_DEBUG, "Function: ", main);
+  RRLIB_LOG_PRINT(rrlib::logging::eLL_DEBUG, "Mal noch einzelne Zeichen: ", 'a', '\0', 'b');
 
   rrlib::logging::PrintDomainConfigurations();
   return EXIT_SUCCESS;

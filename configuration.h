@@ -61,11 +61,6 @@ namespace logging
 // Function declaration
 //----------------------------------------------------------------------
 
-const char *GetLogDescription()
-{
-  return "RRLib Logging";
-}
-
 void SetLogFilenamePrefix(const std::string &filename_prefix);
 
 void SetPadPrefixColumns(bool value);
