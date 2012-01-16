@@ -190,7 +190,7 @@ const tConfiguration &tDomainRegistryImplementation::GetConfigurationByFilename(
   if (!found_prefix && !this->rrlib_logging_path_entries.back().empty())
   {
     std::stringstream message;
-    message << "'" << filename << "' is not in RRLIB_LOG_PATH";
+    message << "'" << filename << "' is not in RRLIB_LOGGING_PATH";
     throw std::runtime_error(message.str());
   }
 
