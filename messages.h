@@ -72,7 +72,7 @@
       rrlib::logging::Print(domain, GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level, args); \
     } \
   } while(0) \
-
+     
 #define __RRLIB_LOG_PRINT_STATIC__(domain, level, args...) \
   do \
   { \
@@ -81,16 +81,16 @@
       rrlib::logging::Print(domain, "<static>", __FUNCTION__, __FILE__, __LINE__, level, args); \
     } \
   } while(0) \
-
+     
 #define __RRLIB_LOG_PRINTF__(domain, level, args...) \
   do \
   { \
     if ((level) <= domain.MaxMessageLevel()) \
-	{ \
+    { \
       rrlib::logging::PrintFormatted(domain, GetLogDescription(), __FUNCTION__, __FILE__, __LINE__, level, args); \
     } \
   } while(0) \
-
+     
 #define __RRLIB_LOG_PRINTF_STATIC__(domain, level, args...) \
   do \
   { \
@@ -99,7 +99,7 @@
       rrlib::logging::PrintFormatted(domain, "<static>", __FUNCTION__, __FILE__, __LINE__, level, args); \
     } \
   } while(0) \
-
+     
 //----------------------------------------------------------------------
 // The macro interface to the logging library
 //----------------------------------------------------------------------
@@ -115,10 +115,10 @@
   { \
     if ((level) <= rrlib::logging::eLL_DEBUG) \
     { \
-      __RRLIB_LOG_PRINT__(rrlib::logging::GetConfiguration(__FILE__), level, args) \
+      __RRLIB_LOG_PRINT__(rrlib::logging::GetConfiguration(__FILE__), level, args); \
     } \
   } while (0) \
-
+     
 /*! Macro to print messages to explicitly specified domain using stream semantics
  *
  * \param domain   The domain the message should be printed to
@@ -130,10 +130,10 @@
   { \
     if ((level) <= rrlib::logging::eLL_DEBUG) \
     { \
-      __RRLIB_LOG_PRINT__(rrlib::logging::GetConfiguration(__FILE__, #domain), level, args) \
+      __RRLIB_LOG_PRINT__(rrlib::logging::GetConfiguration(__FILE__, #domain), level, args); \
     } \
   } while (0) \
-
+     
 /*! Macro to print messages using stream semantics from static context
  *
  * \param level    The level of the message
@@ -144,10 +144,10 @@
   { \
     if ((level) <= rrlib::logging::eLL_DEBUG) \
     { \
-      __RRLIB_LOG_PRINT_STATIC__(rrlib::logging::GetConfiguration(__FILE__), level, args) \
+      __RRLIB_LOG_PRINT_STATIC__(rrlib::logging::GetConfiguration(__FILE__), level, args); \
     } \
   } while (0) \
-
+     
 /*! Macro to print messages to explicitly specified domain using stream semantics from static context
  *
  * \param domain   The domain the message should be printed to
@@ -159,10 +159,10 @@
   { \
     if ((level) <= rrlib::logging::eLL_DEBUG) \
     { \
-      __RRLIB_LOG_PRINT_STATIC__(rrlib::logging::GetConfiguration(__FILE__, #domain), level, args) \
+      __RRLIB_LOG_PRINT_STATIC__(rrlib::logging::GetConfiguration(__FILE__, #domain), level, args); \
     } \
   } while (0) \
-
+     
 /*! Macro to print messages using printf semantics
  *
  * \param level    The level of the message
@@ -173,10 +173,10 @@
   { \
     if ((level) <= rrlib::logging::eLL_DEBUG) \
     { \
-      __RRLIB_LOG_PRINTF__(rrlib::logging::GetConfiguration(__FILE__), level, args) \
+      __RRLIB_LOG_PRINTF__(rrlib::logging::GetConfiguration(__FILE__), level, args); \
     } \
   } while (0) \
-
+     
 /*! Macro to print messages to explicitly specified domain using printf semantics
  *
  * \param domain   The domain the message should be printed to
@@ -188,10 +188,10 @@
   { \
     if ((level) <= rrlib::logging::eLL_DEBUG) \
     { \
-      __RRLIB_LOG_PRINTF__(rrlib::logging::GetConfiguration(__FILE__, #domain), level, args) \
+      __RRLIB_LOG_PRINTF__(rrlib::logging::GetConfiguration(__FILE__, #domain), level, args); \
     } \
   } while (0) \
-
+     
 /*! Macro to print messages using printf semantics from static context
  *
  * \param level    The level of the message
@@ -202,10 +202,10 @@
   { \
     if ((level) <= rrlib::logging::eLL_DEBUG) \
     { \
-      __RRLIB_LOG_PRINTF_STATIC__(rrlib::logging::GetConfiguration(__FILE__), level, args) \
+      __RRLIB_LOG_PRINTF_STATIC__(rrlib::logging::GetConfiguration(__FILE__), level, args); \
     } \
   } while (0) \
-
+     
 /*! Macro to print messages to explicitly specified domain using printf semantics from static context
  *
  * \param domain   The domain the message should be printed to
@@ -217,10 +217,10 @@
   { \
     if ((level) <= rrlib::logging::eLL_DEBUG) \
     { \
-      __RRLIB_LOG_PRINTF_STATIC__(rrlib::logging::GetConfiguration(__FILE__, #domain), level, args) \
+      __RRLIB_LOG_PRINTF_STATIC__(rrlib::logging::GetConfiguration(__FILE__, #domain), level, args); \
     } \
   } while (0) \
-
+     
 #else
 
 /*! Macro to print messages using stream semantics
@@ -230,7 +230,7 @@
  */
 #define RRLIB_LOG_PRINT(level, args...) \
   __RRLIB_LOG_PRINT__(rrlib::logging::GetConfiguration(__FILE__), level, args) \
-
+   
 /*! Macro to print messages to explicitly specified domain using stream semantics
  *
  * \param domain   The domain the message should be printed to
@@ -239,7 +239,7 @@
  */
 #define RRLIB_LOG_PRINT_TO(domain, level, args...) \
   __RRLIB_LOG_PRINT__(rrlib::logging::GetConfiguration(__FILE__, #domain), level, args) \
-
+   
 /*! Macro to print messages using stream semantics static context
  *
  * \param level    The level of the message
@@ -247,7 +247,7 @@
  */
 #define RRLIB_LOG_PRINT_STATIC(level, args...) \
   __RRLIB_LOG_PRINT_STATIC__(rrlib::logging::GetConfiguration(__FILE__), level, args) \
-
+   
 /*! Macro to print messages to explicitly specified using stream semantics static context
  *
  * \param domain   The domain the message should be printed to
@@ -256,7 +256,7 @@
  */
 #define RRLIB_LOG_PRINT_STATIC_TO(domain, level, args...) \
   __RRLIB_LOG_PRINT_STATIC__(rrlib::logging::GetConfiguration(__FILE__, #domain), level, args) \
-
+   
 /*! Macro to print messages using printf semantics
  *
  * \param level    The level of the message
@@ -264,7 +264,7 @@
  */
 #define RRLIB_LOG_PRINTF(level, args...) \
   __RRLIB_LOG_PRINTF__(rrlib::logging::GetConfiguration(__FILE__), level, args) \
-
+   
 /*! Macro to print messages to explicitly specified using printf semantics
  *
  * \param domain   The domain the message should be printed to
@@ -273,7 +273,7 @@
  */
 #define RRLIB_LOG_PRINTF_TO(domain, level, args...) \
   __RRLIB_LOG_PRINTF__(rrlib::logging::GetConfiguration(__FILE__, #domain), level, args) \
-
+   
 /*! Macro to print messages using printf semantics from static context
  *
  * \param level    The level of the message
@@ -281,7 +281,7 @@
  */
 #define RRLIB_LOG_PRINTF_STATIC(level, args...) \
   __RRLIB_LOG_PRINTF_STATIC__(rrlib::logging::GetConfiguration(__FILE__), level, args) \
-
+   
 /*! Macro to print messages to explicitly specified using printf semantics from static context
  *
  * \param domain   The domain the message should be printed to
@@ -290,7 +290,7 @@
  */
 #define RRLIB_LOG_PRINTF_STATIC_TO(domain, level, args...) \
   __RRLIB_LOG_PRINTF_STATIC__(rrlib::logging::GetConfiguration(__FILE__, #domain), level, args) \
-
+   
 #endif
 
 
