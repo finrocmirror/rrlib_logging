@@ -3,7 +3,7 @@
 <targets>
 
   <rrlib name="logging"
-        libs="boost_thread">
+        libs="boost_thread rt">
     <sources>
       configuration/*.cpp
       messages/*.cpp
