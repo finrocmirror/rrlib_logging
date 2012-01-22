@@ -74,7 +74,7 @@ namespace logging
 // tDomainRegistryImplementation constructors
 //----------------------------------------------------------------------
 tDomainRegistryImplementation::tDomainRegistryImplementation()
-    : global_configuration(new tConfiguration(0, "")),
+  : global_configuration(new tConfiguration(0, "")),
     max_domain_name_length(0),
     pad_prefix_columns(true),
     pad_multi_line_messages(true)
@@ -99,7 +99,7 @@ tDomainRegistryImplementation::tDomainRegistryImplementation()
 
   // For efficient best-fit lookup sort entries by length (longest-first)
   std::sort(this->rrlib_logging_path_entries.begin(), this->rrlib_logging_path_entries.end(),
-            [](const std::string &a, const std::string &b)
+            [](const std::string & a, const std::string & b)
   {
     return a.length() > b.length();
   });

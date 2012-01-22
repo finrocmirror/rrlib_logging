@@ -87,7 +87,7 @@ const int cDEFAULT_SINK_MASK = 1 << eLS_STDOUT;         //!< Default output stre
 // tConfiguration constructors
 //----------------------------------------------------------------------
 tConfiguration::tConfiguration(const tConfiguration *parent, const std::string &name)
-    : parent(parent),
+  : parent(parent),
     name(name),
     prints_name(parent ? parent->prints_name : cDEFAULT_PRINTS_NAME),
     prints_time(parent ? parent->prints_time : cDEFAULT_PRINTS_TIME),

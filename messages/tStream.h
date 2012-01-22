@@ -250,7 +250,7 @@ public:
    *
    * \returns A reference to the altered stream (in this case the proxy)
    */
-  inline tStream &operator << (std::ios_base &(*manipulator)(std::ios_base &))
+  inline tStream &operator << (std::ios_base & (*manipulator)(std::ios_base &))
   {
     manipulator(this->stream);
     return *this;

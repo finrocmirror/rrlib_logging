@@ -79,7 +79,7 @@ namespace logging
 // tStreamBuffer constructors
 //----------------------------------------------------------------------
 tStreamBuffer::tStreamBuffer()
-    : ends_with_newline(false),
+  : ends_with_newline(false),
     multi_line_pad_width(0),
     collect_multi_line_pad_width(false),
     pad_before_next_character(false)
