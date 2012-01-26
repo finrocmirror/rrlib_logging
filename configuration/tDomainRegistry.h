@@ -214,7 +214,11 @@ private:
 
 };
 
-typedef util::tSingletonHolder<tDomainRegistryImplementation, util::singleton::NoDestruction> tDomainRegistry;
+typedef util::tSingletonHolder<tDomainRegistryImplementation, util::singleton::Longevity> tDomainRegistry;
+inline unsigned int GetLongevity(tDomainRegistryImplementation *)
+{
+  return 0xFFFFFFFF;
+}
 
 //----------------------------------------------------------------------
 // End of namespace declaration
