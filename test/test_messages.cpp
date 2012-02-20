@@ -144,7 +144,9 @@ int main(int argc, char **argv)
 
   local::Test::function();
 
-  RRLIB_LOG_PRINT(rrlib::logging::eLL_ERROR, std::runtime_error("runtime_error"));
+  std::runtime_error exception("runtime_error");
+  std::exception &e(exception);
+  RRLIB_LOG_PRINT(rrlib::logging::eLL_ERROR, e);
 
   RRLIB_LOG_PRINT(rrlib::logging::eLL_WARNING, "0x", std::setw(20), std::setfill('0'), std::hex, 324);
 

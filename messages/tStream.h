@@ -162,6 +162,11 @@ public:
    *
    * \returns A reference to the altered stream (in this case the proxy)
    */
+  inline tStream &operator << (const std::exception &exception)
+  {
+    this->stream << "Exception (" << typeid(exception).name() << "): " << exception.what();
+    return *this;
+  }
   inline tStream &operator << (std::exception &exception)
   {
     this->stream << "Exception (" << typeid(exception).name() << "): " << exception.what();

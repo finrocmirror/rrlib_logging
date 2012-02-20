@@ -76,13 +76,13 @@ void SendFormattedLocationToStream(tStream &stream, const char *filename, unsign
 namespace
 {
 template <typename THead>
-void SendDataToStream(tStream &stream, THead head)
+void SendDataToStream(tStream &stream, const THead &head)
 {
   stream << head;
 }
 
 template <typename THead, typename ... TTail>
-void SendDataToStream(tStream &stream, THead head, TTail ... tail)
+void SendDataToStream(tStream &stream, const THead &head, const TTail &... tail)
 {
   stream << head;
   SendDataToStream(stream, tail...);
@@ -92,7 +92,7 @@ void SendDataToStream(tStream &stream, THead head, TTail ... tail)
 
 
 template <typename TLogDescription, typename ... TArgs>
-void Print(const tConfiguration &domain_configuration, const TLogDescription &log_description, const char *function, const char *filename, unsigned int line, tLogLevel level, TArgs ... args)
+void Print(const tConfiguration &domain_configuration, const TLogDescription &log_description, const char *function, const char *filename, unsigned int line, tLogLevel level, const TArgs &... args)
 {
   if (level > domain_configuration.MaxMessageLevel())
   {
