@@ -39,7 +39,7 @@
  * The enumeration that encodes the message levels. These levels are
  * predefined and can be used to give the messages different priorities,
  * as messages with too low level will be suppressed by a configuration
- * setting or when _RRLIB_LOGGING_LESS_OUTPUT_ is defined (e.g. in
+ * setting or when RRLIB_LOGGING_LESS_OUTPUT is defined (e.g. in
  * release mode).
  * They are also used for colored output to stdout or stderr.
  *

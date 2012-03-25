@@ -63,7 +63,7 @@ namespace logging
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
-#ifdef _RRLIB_LOGGING_LESS_OUTPUT_
+#ifdef RRLIB_LOGGING_LESS_OUTPUT
 const bool cDEFAULT_PRINTS_NAME = false;                //!< Default prints name setting for reduced output mode
 const bool cDEFAULT_PRINTS_TIME = false;                //!< Default prints time setting for reduced output mode
 const bool cDEFAULT_PRINTS_LEVEL = false;               //!< Default prints level setting for reduced output mode

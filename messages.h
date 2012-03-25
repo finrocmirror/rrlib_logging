@@ -103,7 +103,7 @@
 //----------------------------------------------------------------------
 // The macro interface to the logging library
 //----------------------------------------------------------------------
-#ifdef _RRLIB_LOGGING_LESS_OUTPUT_
+#ifdef RRLIB_LOGGING_LESS_OUTPUT
 
 /*! Macro to print messages using stream semantics
  *

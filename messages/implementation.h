@@ -112,7 +112,7 @@ void Print(const tConfiguration &domain_configuration, const TLogDescription &lo
 
     SetColor(domain_configuration.StreamBuffer(), level);
 
-#ifndef _RRLIB_LOGGING_LESS_OUTPUT_
+#ifndef RRLIB_LOGGING_LESS_OUTPUT
     if (domain_configuration.PrintsName())
     {
       SendFormattedDomainNameToStream(stream, domain_configuration.GetFullQualifiedName());
@@ -125,7 +125,7 @@ void Print(const tConfiguration &domain_configuration, const TLogDescription &lo
 
     stream << log_description << "::" << function << " ";
 
-#ifndef _RRLIB_LOGGING_LESS_OUTPUT_
+#ifndef RRLIB_LOGGING_LESS_OUTPUT
     if (domain_configuration.PrintsLocation())
     {
       SendFormattedLocationToStream(stream, filename, line);
