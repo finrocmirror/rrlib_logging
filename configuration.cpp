@@ -42,7 +42,7 @@
 #include "rrlib/logging/messages.h"
 
 #ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
-#include "rrlib/xml2_wrapper/tXMLDocument.h"
+#include "rrlib/xml/tDocument.h"
 #endif
 
 //----------------------------------------------------------------------
@@ -165,7 +165,7 @@ bool ConfigureFromFile(const std::string &file_name)
 
 #ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
 
-  xml2::tXMLDocument document(file_name);
+  xml::tDocument document(file_name);
   return ConfigureFromXMLNode(document.RootNode());
 
 #endif
@@ -182,7 +182,7 @@ namespace
 //----------------------------------------------------------------------
 // AddConfigurationFromXMLNode
 //----------------------------------------------------------------------
-bool AddConfigurationFromXMLNode(const xml2::tXMLNode &node, const std::string &parent_name)
+bool AddConfigurationFromXMLNode(const xml::tNode &node, const std::string &parent_name)
 {
   static const std::vector<std::string> level_names = { "error", "warning", "debug_warning", "debug", "debug_verbose_1", "debug_verbose_2", "debug_verbose_3" };
   static const std::vector<std::string> sink_names = { "stdout", "stderr", "file", "combined_file" };
@@ -244,7 +244,7 @@ bool AddConfigurationFromXMLNode(const xml2::tXMLNode &node, const std::string &
 //  }
 
 //  int sink_mask = 0;
-//  for (xml2::tXMLNode::const_iterator it = node.ChildrenBegin(); it != node.ChildrenEnd(); ++it)
+//  for (xml::tNode::const_iterator it = node.ChildrenBegin(); it != node.ChildrenEnd(); ++it)
 //  {
 //    if (it->Name() == "sink")
 //    {
@@ -261,7 +261,7 @@ bool AddConfigurationFromXMLNode(const xml2::tXMLNode &node, const std::string &
 //    this->SetDomainSinkMask(name, sink_mask);
 //  }
 
-  for (xml2::tXMLNode::const_iterator it = node.ChildrenBegin(); it != node.ChildrenEnd(); ++it)
+  for (xml::tNode::const_iterator it = node.ChildrenBegin(); it != node.ChildrenEnd(); ++it)
   {
     if (it->Name() == "domain")
     {
@@ -280,7 +280,7 @@ bool AddConfigurationFromXMLNode(const xml2::tXMLNode &node, const std::string &
 //----------------------------------------------------------------------
 // ConfigureFromXMLNode
 //----------------------------------------------------------------------
-bool ConfigureFromXMLNode(const xml2::tXMLNode &node)
+bool ConfigureFromXMLNode(const xml::tNode &node)
 {
   if (node.Name() != "rrlib_logging")
   {
@@ -299,7 +299,7 @@ bool ConfigureFromXMLNode(const xml2::tXMLNode &node)
       SetPadMultiLineMessages(node.GetBoolAttribute("pad_multi_line_messages"));
     }
 
-    for (xml2::tXMLNode::const_iterator it = node.ChildrenBegin(); it != node.ChildrenEnd(); ++it)
+    for (xml::tNode::const_iterator it = node.ChildrenBegin(); it != node.ChildrenEnd(); ++it)
     {
       if (it->Name() == "domain")
       {
@@ -310,7 +310,7 @@ bool ConfigureFromXMLNode(const xml2::tXMLNode &node)
       }
     }
   }
-  catch (const xml2::tXML2WrapperException &exception)
+  catch (const xml::tException &exception)
   {
     RRLIB_LOG_PRINT(eLL_ERROR, exception);
     return false;

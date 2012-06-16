@@ -105,7 +105,7 @@ bool ConfigureFromFile(const std::string &filename);
  *
  * \returns Whether the configuration could be applied or not
  */
-bool ConfigureFromXMLNode(const xml2::tXMLNode &node);
+bool ConfigureFromXMLNode(const xml::tNode &node);
 
 #endif
 
