@@ -117,7 +117,7 @@ int main(int argc, char **argv)
   rrlib::logging::default_log_description = basename(argv[0]);
   rrlib::logging::SetLogFilenamePrefix(basename(argv[0]));
 
-#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
+#ifdef _LIB_RRLIB_XML_PRESENT_
   if (!rrlib::logging::ConfigureFromFile("logging_config.xml"))
   {
     RRLIB_LOG_PRINT(rrlib::logging::eLL_ERROR, "Loading configuration failed!");

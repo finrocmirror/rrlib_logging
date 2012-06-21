@@ -92,7 +92,7 @@ void PrintDomainConfigurations();
  */
 bool ConfigureFromFile(const std::string &filename);
 
-#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
+#ifdef _LIB_RRLIB_XML_PRESENT_
 
 /*! Read domain configuration from a given XML node
  *

@@ -41,7 +41,7 @@
 
 #include "rrlib/logging/messages.h"
 
-#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
+#ifdef _LIB_RRLIB_XML_PRESENT_
 #include "rrlib/xml/tDocument.h"
 #endif
 
@@ -163,7 +163,7 @@ void PrintDomainConfigurations()
 bool ConfigureFromFile(const std::string &file_name)
 {
 
-#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
+#ifdef _LIB_RRLIB_XML_PRESENT_
 
   xml::tDocument document(file_name);
   return ConfigureFromXMLNode(document.RootNode());
@@ -174,7 +174,7 @@ bool ConfigureFromFile(const std::string &file_name)
   return false;
 }
 
-#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
+#ifdef _LIB_RRLIB_XML_PRESENT_
 
 namespace
 {

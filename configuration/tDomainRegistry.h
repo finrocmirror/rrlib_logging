@@ -55,7 +55,7 @@
 
 #include "rrlib/util/patterns/singleton.h"
 
-#ifdef _LIB_RRLIB_XML2_WRAPPER_PRESENT_
+#ifdef _LIB_RRLIB_XML_PRESENT_
 #include "rrlib/xml/tNode.h"
 #endif
 
