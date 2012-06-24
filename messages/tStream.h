@@ -62,6 +62,7 @@
 #include <exception>
 #include <boost/type_traits/is_base_of.hpp>
 #include <boost/utility/enable_if.hpp>
+#include "rrlib/time/time.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -205,6 +206,21 @@ public:
       return *this;
     }
     this->stream << value;
+    return *this;
+  }
+
+  /*! Streaming operator for timestamps
+   *
+   * There are no iostream operators for the std::chrono::time_point
+   * template. Therefore, we need an operator implementation here.
+   *
+   * \param value   The duration value to put into the stream.
+   *
+   * \returns A reference to the altered stream (in this case the proxy)
+   */
+  inline tStream &operator << (const rrlib::time::tTimestamp& value)
+  {
+    this->stream << rrlib::time::ToIsoString(value);
     return *this;
   }
 
