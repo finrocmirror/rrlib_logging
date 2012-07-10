@@ -33,7 +33,7 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
-#include "rrlib/util/patterns/singleton.h"
+#include "rrlib/design_patterns/singleton.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -58,7 +58,7 @@ namespace logging
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
-typedef util::tSingletonHolder<std::mutex, util::singleton::NoDestruction> tStreamMutex;
+typedef design_patterns::tSingletonHolder<std::mutex, design_patterns::singleton::NoDestruction> tStreamMutex;
 
 //----------------------------------------------------------------------
 // Const values

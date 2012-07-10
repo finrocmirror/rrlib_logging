@@ -53,7 +53,7 @@
 //#include <string>
 #include <vector>
 
-#include "rrlib/util/patterns/singleton.h"
+#include "rrlib/design_patterns/singleton.h"
 
 #ifdef _LIB_RRLIB_XML_PRESENT_
 #include "rrlib/xml/tNode.h"
@@ -214,7 +214,7 @@ private:
 
 };
 
-typedef util::tSingletonHolder<tDomainRegistryImplementation, util::singleton::Longevity> tDomainRegistry;
+typedef design_patterns::tSingletonHolder<tDomainRegistryImplementation, design_patterns::singleton::Longevity> tDomainRegistry;
 inline unsigned int GetLongevity(tDomainRegistryImplementation *)
 {
   return 0xFFFFFFFF;
