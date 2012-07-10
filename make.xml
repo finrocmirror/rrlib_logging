@@ -17,6 +17,8 @@
   <testprogram name="messages">
     <sources>
       test/test_messages.cpp
+      test/libA/*
+      test/libB/*
     </sources>
   </testprogram>
 
