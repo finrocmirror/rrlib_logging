@@ -7,7 +7,7 @@ namespace libB
 {
 void Test()
 {
-  RRLIB_LOG_PRINT(rrlib::logging::eLL_USER, "Test in libB");
+  RRLIB_LOG_PRINT(USER, "Test in libB");
 }
 }
 

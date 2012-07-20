@@ -98,25 +98,25 @@ void SetColor(tStreamBuffer &stream_buffer, tLogLevel level)
 {
   switch (level)
   {
-  case eLL_ERROR:
+  case tLogLevel::ERROR:
     stream_buffer.SetColor(eSBE_BOLD, eSBC_RED);
     break;
-  case eLL_WARNING:
+  case tLogLevel::WARNING:
     stream_buffer.SetColor(eSBE_BOLD, eSBC_BLUE);
     break;
-  case eLL_DEBUG_WARNING:
+  case tLogLevel::DEBUG_WARNING:
     stream_buffer.SetColor(eSBE_DARK, eSBC_YELLOW);
     break;
-  case eLL_DEBUG:
+  case tLogLevel::DEBUG:
     stream_buffer.SetColor(eSBE_DARK, eSBC_GREEN);
     break;
-  case eLL_DEBUG_VERBOSE_1:
+  case tLogLevel::DEBUG_VERBOSE_1:
     stream_buffer.SetColor(eSBE_REGULAR, eSBC_CYAN);
     break;
-  case eLL_DEBUG_VERBOSE_2:
+  case tLogLevel::DEBUG_VERBOSE_2:
     stream_buffer.SetColor(eSBE_REGULAR, eSBC_CYAN);
     break;
-  case eLL_DEBUG_VERBOSE_3:
+  case tLogLevel::DEBUG_VERBOSE_3:
     stream_buffer.SetColor(eSBE_REGULAR, eSBC_CYAN);
     break;
   default:
@@ -142,25 +142,25 @@ void SendFormattedLevelToStream(tStream &stream, tLogLevel level)
   const char *level_name = 0;
   switch (level)
   {
-  case eLL_ERROR:
+  case tLogLevel::ERROR:
     level_name = "[error]";
     break;
-  case eLL_WARNING:
+  case tLogLevel::WARNING:
     level_name = "[warning]";
     break;
-  case eLL_DEBUG_WARNING:
+  case tLogLevel::DEBUG_WARNING:
     level_name = "[debug]";
     break;
-  case eLL_DEBUG:
+  case tLogLevel::DEBUG:
     level_name = "[debug]";
     break;
-  case eLL_DEBUG_VERBOSE_1:
+  case tLogLevel::DEBUG_VERBOSE_1:
     level_name = "[verbose]";
     break;
-  case eLL_DEBUG_VERBOSE_2:
+  case tLogLevel::DEBUG_VERBOSE_2:
     level_name = "[verbose]";
     break;
-  case eLL_DEBUG_VERBOSE_3:
+  case tLogLevel::DEBUG_VERBOSE_3:
     level_name = "[verbose]";
     break;
   default:

@@ -7,7 +7,7 @@ namespace libA
 {
 void Test()
 {
-  RRLIB_LOG_PRINT(rrlib::logging::eLL_DEBUG, "Test in libA");
+  RRLIB_LOG_PRINT(DEBUG, "Test in libA");
 }
 }
 

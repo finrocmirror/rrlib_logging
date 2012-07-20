@@ -80,13 +80,13 @@ struct Test
 {
   static void function()
   {
-    RRLIB_LOG_PRINT_TO(my_domain, rrlib::logging::eLL_DEBUG_WARNING, "this ", "is a ", "local class test");
+    RRLIB_LOG_PRINT_TO(my_domain, DEBUG_WARNING, "this ", "is a ", "local class test");
 
-    RRLIB_LOG_PRINT(rrlib::logging::eLL_WARNING, "foo");
-    RRLIB_LOG_PRINT_TO(my_domain, rrlib::logging::eLL_ERROR, "foo2");
+    RRLIB_LOG_PRINT(WARNING, "foo");
+    RRLIB_LOG_PRINT_TO(my_domain, ERROR, "foo2");
     if (true)
     {
-      RRLIB_LOG_PRINTF_TO(my_domain, rrlib::logging::eLL_DEBUG, "%s\n", "FOO");
+      RRLIB_LOG_PRINTF_TO(my_domain, DEBUG, "%s\n", "FOO");
     }
   }
 };
@@ -102,12 +102,12 @@ struct TestStatic
 
   static void StaticMethod()
   {
-    RRLIB_LOG_PRINT_STATIC(rrlib::logging::eLL_USER, "From static method");
+    RRLIB_LOG_PRINT_STATIC(USER, "From static method");
   }
 
   void NonStaticMethod()
   {
-    RRLIB_LOG_PRINT(rrlib::logging::eLL_USER, "From non-static method");
+    RRLIB_LOG_PRINT(USER, "From non-static method");
   }
 };
 
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
 #ifdef _LIB_RRLIB_XML_PRESENT_
   if (!rrlib::logging::ConfigureFromFile("logging_config.xml"))
   {
-    RRLIB_LOG_PRINT(rrlib::logging::eLL_ERROR, "Loading configuration failed!");
+    RRLIB_LOG_PRINT(ERROR, "Loading configuration failed!");
     return EXIT_FAILURE;
   }
 
@@ -131,13 +131,13 @@ int main(int argc, char **argv)
 //  rrlib::logging::SetDomainPrintsTime(".", true);
 //  rrlib::logging::SetDomainPrintsLevel(".", true);
 //  rrlib::logging::SetDomainPrintsLocation(".", true);
-//  rrlib::logging::SetDomainMaxMessageLevel(".", rrlib::logging::eLL_DEBUG_VERBOSE_3);
+//  rrlib::logging::SetDomainMaxMessageLevel(".", DEBUG_VERBOSE_3);
 //  rrlib::logging::SetDomainSink(".", rrlib::logging::eLS_FILE);
 
-  rrlib::logging::SetDomainMaxMessageLevel(".example", rrlib::logging::eLL_DEBUG_VERBOSE_3);
+  rrlib::logging::SetDomainMaxMessageLevel(".example", rrlib::logging::tLogLevel::DEBUG_VERBOSE_3);
 //  rrlib::logging::SetDomainSink(".example", rrlib::logging::eLS_STDOUT, rrlib::logging::eLS_FILE_SUBTREE);
 
-  RRLIB_LOG_PRINT(rrlib::logging::eLL_WARNING, "foo");
+  RRLIB_LOG_PRINT(WARNING, "foo");
 
   libA::Test();
   libB::Test();
@@ -146,15 +146,15 @@ int main(int argc, char **argv)
 
   std::runtime_error exception("runtime_error");
   std::exception &e(exception);
-  RRLIB_LOG_PRINT(rrlib::logging::eLL_ERROR, e);
+  RRLIB_LOG_PRINT(ERROR, e);
 
-  RRLIB_LOG_PRINT(rrlib::logging::eLL_WARNING, "0x", std::setw(20), std::setfill('0'), std::hex, 324);
+  RRLIB_LOG_PRINT(WARNING, "0x", std::setw(20), std::setfill('0'), std::hex, 324);
 
-  RRLIB_LOG_PRINT(rrlib::logging::eLL_ERROR, "Das hier ist ein mehrzeiliger\nFehler.");
-  RRLIB_LOG_PRINT(rrlib::logging::eLL_USER, "Und das hier ein mehrzeiliger\nText fuer den lieben Benutzer.");
+  RRLIB_LOG_PRINT(ERROR, "Das hier ist ein mehrzeiliger\nFehler.");
+  RRLIB_LOG_PRINT(USER, "Und das hier ein mehrzeiliger\nText fuer den lieben Benutzer.");
 
   const char* texts[] = {"Dies", "ist", "ein", "kleiner", "Text."};
-  RRLIB_LOG_PRINT(rrlib::logging::eLL_DEBUG, rrlib::util::Join(texts, texts + 5, " "));
+  RRLIB_LOG_PRINT(DEBUG, rrlib::util::Join(texts, texts + 5, " "));
 
   TestStatic test_static;
   test_static.StaticMethod();
@@ -162,11 +162,11 @@ int main(int argc, char **argv)
 
   int *a = 0;
   const int *b = 0;
-  RRLIB_LOG_PRINT(rrlib::logging::eLL_DEBUG, "Pointer: ", a);
-  RRLIB_LOG_PRINT(rrlib::logging::eLL_DEBUG, "Const-Pointer: ", b);
-  RRLIB_LOG_PRINT(rrlib::logging::eLL_DEBUG, "Bool: ", true, false);
-  RRLIB_LOG_PRINT(rrlib::logging::eLL_DEBUG, "Function: ", main);
-  RRLIB_LOG_PRINT(rrlib::logging::eLL_DEBUG, "Mal noch einzelne Zeichen: ", 'a', '\0', 'b');
+  RRLIB_LOG_PRINT(DEBUG, "Pointer: ", a);
+  RRLIB_LOG_PRINT(DEBUG, "Const-Pointer: ", b);
+  RRLIB_LOG_PRINT(DEBUG, "Bool: ", true, false);
+  RRLIB_LOG_PRINT(DEBUG, "Function: ", main);
+  RRLIB_LOG_PRINT(DEBUG, "Mal noch einzelne Zeichen: ", 'a', '\0', 'b');
 
   rrlib::logging::PrintDomainConfigurations();
   return EXIT_SUCCESS;

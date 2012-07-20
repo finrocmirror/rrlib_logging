@@ -170,7 +170,7 @@ bool ConfigureFromFile(const std::string &file_name)
 
 #endif
 
-  RRLIB_LOG_PRINT(eLL_ERROR, "XML support not available due to missing rrlib_mca2_wrapper.");
+  RRLIB_LOG_PRINT(ERROR, "XML support not available due to missing rrlib_mca2_wrapper.");
   return false;
 }
 
@@ -184,9 +184,6 @@ namespace
 //----------------------------------------------------------------------
 bool AddConfigurationFromXMLNode(const xml::tNode &node, const std::string &parent_name)
 {
-  static const std::vector<std::string> level_names = { "error", "warning", "debug_warning", "debug", "debug_verbose_1", "debug_verbose_2", "debug_verbose_3" };
-  static const std::vector<std::string> sink_names = { "stdout", "stderr", "file", "combined_file" };
-
   assert(node.Name() == "domain");
 
   const std::string node_name(node.GetStringAttribute("name"));
@@ -195,7 +192,7 @@ bool AddConfigurationFromXMLNode(const xml::tNode &node, const std::string &pare
   {
     if (node_name[0] != '.')
     {
-      RRLIB_LOG_PRINT(eLL_ERROR, "Trying to configure a log domain not below root domain");
+      RRLIB_LOG_PRINT(ERROR, "Trying to configure a log domain not below root domain");
       return false;
     }
   }
@@ -233,7 +230,7 @@ bool AddConfigurationFromXMLNode(const xml::tNode &node, const std::string &pare
 
   if (node.HasAttribute("max_level"))
   {
-    configuration.SetMaxMessageLevel(static_cast<tLogLevel>(eLL_ERROR + node.GetEnumAttribute<tLogLevel>("max_level", level_names)));
+    configuration.SetMaxMessageLevel(node.GetEnumAttribute<tLogLevel>("max_level"));
   }
 
 //  bool sinks_configured = false;
@@ -284,7 +281,7 @@ bool ConfigureFromXMLNode(const xml::tNode &node)
 {
   if (node.Name() != "rrlib_logging")
   {
-    RRLIB_LOG_PRINT(eLL_ERROR, "Unexpected content (Not an rrlib_logging tree)");
+    RRLIB_LOG_PRINT(ERROR, "Unexpected content (Not an rrlib_logging tree)");
     return false;
   }
 
@@ -312,7 +309,7 @@ bool ConfigureFromXMLNode(const xml::tNode &node)
   }
   catch (const xml::tException &exception)
   {
-    RRLIB_LOG_PRINT(eLL_ERROR, exception);
+    RRLIB_LOG_PRINT(ERROR, exception);
     return false;
   }
 

@@ -64,19 +64,19 @@ namespace logging
 // Const values
 //----------------------------------------------------------------------
 #ifdef RRLIB_LOGGING_LESS_OUTPUT
-const bool cDEFAULT_PRINTS_NAME = false;                //!< Default prints name setting for reduced output mode
-const bool cDEFAULT_PRINTS_TIME = false;                //!< Default prints time setting for reduced output mode
-const bool cDEFAULT_PRINTS_LEVEL = false;               //!< Default prints level setting for reduced output mode
-const bool cDEFAULT_PRINTS_LOCATION = false;            //!< Default prints location setting for reduced output mode
-const tLogLevel cDEFAULT_MAX_LOG_LEVEL = eLL_WARNING;   //!< Default max log level for reduced output mode
-const int cDEFAULT_SINK_MASK = 1 << eLS_STDOUT;         //!< Default output stream mask
+const bool cDEFAULT_PRINTS_NAME = false;                       //!< Default prints name setting for reduced output mode
+const bool cDEFAULT_PRINTS_TIME = false;                       //!< Default prints time setting for reduced output mode
+const bool cDEFAULT_PRINTS_LEVEL = false;                      //!< Default prints level setting for reduced output mode
+const bool cDEFAULT_PRINTS_LOCATION = false;                   //!< Default prints location setting for reduced output mode
+const tLogLevel cDEFAULT_MAX_LOG_LEVEL = tLogLevel::WARNING;   //!< Default max log level for reduced output mode
+const int cDEFAULT_SINK_MASK = 1 << eLS_STDOUT;                //!< Default output stream mask
 #else
-const bool cDEFAULT_PRINTS_NAME = false;                //!< Default prints name setting for normal output mode
-const bool cDEFAULT_PRINTS_TIME = false;                //!< Default prints time setting for normal output mode
-const bool cDEFAULT_PRINTS_LEVEL = false;               //!< Default prints level setting for normal output mode
-const bool cDEFAULT_PRINTS_LOCATION = true;             //!< Default prints location setting for normal output mode
-const tLogLevel cDEFAULT_MAX_LOG_LEVEL = eLL_DEBUG;     //!< Default max log level for normal output mode
-const int cDEFAULT_SINK_MASK = 1 << eLS_STDOUT;         //!< Default output stream mask
+const bool cDEFAULT_PRINTS_NAME = false;                       //!< Default prints name setting for normal output mode
+const bool cDEFAULT_PRINTS_TIME = false;                       //!< Default prints time setting for normal output mode
+const bool cDEFAULT_PRINTS_LEVEL = false;                      //!< Default prints level setting for normal output mode
+const bool cDEFAULT_PRINTS_LOCATION = true;                    //!< Default prints location setting for normal output mode
+const tLogLevel cDEFAULT_MAX_LOG_LEVEL = tLogLevel::DEBUG;     //!< Default max log level for normal output mode
+const int cDEFAULT_SINK_MASK = 1 << eLS_STDOUT;                //!< Default output stream mask
 #endif
 
 //----------------------------------------------------------------------

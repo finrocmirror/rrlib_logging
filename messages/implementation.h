@@ -102,7 +102,7 @@ void Print(const tConfiguration &domain_configuration, const TLogDescription &lo
   tStream stream(domain_configuration.StreamBuffer());
   domain_configuration.StreamBuffer().InitializeMultiLinePadding();
 
-  if (level != eLL_USER)
+  if (level != tLogLevel::USER)
   {
 
     if (domain_configuration.PrintsTime())
@@ -138,11 +138,11 @@ void Print(const tConfiguration &domain_configuration, const TLogDescription &lo
 
     switch (level)
     {
-    case eLL_ERROR:
+    case tLogLevel::ERROR:
       stream << "ERROR: ";
       break;
-    case eLL_WARNING:
-    case eLL_DEBUG_WARNING:
+    case tLogLevel::WARNING:
+    case tLogLevel::DEBUG_WARNING:
       stream << "WARNING: ";
       break;
     default:

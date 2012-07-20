@@ -100,6 +100,8 @@
     } \
   } while(0) \
      
+#define __EXPAND_LEVEL__(level) rrlib::logging::tLogLevel::level
+
 //----------------------------------------------------------------------
 // The macro interface to the logging library
 //----------------------------------------------------------------------
@@ -113,9 +115,9 @@
 #define RRLIB_LOG_PRINT(level, args...) \
   do \
   { \
-    if ((level) <= rrlib::logging::eLL_DEBUG) \
+    if ((__EXPAND_LEVEL__(level)) <= rrlib::logging::tLogLevel::DEBUG) \
     { \
-      __RRLIB_LOG_PRINT__(rrlib::logging::GetConfiguration(__FILE__), level, args); \
+      __RRLIB_LOG_PRINT__(rrlib::logging::GetConfiguration(__FILE__), __EXPAND_LEVEL__(level), args); \
     } \
   } while (0) \
      
@@ -128,9 +130,9 @@
 #define RRLIB_LOG_PRINT_TO(domain, level, args...) \
   do \
   { \
-    if ((level) <= rrlib::logging::eLL_DEBUG) \
+    if ((__EXPAND_LEVEL__(level)) <= rrlib::logging::tLogLevel::DEBUG) \
     { \
-      __RRLIB_LOG_PRINT__(rrlib::logging::GetConfiguration(__FILE__, #domain), level, args); \
+      __RRLIB_LOG_PRINT__(rrlib::logging::GetConfiguration(__FILE__, #domain), __EXPAND_LEVEL__(level), args); \
     } \
   } while (0) \
      
@@ -142,9 +144,9 @@
 #define RRLIB_LOG_PRINT_STATIC(level, args...) \
   do \
   { \
-    if ((level) <= rrlib::logging::eLL_DEBUG) \
+    if ((__EXPAND_LEVEL__(level)) <= rrlib::logging::tLogLevel::DEBUG) \
     { \
-      __RRLIB_LOG_PRINT_STATIC__(rrlib::logging::GetConfiguration(__FILE__), level, args); \
+      __RRLIB_LOG_PRINT_STATIC__(rrlib::logging::GetConfiguration(__FILE__), __EXPAND_LEVEL__(level), args); \
     } \
   } while (0) \
      
@@ -157,9 +159,9 @@
 #define RRLIB_LOG_PRINT_STATIC_TO(domain, level, args...) \
   do \
   { \
-    if ((level) <= rrlib::logging::eLL_DEBUG) \
+    if ((__EXPAND_LEVEL__(level)) <= rrlib::logging::tLogLevel::DEBUG) \
     { \
-      __RRLIB_LOG_PRINT_STATIC__(rrlib::logging::GetConfiguration(__FILE__, #domain), level, args); \
+      __RRLIB_LOG_PRINT_STATIC__(rrlib::logging::GetConfiguration(__FILE__, #domain), __EXPAND_LEVEL__(level), args); \
     } \
   } while (0) \
      
@@ -171,9 +173,9 @@
 #define RRLIB_LOG_PRINTF(level, args...) \
   do \
   { \
-    if ((level) <= rrlib::logging::eLL_DEBUG) \
+    if ((__EXPAND_LEVEL__(level)) <= rrlib::logging::tLogLevel::DEBUG) \
     { \
-      __RRLIB_LOG_PRINTF__(rrlib::logging::GetConfiguration(__FILE__), level, args); \
+      __RRLIB_LOG_PRINTF__(rrlib::logging::GetConfiguration(__FILE__), __EXPAND_LEVEL__(level), args); \
     } \
   } while (0) \
      
@@ -186,9 +188,9 @@
 #define RRLIB_LOG_PRINTF_TO(domain, level, args...) \
   do \
   { \
-    if ((level) <= rrlib::logging::eLL_DEBUG) \
+    if ((__EXPAND_LEVEL__(level)) <= rrlib::logging::tLogLevel::DEBUG) \
     { \
-      __RRLIB_LOG_PRINTF__(rrlib::logging::GetConfiguration(__FILE__, #domain), level, args); \
+      __RRLIB_LOG_PRINTF__(rrlib::logging::GetConfiguration(__FILE__, #domain), __EXPAND_LEVEL__(level), args); \
     } \
   } while (0) \
      
@@ -200,9 +202,9 @@
 #define RRLIB_LOG_PRINTF_STATIC(level, args...) \
   do \
   { \
-    if ((level) <= rrlib::logging::eLL_DEBUG) \
+    if ((__EXPAND_LEVEL__(level)) <= rrlib::logging::tLogLevel::DEBUG) \
     { \
-      __RRLIB_LOG_PRINTF_STATIC__(rrlib::logging::GetConfiguration(__FILE__), level, args); \
+      __RRLIB_LOG_PRINTF_STATIC__(rrlib::logging::GetConfiguration(__FILE__), __EXPAND_LEVEL__(level), args); \
     } \
   } while (0) \
      
@@ -215,9 +217,9 @@
 #define RRLIB_LOG_PRINTF_STATIC_TO(domain, level, args...) \
   do \
   { \
-    if ((level) <= rrlib::logging::eLL_DEBUG) \
+    if ((__EXPAND_LEVEL__(level)) <= rrlib::logging::tLogLevel::DEBUG) \
     { \
-      __RRLIB_LOG_PRINTF_STATIC__(rrlib::logging::GetConfiguration(__FILE__, #domain), level, args); \
+      __RRLIB_LOG_PRINTF_STATIC__(rrlib::logging::GetConfiguration(__FILE__, #domain), __EXPAND_LEVEL__(level), args); \
     } \
   } while (0) \
      
@@ -229,7 +231,7 @@
  * \param args     The data to be put into the underlying stream
  */
 #define RRLIB_LOG_PRINT(level, args...) \
-  __RRLIB_LOG_PRINT__(rrlib::logging::GetConfiguration(__FILE__), level, args) \
+  __RRLIB_LOG_PRINT__(rrlib::logging::GetConfiguration(__FILE__), __EXPAND_LEVEL__(level), args) \
    
 /*! Macro to print messages to explicitly specified domain using stream semantics
  *
@@ -238,7 +240,7 @@
  * \param args     The data to be put into the underlying stream
  */
 #define RRLIB_LOG_PRINT_TO(domain, level, args...) \
-  __RRLIB_LOG_PRINT__(rrlib::logging::GetConfiguration(__FILE__, #domain), level, args) \
+  __RRLIB_LOG_PRINT__(rrlib::logging::GetConfiguration(__FILE__, #domain), __EXPAND_LEVEL__(level), args) \
    
 /*! Macro to print messages using stream semantics static context
  *
@@ -246,7 +248,7 @@
  * \param args     The data to be put into the underlying stream
  */
 #define RRLIB_LOG_PRINT_STATIC(level, args...) \
-  __RRLIB_LOG_PRINT_STATIC__(rrlib::logging::GetConfiguration(__FILE__), level, args) \
+  __RRLIB_LOG_PRINT_STATIC__(rrlib::logging::GetConfiguration(__FILE__), __EXPAND_LEVEL__(level), args) \
    
 /*! Macro to print messages to explicitly specified using stream semantics static context
  *
@@ -255,7 +257,7 @@
  * \param args     The data to be put into the underlying stream
  */
 #define RRLIB_LOG_PRINT_STATIC_TO(domain, level, args...) \
-  __RRLIB_LOG_PRINT_STATIC__(rrlib::logging::GetConfiguration(__FILE__, #domain), level, args) \
+  __RRLIB_LOG_PRINT_STATIC__(rrlib::logging::GetConfiguration(__FILE__, #domain), __EXPAND_LEVEL__(level), args) \
    
 /*! Macro to print messages using printf semantics
  *
@@ -263,7 +265,7 @@
  * \param args     The format string for printf and the optional arguments to be printed
  */
 #define RRLIB_LOG_PRINTF(level, args...) \
-  __RRLIB_LOG_PRINTF__(rrlib::logging::GetConfiguration(__FILE__), level, args) \
+  __RRLIB_LOG_PRINTF__(rrlib::logging::GetConfiguration(__FILE__), __EXPAND_LEVEL__(level), args) \
    
 /*! Macro to print messages to explicitly specified using printf semantics
  *
@@ -272,7 +274,7 @@
  * \param args     The format string for printf and the optional arguments to be printed
  */
 #define RRLIB_LOG_PRINTF_TO(domain, level, args...) \
-  __RRLIB_LOG_PRINTF__(rrlib::logging::GetConfiguration(__FILE__, #domain), level, args) \
+  __RRLIB_LOG_PRINTF__(rrlib::logging::GetConfiguration(__FILE__, #domain), __EXPAND_LEVEL__(level), args) \
    
 /*! Macro to print messages using printf semantics from static context
  *
@@ -280,7 +282,7 @@
  * \param args     The format string for printf and the optional arguments to be printed
  */
 #define RRLIB_LOG_PRINTF_STATIC(level, args...) \
-  __RRLIB_LOG_PRINTF_STATIC__(rrlib::logging::GetConfiguration(__FILE__), level, args) \
+  __RRLIB_LOG_PRINTF_STATIC__(rrlib::logging::GetConfiguration(__FILE__), __EXPAND_LEVEL__(level), args) \
    
 /*! Macro to print messages to explicitly specified using printf semantics from static context
  *
@@ -289,7 +291,7 @@
  * \param args     The format string for printf and the optional arguments to be printed
  */
 #define RRLIB_LOG_PRINTF_STATIC_TO(domain, level, args...) \
-  __RRLIB_LOG_PRINTF_STATIC__(rrlib::logging::GetConfiguration(__FILE__, #domain), level, args) \
+  __RRLIB_LOG_PRINTF_STATIC__(rrlib::logging::GetConfiguration(__FILE__, #domain), __EXPAND_LEVEL__(level), args) \
    
 #endif
 
