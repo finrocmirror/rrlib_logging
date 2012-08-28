@@ -65,6 +65,7 @@
 //----------------------------------------------------------------------
 #include <string>
 #include <list>
+#include <fstream>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -92,11 +93,11 @@ namespace logging
 //! Enumeration type that contains the available sinks for message domains
 enum tLogSink
 {
-  eLS_STDOUT,          //!< Messages are printed to stdout
-  eLS_STDERR,          //!< Messages are printed to stderr
-  eLS_FILE,            //!< Messages are printed to one file per domain
-  eLS_FILE_SUBTREE,    //!< Messages are collected in one file per subtree
-  eLS_DIMENSION        //!< Endmarker and dimension of eLogStream
+  eLOG_SINK_STDOUT,          //!< Messages are printed to stdout
+  eLOG_SINK_STDERR,          //!< Messages are printed to stderr
+  eLOG_SINK_FILE,            //!< Messages are printed to single files for each subdomain
+  eLOG_SINK_COMBINED_FILE,   //!< Messages are printed into one combined file
+  eLOG_SINK_DIMENSION        //!< Endmarker and dimension of tLogSink
 };
 
 //----------------------------------------------------------------------
@@ -137,6 +138,7 @@ public:
   void SetPrintsLevel(bool value);
   void SetPrintsLocation(bool value);
   void SetMaxMessageLevel(tLogLevel level);
+  void SetSinkMask(int sink_mask);
 
   inline bool PrintsName() const
   {
@@ -165,6 +167,11 @@ public:
 
   inline tStreamBuffer &StreamBuffer() const
   {
+    if (!this->stream_buffer_ready)
+    {
+      this->PrepareStreamBuffer();
+    }
+
     return this->stream_buffer;
   }
 
@@ -187,8 +194,10 @@ private:
   bool prints_location;
 
   tLogLevel max_message_level;
-  int sink_mask;
 
+  int sink_mask;
+  mutable bool stream_buffer_ready;
+  mutable std::ofstream file_stream;
   mutable tStreamBuffer stream_buffer;
 
   mutable std::list<tConfiguration *> children;
@@ -204,6 +213,12 @@ private:
   const tConfiguration &GetConfigurationByFilename(const char *filename) const;
 
   const tConfiguration &LookupChild(const char *name, size_t length) const;
+
+  void PrepareStreamBuffer() const;
+
+  std::ofstream &FileStream() const;
+
+  void OpenFileStream() const;
 
 };
 

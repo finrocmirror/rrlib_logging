@@ -68,6 +68,8 @@ namespace logging
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
+const char * const xml_attribute_max_level_values[static_cast<size_t>(tLogLevel::DIMENSION)] = { "user", "error", "warning", "debug", "debug_warning", "debug_verbose_1", "debug_verbose_2", "debug_verbose_3" };
+const char * const xml_attribute_sink_values[eLOG_SINK_DIMENSION] = { "stdout", "stderr", "file", "combined_file" };
 
 //----------------------------------------------------------------------
 // Implementation
@@ -135,6 +137,14 @@ void SetDomainPrintsLocation(const std::string &domain_name, bool value)
 void SetDomainMaxMessageLevel(const std::string &domain_name, tLogLevel level)
 {
   const_cast<tConfiguration &>(tDomainRegistry::Instance().GetConfiguration(NULL, domain_name.c_str())).SetMaxMessageLevel(level);
+}
+
+//----------------------------------------------------------------------
+// SetDomainSink
+//----------------------------------------------------------------------
+void SetDomainSink(const std::string &domain_name, tLogSink sink_1, tLogSink sink_2, tLogSink sink_3, tLogSink sink_4)
+{
+  const_cast<tConfiguration &>(tDomainRegistry::Instance().GetConfiguration(NULL, domain_name.c_str())).SetSinkMask(sink_1 | sink_2 | sink_3 | sink_4);
 }
 
 //----------------------------------------------------------------------
@@ -230,33 +240,33 @@ bool AddConfigurationFromXMLNode(const xml::tNode &node, const std::string &pare
 
   if (node.HasAttribute("max_level"))
   {
-    configuration.SetMaxMessageLevel(node.GetEnumAttribute<tLogLevel>("max_level"));
+    configuration.SetMaxMessageLevel(node.GetEnumAttribute<tLogLevel>("max_level", xml_attribute_max_level_values, xml_attribute_max_level_values + static_cast<size_t>(tLogLevel::DIMENSION)));
   }
 
-//  bool sinks_configured = false;
-//  if (node.HasAttribute("sink"))
-//  {
-//    sinks_configured = true;
-//    this->SetDomainSink(name, node.GetEnumAttribute<tLogSink>("sink", sink_names));
-//  }
+  bool sinks_configured = false;
+  if (node.HasAttribute("sink"))
+  {
+    sinks_configured = true;
+    configuration.SetSinkMask(1 << node.GetEnumAttribute<tLogSink>("sink", xml_attribute_sink_values, xml_attribute_sink_values + eLOG_SINK_DIMENSION));
+  }
 
-//  int sink_mask = 0;
-//  for (xml::tNode::const_iterator it = node.ChildrenBegin(); it != node.ChildrenEnd(); ++it)
-//  {
-//    if (it->Name() == "sink")
-//    {
-//      if (sinks_configured)
-//      {
-//        std::cerr << "RRLib Logging: tDomainRegistry::AddConfigurationFromXMLNode >> Sink already configured in domain element!" << std::endl;
-//        return false;
-//      }
-//      sink_mask |= 1 << it->GetEnumAttribute<tLogSink>("output", sink_names);
-//    }
-//  }
-//  if (sink_mask != 0)
-//  {
-//    this->SetDomainSinkMask(name, sink_mask);
-//  }
+  int sink_mask = 0;
+  for (xml::tNode::const_iterator it = node.ChildrenBegin(); it != node.ChildrenEnd(); ++it)
+  {
+    if (it->Name() == "sink")
+    {
+      if (sinks_configured)
+      {
+        RRLIB_LOG_PRINT(ERROR, "Sink already configured in domain element!");
+        return false;
+      }
+      sink_mask |= 1 << it->GetEnumAttribute<tLogSink>("output", xml_attribute_sink_values, xml_attribute_sink_values + eLOG_SINK_DIMENSION);
+    }
+  }
+  if (sink_mask != 0)
+  {
+    configuration.SetSinkMask(sink_mask);
+  }
 
   for (xml::tNode::const_iterator it = node.ChildrenBegin(); it != node.ChildrenEnd(); ++it)
   {

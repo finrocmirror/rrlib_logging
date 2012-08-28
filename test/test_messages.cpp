@@ -132,10 +132,10 @@ int main(int argc, char **argv)
 //  rrlib::logging::SetDomainPrintsLevel(".", true);
 //  rrlib::logging::SetDomainPrintsLocation(".", true);
 //  rrlib::logging::SetDomainMaxMessageLevel(".", DEBUG_VERBOSE_3);
-//  rrlib::logging::SetDomainSink(".", rrlib::logging::eLS_FILE);
+//  rrlib::logging::SetDomainSink(".", rrlib::logging::eLOG_SINK_FILE);
 
   rrlib::logging::SetDomainMaxMessageLevel(".example", rrlib::logging::tLogLevel::DEBUG_VERBOSE_3);
-//  rrlib::logging::SetDomainSink(".example", rrlib::logging::eLS_STDOUT, rrlib::logging::eLS_FILE_SUBTREE);
+//  rrlib::logging::SetDomainSink(".example", rrlib::logging::eLOG_SINK_STDOUT, rrlib::logging::eLOG_SINK_COMBINED_FILE);
 
   RRLIB_LOG_PRINT(WARNING, "foo");
 

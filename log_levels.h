@@ -66,6 +66,7 @@ enum class tLogLevel
   DEBUG_VERBOSE_1,  //!< Higher detail debug info (not available in release mode) - only relevant to developers in respective domain
   DEBUG_VERBOSE_2,  //!< Higher detail debug info (not available in release mode) - only relevant to developers in respective domain
   DEBUG_VERBOSE_3,  //!< Higher detail debug info (not available in release mode) - only relevant to developers in respective domain
+  DIMENSION         //!< Endmarker and dimension of tLogLevel
 };
 
 }

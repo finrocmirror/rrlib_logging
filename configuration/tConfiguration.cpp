@@ -69,15 +69,17 @@ const bool cDEFAULT_PRINTS_TIME = false;                       //!< Default prin
 const bool cDEFAULT_PRINTS_LEVEL = false;                      //!< Default prints level setting for reduced output mode
 const bool cDEFAULT_PRINTS_LOCATION = false;                   //!< Default prints location setting for reduced output mode
 const tLogLevel cDEFAULT_MAX_LOG_LEVEL = tLogLevel::WARNING;   //!< Default max log level for reduced output mode
-const int cDEFAULT_SINK_MASK = 1 << eLS_STDOUT;                //!< Default output stream mask
+const int cDEFAULT_SINK_MASK = 1 << eLOG_SINK_STDOUT;          //!< Default output stream mask
 #else
 const bool cDEFAULT_PRINTS_NAME = false;                       //!< Default prints name setting for normal output mode
 const bool cDEFAULT_PRINTS_TIME = false;                       //!< Default prints time setting for normal output mode
 const bool cDEFAULT_PRINTS_LEVEL = false;                      //!< Default prints level setting for normal output mode
 const bool cDEFAULT_PRINTS_LOCATION = true;                    //!< Default prints location setting for normal output mode
 const tLogLevel cDEFAULT_MAX_LOG_LEVEL = tLogLevel::DEBUG;     //!< Default max log level for normal output mode
-const int cDEFAULT_SINK_MASK = 1 << eLS_STDOUT;                //!< Default output stream mask
+const int cDEFAULT_SINK_MASK = 1 << eLOG_SINK_STDOUT;          //!< Default output stream mask
 #endif
+
+const int cLOG_SINK_COMBINED_FILE_CHILD_MASK = 1 << eLOG_SINK_DIMENSION;
 
 //----------------------------------------------------------------------
 // Implementation
@@ -93,11 +95,11 @@ tConfiguration::tConfiguration(const tConfiguration *parent, const std::string &
     prints_time(parent ? parent->prints_time : cDEFAULT_PRINTS_TIME),
     prints_level(parent ? parent->prints_level : cDEFAULT_PRINTS_LEVEL),
     prints_location(parent ? parent->prints_location : cDEFAULT_PRINTS_LOCATION),
-    max_message_level(parent ? parent->max_message_level : cDEFAULT_MAX_LOG_LEVEL)//,
-//    sink_mask(cDEFAULT_SINK_MASK)
+    max_message_level(parent ? parent->max_message_level : cDEFAULT_MAX_LOG_LEVEL),
+    sink_mask(parent ? parent->sink_mask | cLOG_SINK_COMBINED_FILE_CHILD_MASK : cDEFAULT_SINK_MASK),
+    stream_buffer_ready(false)
 {
   assert(name.length() || !parent);
-  this->stream_buffer.AddStream(std::cout);
 }
 
 //----------------------------------------------------------------------
@@ -105,6 +107,11 @@ tConfiguration::tConfiguration(const tConfiguration *parent, const std::string &
 //----------------------------------------------------------------------
 tConfiguration::~tConfiguration()
 {
+  if (this->file_stream.is_open())
+  {
+    this->file_stream.close();
+  }
+
   for (auto it = this->children.begin(); it != this->children.end(); ++it)
   {
     delete *it;
@@ -172,6 +179,22 @@ void tConfiguration::SetMaxMessageLevel(tLogLevel level)
 }
 
 //----------------------------------------------------------------------
+// tConfiguration SetSinkMask
+//----------------------------------------------------------------------
+void tConfiguration::SetSinkMask(int sink_mask)
+{
+  this->sink_mask = sink_mask;
+  this->stream_buffer_ready = false;
+
+  sink_mask |= cLOG_SINK_COMBINED_FILE_CHILD_MASK;
+
+  for (auto it = this->children.begin(); it != this->children.end(); ++it)
+  {
+    (*it)->SetSinkMask(sink_mask);
+  }
+}
+
+//----------------------------------------------------------------------
 // tConfiguration GetConfigurationByName
 //----------------------------------------------------------------------
 const tConfiguration &tConfiguration::GetConfigurationByName(const char *domain_name) const
@@ -205,6 +228,9 @@ const tConfiguration &tConfiguration::GetConfigurationByFilename(const char *fil
   return this->LookupChild(filename, delimiter - filename).GetConfigurationByFilename(delimiter + 1);
 }
 
+//----------------------------------------------------------------------
+// tConfiguration LookupChild
+//----------------------------------------------------------------------
 const tConfiguration &tConfiguration::LookupChild(const char *name, size_t length) const
 {
   tConfiguration *configuration = 0;
@@ -252,6 +278,75 @@ const tConfiguration &tConfiguration::LookupChild(const char *name, size_t lengt
   }
 
   return *configuration;
+}
+
+//----------------------------------------------------------------------
+// tConfiguration PrepareStreamBuffer
+//----------------------------------------------------------------------
+void tConfiguration::PrepareStreamBuffer() const
+{
+  this->stream_buffer.Clear();
+  if (this->sink_mask & (1 << eLOG_SINK_STDOUT))
+  {
+    this->stream_buffer.AddStream(std::cout);
+  }
+  if (this->sink_mask & (1 << eLOG_SINK_STDERR))
+  {
+    this->stream_buffer.AddStream(std::cerr);
+  }
+  if (this->sink_mask & (1 << eLOG_SINK_FILE))
+  {
+    this->stream_buffer.AddStream(this->FileStream());
+  }
+  if (this->sink_mask & (1 << eLOG_SINK_COMBINED_FILE))
+  {
+    const tConfiguration *configuration = this;
+    while (configuration->parent && configuration->sink_mask & cLOG_SINK_COMBINED_FILE_CHILD_MASK)
+    {
+      configuration = configuration->parent;
+    }
+    this->stream_buffer.AddStream(configuration->FileStream());
+  }
+
+  this->stream_buffer_ready = true;
+}
+
+//----------------------------------------------------------------------
+// tConfiguration FileStream
+//----------------------------------------------------------------------
+std::ofstream &tConfiguration::FileStream() const
+{
+  if (!this->file_stream.is_open())
+  {
+    this->OpenFileStream();
+  }
+
+  return this->file_stream;
+}
+
+//----------------------------------------------------------------------
+// tConfiguration OpenFileStream
+//----------------------------------------------------------------------
+void tConfiguration::OpenFileStream() const
+{
+  const std::string &file_name_prefix(tDomainRegistry::Instance().LogFilenamePrefix());
+  if (file_name_prefix.length() == 0)
+  {
+    std::stringstream message;
+    message << "RRLib Logging >> Prefix for log filenames not set. Can not use eLOG_SINK_FILE or eLOG_SINK_COMBINED_FILE." << std::endl
+            << "                 Consider calling e.g. rrlib::logging::SetLogFilenamePrefix(basename(argv[0])) from main." << std::endl;
+    throw std::runtime_error(message.str());
+  }
+
+  std::string fqdn = this->GetFullQualifiedName();
+  std::string file_name(file_name_prefix + (fqdn != "." ? fqdn : "") + ".log");
+  this->file_stream.open(file_name.c_str(), std::ios::out | std::ios::trunc);
+  if (!this->file_stream.is_open())
+  {
+    std::stringstream message;
+    message << "RRLib Logging >> Could not open file `" << file_name << "'!" << std::endl;
+    throw std::runtime_error(message.str());
+  }
 }
 
 //----------------------------------------------------------------------

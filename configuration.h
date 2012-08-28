@@ -77,6 +77,8 @@ void SetDomainPrintsLocation(const std::string &domain_name, bool value);
 
 void SetDomainMaxMessageLevel(const std::string &domain_name, tLogLevel level);
 
+void SetDomainSink(const std::string &domain_name, tLogSink sink_1, tLogSink sink_2 = (tLogSink)0, tLogSink sink_3 = (tLogSink)0, tLogSink sink_4 = (tLogSink)0);
+
 void PrintDomainConfigurations();
 
 /*! Read domain configuration from a given XML file
