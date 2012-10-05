@@ -25,7 +25,7 @@
  *
  * \date    2010-06-20
  *
- * \brief Contains tConfiguration and corresponding enumerations eLogLevel, eLogStream, eLogStreamMask
+ * \brief Contains tConfiguration and corresponding enumerations
  *
  * \b tConfiguration
  *
