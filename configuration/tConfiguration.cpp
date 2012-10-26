@@ -34,6 +34,7 @@
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
 #include <cstring>
+#include <sstream>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
