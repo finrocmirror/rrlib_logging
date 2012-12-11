@@ -61,9 +61,8 @@ namespace logging
 //----------------------------------------------------------------------
 // Implementation
 //----------------------------------------------------------------------
-const tConfiguration &GetConfiguration(const char *filename, const char *domain_name = 0);
 
-
+const tConfiguration &GetConfiguration(const char *filename, const char *domain_name = 0, const tDefaultConfigurationContext &default_context = cDEFAULT_CONTEXT);
 
 void SendFormattedTimeToStream(tStream &stream);
 void SendFormattedDomainNameToStream(tStream &stream, const std::string &domain_name);

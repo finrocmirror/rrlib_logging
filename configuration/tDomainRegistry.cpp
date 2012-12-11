@@ -74,7 +74,7 @@ namespace logging
 // tDomainRegistryImplementation constructors
 //----------------------------------------------------------------------
 tDomainRegistryImplementation::tDomainRegistryImplementation()
-  : global_configuration(new tConfiguration(0, "")),
+  : global_configuration(new tConfiguration(cDEFAULT_CONTEXT, 0, "")),
     max_domain_name_length(0),
     pad_prefix_columns(true),
     pad_multi_line_messages(true)
@@ -116,7 +116,7 @@ tDomainRegistryImplementation::~tDomainRegistryImplementation()
 //----------------------------------------------------------------------
 // tDomainRegistryImplementation GetConfiguration
 //----------------------------------------------------------------------
-const tConfiguration &tDomainRegistryImplementation::GetConfiguration(const char *filename, const char *domain_name)
+const tConfiguration &tDomainRegistryImplementation::GetConfiguration(const tDefaultConfigurationContext &default_context, const char *filename, const char *domain_name)
 {
   if (domain_name)
   {
@@ -124,11 +124,11 @@ const tConfiguration &tDomainRegistryImplementation::GetConfiguration(const char
     if (domain_name[0] == '.')
     {
       assert(this->global_configuration);
-      return (domain_name[1] == 0) ? *this->global_configuration : this->global_configuration->GetConfigurationByName(domain_name + 1);
+      return (domain_name[1] == 0) ? *this->global_configuration : this->global_configuration->GetConfigurationByName(default_context, domain_name + 1);
     }
-    return tDomainRegistry::Instance().GetConfigurationByFilename(filename).GetConfigurationByName(domain_name);
+    return tDomainRegistry::Instance().GetConfigurationByFilename(default_context, filename).GetConfigurationByName(default_context, domain_name);
   }
-  return tDomainRegistry::Instance().GetConfigurationByFilename(filename);
+  return tDomainRegistry::Instance().GetConfigurationByFilename(default_context, filename);
 }
 
 //----------------------------------------------------------------------
@@ -163,7 +163,7 @@ void tDomainRegistryImplementation::UpdateMaxDomainNameLength(size_t added_domai
 //----------------------------------------------------------------------
 // tDomainRegistryImplementation GetConfigurationByFilename
 //----------------------------------------------------------------------
-const tConfiguration &tDomainRegistryImplementation::GetConfigurationByFilename(const char *filename) const
+const tConfiguration &tDomainRegistryImplementation::GetConfigurationByFilename(const tDefaultConfigurationContext &default_context, const char *filename) const
 {
   bool found_prefix = false;
 
@@ -195,7 +195,7 @@ const tConfiguration &tDomainRegistryImplementation::GetConfigurationByFilename(
   }
 
   assert(this->global_configuration);
-  return this->global_configuration->GetConfigurationByFilename(filename);
+  return this->global_configuration->GetConfigurationByFilename(default_context, filename);
 }
 
 

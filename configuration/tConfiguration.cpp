@@ -64,22 +64,6 @@ namespace logging
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
-#ifdef RRLIB_LOGGING_LESS_OUTPUT
-const bool cDEFAULT_PRINTS_NAME = false;                       //!< Default prints name setting for reduced output mode
-const bool cDEFAULT_PRINTS_TIME = false;                       //!< Default prints time setting for reduced output mode
-const bool cDEFAULT_PRINTS_LEVEL = false;                      //!< Default prints level setting for reduced output mode
-const bool cDEFAULT_PRINTS_LOCATION = false;                   //!< Default prints location setting for reduced output mode
-const tLogLevel cDEFAULT_MAX_LOG_LEVEL = tLogLevel::WARNING;   //!< Default max log level for reduced output mode
-const int cDEFAULT_SINK_MASK = 1 << eLOG_SINK_STDOUT;          //!< Default output stream mask
-#else
-const bool cDEFAULT_PRINTS_NAME = false;                       //!< Default prints name setting for normal output mode
-const bool cDEFAULT_PRINTS_TIME = false;                       //!< Default prints time setting for normal output mode
-const bool cDEFAULT_PRINTS_LEVEL = false;                      //!< Default prints level setting for normal output mode
-const bool cDEFAULT_PRINTS_LOCATION = true;                    //!< Default prints location setting for normal output mode
-const tLogLevel cDEFAULT_MAX_LOG_LEVEL = tLogLevel::DEBUG;     //!< Default max log level for normal output mode
-const int cDEFAULT_SINK_MASK = 1 << eLOG_SINK_STDOUT;          //!< Default output stream mask
-#endif
-
 const int cLOG_SINK_COMBINED_FILE_CHILD_MASK = 1 << eLOG_SINK_DIMENSION;
 
 //----------------------------------------------------------------------
@@ -89,15 +73,15 @@ const int cLOG_SINK_COMBINED_FILE_CHILD_MASK = 1 << eLOG_SINK_DIMENSION;
 //----------------------------------------------------------------------
 // tConfiguration constructors
 //----------------------------------------------------------------------
-tConfiguration::tConfiguration(const tConfiguration *parent, const std::string &name)
+tConfiguration::tConfiguration(const tDefaultConfigurationContext &default_context, const tConfiguration *parent, const std::string &name)
   : parent(parent),
     name(name),
-    prints_name(parent ? parent->prints_name : cDEFAULT_PRINTS_NAME),
-    prints_time(parent ? parent->prints_time : cDEFAULT_PRINTS_TIME),
-    prints_level(parent ? parent->prints_level : cDEFAULT_PRINTS_LEVEL),
-    prints_location(parent ? parent->prints_location : cDEFAULT_PRINTS_LOCATION),
-    max_message_level(parent ? parent->max_message_level : cDEFAULT_MAX_LOG_LEVEL),
-    sink_mask(parent ? parent->sink_mask | cLOG_SINK_COMBINED_FILE_CHILD_MASK : cDEFAULT_SINK_MASK),
+    prints_name(parent ? parent->prints_name : default_context.cPRINTS_NAME),
+    prints_time(parent ? parent->prints_time : default_context.cPRINTS_TIME),
+    prints_level(parent ? parent->prints_level : default_context.cPRINTS_LEVEL),
+    prints_location(parent ? parent->prints_location : default_context.cPRINTS_LOCATION),
+    max_message_level(parent ? parent->max_message_level : default_context.cMAX_LOG_LEVEL),
+    sink_mask(parent ? parent->sink_mask | cLOG_SINK_COMBINED_FILE_CHILD_MASK : default_context.cSINK_MASK),
     stream_buffer_ready(false)
 {
   assert(name.length() || !parent);
@@ -198,7 +182,7 @@ void tConfiguration::SetSinkMask(int sink_mask)
 //----------------------------------------------------------------------
 // tConfiguration GetConfigurationByName
 //----------------------------------------------------------------------
-const tConfiguration &tConfiguration::GetConfigurationByName(const char *domain_name) const
+const tConfiguration &tConfiguration::GetConfigurationByName(const tDefaultConfigurationContext &default_context, const char *domain_name) const
 {
   assert(domain_name && *domain_name);
 
@@ -206,16 +190,16 @@ const tConfiguration &tConfiguration::GetConfigurationByName(const char *domain_
 
   if (!delimiter)
   {
-    return this->LookupChild(domain_name, std::strlen(domain_name));
+    return this->LookupChild(default_context, domain_name, std::strlen(domain_name));
   }
 
-  return this->LookupChild(domain_name, delimiter - domain_name).GetConfigurationByName(delimiter + 1);
+  return this->LookupChild(default_context, domain_name, delimiter - domain_name).GetConfigurationByName(default_context, delimiter + 1);
 }
 
 //----------------------------------------------------------------------
 // tConfiguration GetConfigurationByFilename
 //----------------------------------------------------------------------
-const tConfiguration &tConfiguration::GetConfigurationByFilename(const char *filename) const
+const tConfiguration &tConfiguration::GetConfigurationByFilename(const tDefaultConfigurationContext &default_context, const char *filename) const
 {
   assert(filename && *filename);
 
@@ -226,13 +210,13 @@ const tConfiguration &tConfiguration::GetConfigurationByFilename(const char *fil
     return *this;
   }
 
-  return this->LookupChild(filename, delimiter - filename).GetConfigurationByFilename(delimiter + 1);
+  return this->LookupChild(default_context, filename, delimiter - filename).GetConfigurationByFilename(default_context, delimiter + 1);
 }
 
 //----------------------------------------------------------------------
 // tConfiguration LookupChild
 //----------------------------------------------------------------------
-const tConfiguration &tConfiguration::LookupChild(const char *name, size_t length) const
+const tConfiguration &tConfiguration::LookupChild(const tDefaultConfigurationContext &default_context, const char *name, size_t length) const
 {
   tConfiguration *configuration = 0;
   auto insertion_point = this->children.end();
@@ -266,7 +250,7 @@ const tConfiguration &tConfiguration::LookupChild(const char *name, size_t lengt
   // Add child if needed
   if (!configuration)
   {
-    configuration = new tConfiguration(this, std::string(name, length));
+    configuration = new tConfiguration(default_context, this, std::string(name, length));
     const tConfiguration *parent = configuration->parent;
     size_t full_name_length = 0;
     while (parent)

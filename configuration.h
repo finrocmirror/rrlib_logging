@@ -41,6 +41,7 @@
 
 #include "rrlib/logging/log_levels.h"
 #include "rrlib/logging/default_log_description.h"
+#include "rrlib/logging/configuration/tConfiguration.h"
 #include "rrlib/logging/configuration/tDomainRegistry.h"
 
 #undef __rrlib__logging__include_guard__
@@ -67,17 +68,17 @@ void SetPadPrefixColumns(bool value);
 
 void SetPadMultiLineMessages(bool value);
 
-void SetDomainPrintsName(const std::string &domain_name, bool value);
+void SetDomainPrintsName(const std::string &domain_name, bool value, const tDefaultConfigurationContext &default_context = cDEFAULT_CONTEXT);
 
-void SetDomainPrintsTime(const std::string &domain_name, bool value);
+void SetDomainPrintsTime(const std::string &domain_name, bool value, const tDefaultConfigurationContext &default_context = cDEFAULT_CONTEXT);
 
-void SetDomainPrintsLevel(const std::string &domain_name, bool value);
+void SetDomainPrintsLevel(const std::string &domain_name, bool value, const tDefaultConfigurationContext &default_context = cDEFAULT_CONTEXT);
 
-void SetDomainPrintsLocation(const std::string &domain_name, bool value);
+void SetDomainPrintsLocation(const std::string &domain_name, bool value, const tDefaultConfigurationContext &default_context = cDEFAULT_CONTEXT);
 
-void SetDomainMaxMessageLevel(const std::string &domain_name, tLogLevel level);
+void SetDomainMaxMessageLevel(const std::string &domain_name, tLogLevel level, const tDefaultConfigurationContext &default_context = cDEFAULT_CONTEXT);
 
-void SetDomainSink(const std::string &domain_name, tLogSink sink_1, tLogSink sink_2 = (tLogSink)0, tLogSink sink_3 = (tLogSink)0, tLogSink sink_4 = (tLogSink)0);
+void SetDomainSink(const std::string &domain_name, tLogSink sink_1, tLogSink sink_2 = (tLogSink)0, tLogSink sink_3 = (tLogSink)0, tLogSink sink_4 = (tLogSink)0, const tDefaultConfigurationContext &default_context = cDEFAULT_CONTEXT);
 
 void PrintDomainConfigurations();
 

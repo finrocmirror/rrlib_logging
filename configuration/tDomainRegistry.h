@@ -109,7 +109,7 @@ public:
    */
   ~tDomainRegistryImplementation();
 
-  const tConfiguration &GetConfiguration(const char *filename, const char *domain_name = 0);
+  const tConfiguration &GetConfiguration(const tDefaultConfigurationContext &default_context, const char *filename, const char *domain_name = 0);
 
   /*! Set a prefix for filenames that are created as log
    *
@@ -210,7 +210,7 @@ private:
   bool pad_prefix_columns;
   bool pad_multi_line_messages;
 
-  const tConfiguration &GetConfigurationByFilename(const char *filename) const;
+  const tConfiguration &GetConfigurationByFilename(const tDefaultConfigurationContext &default_context, const char *filename) const;
 
 };
 

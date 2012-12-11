@@ -102,49 +102,49 @@ void SetPadMultiLineMessages(bool value)
 //----------------------------------------------------------------------
 // SetDomainPrintsName
 //----------------------------------------------------------------------
-void SetDomainPrintsName(const std::string &domain_name, bool value)
+void SetDomainPrintsName(const std::string &domain_name, bool value, const tDefaultConfigurationContext &default_context)
 {
-  const_cast<tConfiguration &>(tDomainRegistry::Instance().GetConfiguration(NULL, domain_name.c_str())).SetPrintsName(value);
+  const_cast<tConfiguration &>(tDomainRegistry::Instance().GetConfiguration(default_context, NULL, domain_name.c_str())).SetPrintsName(value);
 }
 
 //----------------------------------------------------------------------
 // SetDomainPrintsTime
 //----------------------------------------------------------------------
-void SetDomainPrintsTime(const std::string &domain_name, bool value)
+void SetDomainPrintsTime(const std::string &domain_name, bool value, const tDefaultConfigurationContext &default_context)
 {
-  const_cast<tConfiguration &>(tDomainRegistry::Instance().GetConfiguration(NULL, domain_name.c_str())).SetPrintsTime(value);
+  const_cast<tConfiguration &>(tDomainRegistry::Instance().GetConfiguration(default_context, NULL, domain_name.c_str())).SetPrintsTime(value);
 }
 
 //----------------------------------------------------------------------
 // SetDomainPrintsLevel
 //----------------------------------------------------------------------
-void SetDomainPrintsLevel(const std::string &domain_name, bool value)
+void SetDomainPrintsLevel(const std::string &domain_name, bool value, const tDefaultConfigurationContext &default_context)
 {
-  const_cast<tConfiguration &>(tDomainRegistry::Instance().GetConfiguration(NULL, domain_name.c_str())).SetPrintsLevel(value);
+  const_cast<tConfiguration &>(tDomainRegistry::Instance().GetConfiguration(default_context, NULL, domain_name.c_str())).SetPrintsLevel(value);
 }
 
 //----------------------------------------------------------------------
 // SetDomainPrintsLocation
 //----------------------------------------------------------------------
-void SetDomainPrintsLocation(const std::string &domain_name, bool value)
+void SetDomainPrintsLocation(const std::string &domain_name, bool value, const tDefaultConfigurationContext &default_context)
 {
-  const_cast<tConfiguration &>(tDomainRegistry::Instance().GetConfiguration(NULL, domain_name.c_str())).SetPrintsLocation(value);
+  const_cast<tConfiguration &>(tDomainRegistry::Instance().GetConfiguration(default_context, NULL, domain_name.c_str())).SetPrintsLocation(value);
 }
 
 //----------------------------------------------------------------------
 // SetDomainMaxMessageLevel
 //----------------------------------------------------------------------
-void SetDomainMaxMessageLevel(const std::string &domain_name, tLogLevel level)
+void SetDomainMaxMessageLevel(const std::string &domain_name, tLogLevel level, const tDefaultConfigurationContext &default_context)
 {
-  const_cast<tConfiguration &>(tDomainRegistry::Instance().GetConfiguration(NULL, domain_name.c_str())).SetMaxMessageLevel(level);
+  const_cast<tConfiguration &>(tDomainRegistry::Instance().GetConfiguration(default_context, NULL, domain_name.c_str())).SetMaxMessageLevel(level);
 }
 
 //----------------------------------------------------------------------
 // SetDomainSink
 //----------------------------------------------------------------------
-void SetDomainSink(const std::string &domain_name, tLogSink sink_1, tLogSink sink_2, tLogSink sink_3, tLogSink sink_4)
+void SetDomainSink(const std::string &domain_name, tLogSink sink_1, tLogSink sink_2, tLogSink sink_3, tLogSink sink_4, const tDefaultConfigurationContext &default_context)
 {
-  const_cast<tConfiguration &>(tDomainRegistry::Instance().GetConfiguration(NULL, domain_name.c_str())).SetSinkMask(sink_1 | sink_2 | sink_3 | sink_4);
+  const_cast<tConfiguration &>(tDomainRegistry::Instance().GetConfiguration(default_context, NULL, domain_name.c_str())).SetSinkMask(sink_1 | sink_2 | sink_3 | sink_4);
 }
 
 //----------------------------------------------------------------------
@@ -164,7 +164,7 @@ void PrintDomainConfigurations()
     }
   };
 
-  RecursionHandler::Print(tDomainRegistry::Instance().GetConfiguration(NULL, "."));
+  RecursionHandler::Print(tDomainRegistry::Instance().GetConfiguration(cDEFAULT_CONTEXT, NULL, "."));
 }
 
 //----------------------------------------------------------------------

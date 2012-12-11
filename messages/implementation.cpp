@@ -72,9 +72,9 @@ namespace logging
 //----------------------------------------------------------------------
 // GetConfiguration
 //----------------------------------------------------------------------
-const tConfiguration &GetConfiguration(const char *filename, const char *domain_name)
+const tConfiguration &GetConfiguration(const char *filename, const char *domain_name, const tDefaultConfigurationContext &default_context)
 {
-  return tDomainRegistry::Instance().GetConfiguration(filename, domain_name);
+  return tDomainRegistry::Instance().GetConfiguration(default_context, filename, domain_name);
 }
 
 //----------------------------------------------------------------------

@@ -100,6 +100,27 @@ enum tLogSink
   eLOG_SINK_DIMENSION        //!< Endmarker and dimension of tLogSink
 };
 
+struct tDefaultConfigurationContext
+{
+  const bool cPRINTS_NAME;
+  const bool cPRINTS_TIME;
+  const bool cPRINTS_LEVEL;
+  const bool cPRINTS_LOCATION;
+  const tLogLevel cMAX_LOG_LEVEL;
+  const int cSINK_MASK;
+};
+#ifdef RRLIB_LOGGING_LESS_OUTPUT
+static const tDefaultConfigurationContext cDEFAULT_CONTEXT
+{
+  false, false, false, false, tLogLevel::WARNING, 1 << eLOG_SINK_STDOUT
+};
+#else
+static const tDefaultConfigurationContext cDEFAULT_CONTEXT
+{
+  false, false, false, true, tLogLevel::DEBUG, 1 << eLOG_SINK_STDOUT
+};
+#endif
+
 //----------------------------------------------------------------------
 // Class declaration
 //----------------------------------------------------------------------
@@ -202,17 +223,17 @@ private:
 
   mutable std::list<tConfiguration *> children;
 
-  tConfiguration(const tConfiguration *parent, const std::string &name);
+  tConfiguration(const tDefaultConfigurationContext &default_context, const tConfiguration *parent, const std::string &name);
 
   tConfiguration(const tConfiguration &other);
 
   tConfiguration &operator = (const tConfiguration other);
 
-  const tConfiguration &GetConfigurationByName(const char *domain_name) const;
+  const tConfiguration &GetConfigurationByName(const tDefaultConfigurationContext &default_context, const char *domain_name) const;
 
-  const tConfiguration &GetConfigurationByFilename(const char *filename) const;
+  const tConfiguration &GetConfigurationByFilename(const tDefaultConfigurationContext &default_context, const char *filename) const;
 
-  const tConfiguration &LookupChild(const char *name, size_t length) const;
+  const tConfiguration &LookupChild(const tDefaultConfigurationContext &default_context, const char *name, size_t length) const;
 
   void PrepareStreamBuffer() const;
 
