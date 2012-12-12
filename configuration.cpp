@@ -68,7 +68,7 @@ namespace logging
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
-const char * const xml_attribute_max_level_values[static_cast<size_t>(tLogLevel::DIMENSION)] = { "user", "error", "warning", "debug", "debug_warning", "debug_verbose_1", "debug_verbose_2", "debug_verbose_3" };
+const char * const xml_attribute_max_level_values[static_cast<size_t>(tLogLevel::DIMENSION)] = { "user", "error", "warning", "debug_warning", "debug", "debug_verbose_1", "debug_verbose_2", "debug_verbose_3" };
 const char * const xml_attribute_sink_values[eLOG_SINK_DIMENSION] = { "stdout", "stderr", "file", "combined_file" };
 
 //----------------------------------------------------------------------
