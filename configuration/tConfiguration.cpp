@@ -19,7 +19,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    tConfiguration.cpp
+/*!\file    rrlib/logging/configuration/tConfiguration.cpp
  *
  * \author  Tobias Foehst
  *

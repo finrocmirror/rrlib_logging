@@ -19,13 +19,13 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    tStream.h
+/*!\file    rrlib/logging/messages/tStream.h
  *
  * \author  Tobias Foehst
  *
  * \date    2010-07-06
  *
- * \brief Contains tStream
+ * \brief   Contains tStream
  *
  * \b tStream
  *

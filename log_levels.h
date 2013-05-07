@@ -19,13 +19,13 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    log_levels.h
+/*!\file    rrlib/logging/log_levels.h
  *
  * \author  Tobias Foehst
  *
  * \date    2011-09-15
  *
- * \brief Contains the available log level definitions
+ * \brief   Contains the available log level definitions
  *
  */
 //----------------------------------------------------------------------

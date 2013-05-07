@@ -19,11 +19,13 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    configuration.h
+/*!\file    rrlib/logging/configuration.h
  *
  * \author  Tobias Foehst
  *
  * \date    2011-01-05
+ *
+ * \brief
  *
  */
 //----------------------------------------------------------------------

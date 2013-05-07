@@ -19,13 +19,13 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    messages/implementation.h
+/*!\file    rrlib/logging/messages/implementation.h
  *
  * \author  Tobias Foehst
  *
  * \date    2011-09-15
  *
- * \brief Contains the implementation of message printing
+ * \brief   Contains the implementation of message printing
  *
  * A few words for implementation.h
  *

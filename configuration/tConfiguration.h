@@ -19,13 +19,13 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    tConfiguration.h
+/*!\file    rrlib/logging/configuration/tConfiguration.h
  *
  * \author  Tobias Foehst
  *
  * \date    2010-06-20
  *
- * \brief Contains tConfiguration and corresponding enumerations
+ * \brief   Contains tConfiguration and corresponding enumerations
  *
  * \b tConfiguration
  *

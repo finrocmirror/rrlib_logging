@@ -19,13 +19,13 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    messages.h
+/*!\file    rrlib/logging/messages.h
  *
  * \author  Tobias Foehst
  *
  * \date    2010-06-16
  *
- * \brief Contains macro definitions for using the RRLib logging framework
+ * \brief   Contains macro definitions for using the RRLib logging framework
  *
  * \b Log Messages
  *

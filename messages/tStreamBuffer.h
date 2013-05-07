@@ -19,13 +19,13 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    tStreamBuffer.h
+/*!\file    rrlib/logging/messages/tStreamBuffer.h
  *
  * \author  Tobias Foehst
  *
  * \date    2010-06-23
  *
- * \brief Contains tStreamBuffer
+ * \brief   Contains tStreamBuffer
  *
  * \b tStreamBuffer
  *
