@@ -60,8 +60,6 @@
 #include <mutex>
 
 #include <exception>
-#include <boost/type_traits/is_base_of.hpp>
-#include <boost/utility/enable_if.hpp>
 #include "rrlib/time/time.h"
 
 //----------------------------------------------------------------------
@@ -149,7 +147,7 @@ public:
    * \returns A reference to the altered stream (in this case the proxy)
    */
   template <typename T>
-  inline typename boost::disable_if<boost::is_base_of<std::exception, T>, tStream>::type &operator << (const T &value)
+  inline typename std::enable_if < !std::is_base_of<std::exception, T>::value, tStream >::type &operator << (const T &value)
   {
     this->stream << value;
     return *this;
