@@ -240,6 +240,7 @@ const tConfiguration &tConfiguration::LookupChild(const tDefaultConfigurationCon
         configuration = *it;
         break;
       }
+      continue;
     }
 
     // Shorter names start -> insert new configuration before
