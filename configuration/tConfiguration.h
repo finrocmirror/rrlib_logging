@@ -66,6 +66,7 @@
 #include <string>
 #include <list>
 #include <fstream>
+#include <mutex>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -222,6 +223,7 @@ private:
   mutable tStreamBuffer stream_buffer;
 
   mutable std::list<tConfiguration *> children;
+  mutable std::mutex children_mutex;
 
   tConfiguration(const tDefaultConfigurationContext &default_context, const tConfiguration *parent, const std::string &name);
 
@@ -233,7 +235,11 @@ private:
 
   const tConfiguration &GetConfigurationByFilename(const tDefaultConfigurationContext &default_context, const char *filename) const;
 
-  const tConfiguration &LookupChild(const tDefaultConfigurationContext &default_context, const char *name, size_t length) const;
+  const tConfiguration &GetChild(const tDefaultConfigurationContext &default_context, const char *name, size_t length) const;
+
+  tConfiguration *FindChild(const char *name, size_t length) const;
+
+  std::list<tConfiguration *>::iterator FindInsertionPoint(size_t length) const;
 
   void PrepareStreamBuffer() const;
 

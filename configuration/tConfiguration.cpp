@@ -190,10 +190,10 @@ const tConfiguration &tConfiguration::GetConfigurationByName(const tDefaultConfi
 
   if (!delimiter)
   {
-    return this->LookupChild(default_context, domain_name, std::strlen(domain_name));
+    return this->GetChild(default_context, domain_name, std::strlen(domain_name));
   }
 
-  return this->LookupChild(default_context, domain_name, delimiter - domain_name).GetConfigurationByName(default_context, delimiter + 1);
+  return this->GetChild(default_context, domain_name, delimiter - domain_name).GetConfigurationByName(default_context, delimiter + 1);
 }
 
 //----------------------------------------------------------------------
@@ -210,17 +210,44 @@ const tConfiguration &tConfiguration::GetConfigurationByFilename(const tDefaultC
     return *this;
   }
 
-  return this->LookupChild(default_context, filename, delimiter - filename).GetConfigurationByFilename(default_context, delimiter + 1);
+  return this->GetChild(default_context, filename, delimiter - filename).GetConfigurationByFilename(default_context, delimiter + 1);
 }
 
 //----------------------------------------------------------------------
-// tConfiguration LookupChild
+// tConfiguration GetChild
 //----------------------------------------------------------------------
-const tConfiguration &tConfiguration::LookupChild(const tDefaultConfigurationContext &default_context, const char *name, size_t length) const
+const tConfiguration &tConfiguration::GetChild(const tDefaultConfigurationContext &default_context, const char *name, size_t length) const
 {
-  tConfiguration *configuration = 0;
-  auto insertion_point = this->children.end();
+  tConfiguration *configuration = this->FindChild(name, length);
+  if (!configuration)
+  {
+    std::lock_guard<std::mutex> lock(this->children_mutex);
+    configuration = this->FindChild(name, length);
 
+    // Add child if needed
+    if (!configuration)
+    {
+      configuration = new tConfiguration(default_context, this, std::string(name, length));
+      const tConfiguration *parent = configuration->parent;
+      size_t full_name_length = 0;
+      while (parent)
+      {
+        full_name_length += parent->Name().length() + 1;
+        parent = parent->parent;
+      }
+      tDomainRegistry::Instance().UpdateMaxDomainNameLength(full_name_length + configuration->Name().length());
+      this->children.insert(this->FindInsertionPoint(length), configuration);
+    }
+  }
+
+  return *configuration;
+}
+
+//----------------------------------------------------------------------
+// tConfiguration FindChild
+//----------------------------------------------------------------------
+tConfiguration *tConfiguration::FindChild(const char *name, size_t length) const
+{
   // Iterate over sorted list of children (must be sorted longest name first to work)
   for (auto it = this->children.begin(); it != this->children.end(); ++it)
   {
@@ -232,38 +259,39 @@ const tConfiguration &tConfiguration::LookupChild(const tDefaultConfigurationCon
       continue;
     }
 
-    // Compare matching names
+    // Compare names of matching length
     if (current_length == length)
     {
       if (std::strncmp(name, (*it)->Name().c_str(), length) == 0)
       {
-        configuration = *it;
-        break;
+        return *it;
       }
       continue;
     }
 
-    // Shorter names start -> insert new configuration before
-    insertion_point = it;
+    // Shorter names start -> can not be found anymore
     break;
   }
+  return NULL;
+}
 
-  // Add child if needed
-  if (!configuration)
+//----------------------------------------------------------------------
+// tConfiguration FindInsertionPoint
+//----------------------------------------------------------------------
+std::list<tConfiguration *>::iterator tConfiguration::FindInsertionPoint(size_t length) const
+{
+  // Iterate over sorted list of children (must be sorted longest name first to work)
+  for (auto it = this->children.begin(); it != this->children.end(); ++it)
   {
-    configuration = new tConfiguration(default_context, this, std::string(name, length));
-    const tConfiguration *parent = configuration->parent;
-    size_t full_name_length = 0;
-    while (parent)
-    {
-      full_name_length += parent->Name().length() + 1;
-      parent = parent->parent;
-    }
-    tDomainRegistry::Instance().UpdateMaxDomainNameLength(full_name_length + configuration->Name().length());
-    this->children.insert(insertion_point, configuration);
-  }
+    const size_t current_length = (*it)->Name().length();
 
-  return *configuration;
+    // Shorter names start -> insert new configuration before
+    if (current_length < length)
+    {
+      return it;
+    }
+  }
+  return this->children.end();
 }
 
 //----------------------------------------------------------------------
