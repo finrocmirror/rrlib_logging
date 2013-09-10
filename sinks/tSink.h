@@ -19,33 +19,33 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    rrlib/logging/messages/tStream.cpp
+/*!\file    rrlib/logging/sinks/tSink.h
  *
- * \author  Tobias Foehst
+ * \author  Tobias Föhst
  *
- * \date    2012-01-05
+ * \date    2013-08-07
+ *
+ * \brief   Contains tSink
+ *
+ * \b tSink
  *
  */
 //----------------------------------------------------------------------
-#define __rrlib__logging__include_guard__
-#include "rrlib/logging/messages/tStream.h"
+#ifndef __rrlib__logging__sinks__tSink_h__
+#define __rrlib__logging__sinks__tSink_h__
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
+#include <streambuf>
+
+#include "rrlib/design_patterns/factory.h"
 #include "rrlib/design_patterns/singleton.h"
+
+#include "rrlib/xml/tNode.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
-//----------------------------------------------------------------------
-#include "rrlib/logging/messages/tFormattingBuffer.h"
-
-//----------------------------------------------------------------------
-// Debugging
-//----------------------------------------------------------------------
-
-//----------------------------------------------------------------------
-// Namespace usage
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
@@ -59,42 +59,45 @@ namespace logging
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
-typedef design_patterns::tSingletonHolder<std::mutex> tStreamMutex;
+class tConfiguration;
 
 //----------------------------------------------------------------------
-// Const values
+// Namespace declaration
 //----------------------------------------------------------------------
-
-//----------------------------------------------------------------------
-// Implementation
-//----------------------------------------------------------------------
-
-//----------------------------------------------------------------------
-// tStream constructors
-//----------------------------------------------------------------------
-tStream::tStream(std::streambuf *stream_buffer)
-  : stream(stream_buffer),
-    lock(tStreamMutex::Instance())
-{}
-
-//----------------------------------------------------------------------
-// tStream destructor
-//----------------------------------------------------------------------
-tStream::~tStream()
+namespace sinks
 {
-  tFormattingBuffer *buffer = dynamic_cast<tFormattingBuffer *>(this->stream.rdbuf());
-  if (buffer && buffer->EndsWithNewline())
-  {
-    this->stream << std::flush;
-  }
-  else
-  {
-    this->stream << std::endl;
-  }
-}
+
+//----------------------------------------------------------------------
+// Forward declarations / typedefs / enums
+//----------------------------------------------------------------------
+class tSink;
+typedef design_patterns::tSingletonHolder<design_patterns::tFactory<tSink, std::string, std::function<tSink *(const xml::tNode &, const tConfiguration &)>>> tSinkFactory;
+
+//----------------------------------------------------------------------
+// Class declaration
+//----------------------------------------------------------------------
+//! SHORT_DESCRIPTION
+/*!
+ */
+class tSink
+{
+
+//----------------------------------------------------------------------
+// Public methods and typedefs
+//----------------------------------------------------------------------
+public:
+
+  virtual ~tSink() = 0;
+
+  virtual std::streambuf &GetStreamBuffer() = 0;
+};
 
 //----------------------------------------------------------------------
 // End of namespace declaration
 //----------------------------------------------------------------------
 }
 }
+}
+
+
+#endif

@@ -19,22 +19,22 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    rrlib/logging/messages/tStreamBuffer.h
+/*!\file    rrlib/logging/messages/tFanOutBuffer.h
  *
  * \author  Tobias Foehst
  *
  * \date    2010-06-23
  *
- * \brief   Contains tStreamBuffer
+ * \brief   Contains tFanOutBuffer
  *
- * \b tStreamBuffer
+ * \b tFanOutBuffer
  *
- * tStreamBuffer is an implementation for std::ostreams with multiple
+ * tFanOutBuffer is a specialization of std::streambuf with multiple
  * sinks. Using a std::ostream for output internally uses a std::streambuf
  * for the low level operations necessary to print stream input to a file
- * or terminal. By specializing std::streambuf in this class it is possible
- * to collect the streambuffers of several ostreams and supply all these
- * streams with own input, like tee in UNIX shells.
+ * or terminal, etc. By specializing std::streambuf in this class it is
+ * possible to fan out the stream's content to several other stream buffers,
+ * like tee in UNIX shells.
  *
  * Having an empty buffer vector also implements a null stream that does
  * not open /dev/null to swallow all input.
@@ -45,13 +45,14 @@
 #error Invalid include directive. Try #include "rrlib/logging/messages.h" instead.
 #endif
 
-#ifndef __rrlib__logging__tStreamBuffer_h__
-#define __rrlib__logging__tStreamBuffer_h__
+#ifndef __rrlib__logging__tFanOutBuffer_h__
+#define __rrlib__logging__tFanOutBuffer_h__
+
+#include "rrlib/logging/messages/tFormattingBuffer.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
-#include <iostream>
 #include <streambuf>
 #include <vector>
 
@@ -74,46 +75,22 @@ namespace logging
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
-enum tStreamBufferEffect
-{
-  eSBE_REGULAR,
-  eSBE_BOLD,
-  eSBE_DARK,
-  eSBE_UNDERLINED = 4,
-  eSBE_BLINKING,
-  eSBE_INVERTED = 7,
-  eSBE_CONCEALED,
-  eSBE_DIMENSION
-};
-
-enum tStreamBufferColor
-{
-  eSBC_DEFAULT,
-  eSBC_RED,
-  eSBC_GREEN,
-  eSBC_YELLOW,
-  eSBC_BLUE,
-  eSBC_MAGENTA,
-  eSBC_CYAN,
-  eSBC_GRAY,
-  eSBC_DIMENSION
-};
 
 //----------------------------------------------------------------------
 // Class declaration
 //----------------------------------------------------------------------
-//! A streambuffer implementation for std::ostreams with multiple sinks
-/*! Using a std::ostream for output internally uses a std::streambuf for
- *  the low level operations necessary to print stream input to a file
- *  or terminal. By specializing std::streambuf in this class it is
- *  possible to collect the streambuffers of several ostreams and supply
- *  all these streams with own input, like tee in UNIX shells.
+//! A specialization of std::streambuf with multiple sinks
+/*! Using a std::ostream for output internally uses a std::streambuf
+ * for the low level operations necessary to print stream input to a file
+ * or terminal, etc. By specializing std::streambuf in this class it is
+ * possible to fan out the stream's content to several other stream buffers,
+ * like tee in UNIX shells.
  *
  *  Having an empty buffer vector also implements a null stream that does
  *  not open /dev/null to swallow all input.
  *
  */
-class tStreamBuffer : public std::streambuf
+class tFanOutBuffer : public tFormattingBuffer
 {
 
 //----------------------------------------------------------------------
@@ -121,68 +98,64 @@ class tStreamBuffer : public std::streambuf
 //----------------------------------------------------------------------
 public:
 
-  /*! The ctor of tStreamBuffer
-   *
-   */
-  tStreamBuffer();
+  tFanOutBuffer();
 
-  /*! Add a target output stream to this buffer
+  /*! Add a sink (stream buffer) to this buffer
    *
-   * This buffer forwards its input to a list of target streams.
-   * This method is used to add such a stream to the list.
+   * This buffer forwards its input to a list of target stream buffers.
+   * This method is used to add such a sink to the list.
    *
-   * \param stream   The output stream that should be added as target
+   * \param stream_buffer   The output stream buffer that should be added as sink
    */
-  inline void AddStream(std::ostream &stream)
+  inline void AddSink(tFormattingBuffer stream_buffer)
   {
-    this->buffers.push_back(stream.rdbuf());
+    this->formatting_buffers.push_back(stream_buffer);
   }
 
-  /*! Clear the buffer's list of target streams
+  inline void AddSink(std::streambuf &stream_buffer)
+  {
+    try
+    {
+      tFormattingBuffer &formatting_buffer = dynamic_cast<tFormattingBuffer &>(stream_buffer);
+      this->formatting_buffers.push_back(formatting_buffer);
+    }
+    catch (std::bad_cast)
+    {
+      this->buffers.push_back(&stream_buffer);
+    }
+  }
+
+  /*! Clear the buffer's list of sinks
    *
-   * This method completely clears the list of target streams.
+   * This method completely clears the list of sinks.
    * After calling, the stream that uses this buffer acts as
    * null stream, swallowing every input without generating any
    * output.
    */
   inline void Clear()
   {
+    this->formatting_buffers.clear();
     this->buffers.clear();
   }
 
-  /*! Find out whether the last character put into this stream was a newline or not
-   *
-   * \returns Whether the last character put into this stream was \n or not
-   */
-  inline bool EndsWithNewline() const
-  {
-    return this->ends_with_newline;
-  }
+  virtual void SetColor(tFormattingBufferEffect effect, tFormattingBufferColor color);
 
-  void SetColor(tStreamBufferEffect effect, tStreamBufferColor color);
+  virtual void ResetColor();
 
-  void ResetColor();
+  virtual void InitializeMultiLinePadding();
 
-  void InitializeMultiLinePadding();
+  virtual void MarkEndOfPrefixForMultiLinePadding();
 
-  void MarkEndOfPrefixForMultiLinePadding();
 
 //----------------------------------------------------------------------
 // Private fields and methods
 //----------------------------------------------------------------------
 private:
 
+  std::vector<tFormattingBuffer> formatting_buffers;
   std::vector<std::streambuf *> buffers;
 
-  bool ends_with_newline;
-
-  size_t multi_line_pad_width;
-  bool collect_multi_line_pad_width;
-  bool pad_before_next_character;
-
-  int WriteCharacterToBuffers(int c);
-
-  virtual int overflow(int c);
+  virtual int_type overflow(int_type c);
 
   virtual int sync();
 

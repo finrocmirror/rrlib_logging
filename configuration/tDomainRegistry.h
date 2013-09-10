@@ -79,11 +79,17 @@ namespace logging
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
+class tDomainRegistryImplementation;
+typedef design_patterns::tSingletonHolder<tDomainRegistryImplementation, design_patterns::singleton::Longevity> tDomainRegistry;
+inline unsigned int GetLongevity(tDomainRegistryImplementation *)
+{
+  return 0xFFFFFFFF;
+}
 
 //----------------------------------------------------------------------
 // Class declaration
 //----------------------------------------------------------------------
-//! The central management facility for logging domains and theirconfiguration
+//! The central management facility for logging domains and their configuration
 /*! In RRLib logging messages can be send via several logging domains.
  *  These have to be created and maintained using a single instance of
  *  this class. Thus, this class registers a list of active logging domain
@@ -213,12 +219,6 @@ private:
   const tConfiguration &GetConfigurationByFilename(const tDefaultConfigurationContext &default_context, const char *filename) const;
 
 };
-
-typedef design_patterns::tSingletonHolder<tDomainRegistryImplementation, design_patterns::singleton::Longevity> tDomainRegistry;
-inline unsigned int GetLongevity(tDomainRegistryImplementation *)
-{
-  return 0xFFFFFFFF;
-}
 
 //----------------------------------------------------------------------
 // End of namespace declaration

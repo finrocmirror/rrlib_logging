@@ -65,14 +65,15 @@
 //----------------------------------------------------------------------
 #include <string>
 #include <list>
-#include <fstream>
+#include <memory>
 #include <mutex>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
 #include "rrlib/logging/log_levels.h"
-#include "rrlib/logging/messages/tStreamBuffer.h"
+#include "rrlib/logging/messages/tFanOutBuffer.h"
+#include "rrlib/logging/sinks/tSink.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -99,7 +100,7 @@ enum tLogSink
   eLOG_SINK_FILE,            //!< Messages are printed to single files for each subdomain
   eLOG_SINK_COMBINED_FILE,   //!< Messages are printed into one combined file
   eLOG_SINK_DIMENSION        //!< Endmarker and dimension of tLogSink
-};
+} __attribute__((deprecated));
 
 struct tDefaultConfigurationContext
 {
@@ -108,17 +109,16 @@ struct tDefaultConfigurationContext
   const bool cPRINTS_LEVEL;
   const bool cPRINTS_LOCATION;
   const tLogLevel cMAX_LOG_LEVEL;
-  const int cSINK_MASK;
 };
 #ifdef RRLIB_LOGGING_LESS_OUTPUT
 static const tDefaultConfigurationContext cDEFAULT_CONTEXT
 {
-  false, false, false, false, tLogLevel::WARNING, 1 << eLOG_SINK_STDOUT
+  false, false, false, false, tLogLevel::WARNING
 };
 #else
 static const tDefaultConfigurationContext cDEFAULT_CONTEXT
 {
-  false, false, false, true, tLogLevel::DEBUG, 1 << eLOG_SINK_STDOUT
+  false, false, false, true, tLogLevel::DEBUG
 };
 #endif
 
@@ -160,7 +160,9 @@ public:
   void SetPrintsLevel(bool value);
   void SetPrintsLocation(bool value);
   void SetMaxMessageLevel(tLogLevel level);
-  void SetSinkMask(int sink_mask);
+  void SetSinkMask(int sink_mask) __attribute__((deprecated));
+  void ClearSinks();
+  void AddSink(std::shared_ptr<sinks::tSink> sink);
 
   inline bool PrintsName() const
   {
@@ -187,13 +189,12 @@ public:
     return this->max_message_level;
   }
 
-  inline tStreamBuffer &StreamBuffer() const
+  inline tFanOutBuffer &StreamBuffer() const
   {
     if (!this->stream_buffer_ready)
     {
       this->PrepareStreamBuffer();
     }
-
     return this->stream_buffer;
   }
 
@@ -217,10 +218,9 @@ private:
 
   tLogLevel max_message_level;
 
-  int sink_mask;
+  std::vector<std::shared_ptr<sinks::tSink>> sinks;
   mutable bool stream_buffer_ready;
-  mutable std::ofstream file_stream;
-  mutable tStreamBuffer stream_buffer;
+  mutable tFanOutBuffer stream_buffer;
 
   mutable std::list<tConfiguration *> children;
   mutable std::mutex children_mutex;
@@ -242,10 +242,6 @@ private:
   std::list<tConfiguration *>::iterator FindInsertionPoint(size_t length) const;
 
   void PrepareStreamBuffer() const;
-
-  std::ofstream &FileStream() const;
-
-  void OpenFileStream() const;
 
 };
 

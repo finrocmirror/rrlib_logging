@@ -35,6 +35,7 @@
 //----------------------------------------------------------------------
 #include <cstring>
 #include <sstream>
+#include <iostream>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -81,7 +82,7 @@ tConfiguration::tConfiguration(const tDefaultConfigurationContext &default_conte
     prints_level(parent ? parent->prints_level : default_context.cPRINTS_LEVEL),
     prints_location(parent ? parent->prints_location : default_context.cPRINTS_LOCATION),
     max_message_level(parent ? parent->max_message_level : default_context.cMAX_LOG_LEVEL),
-    sink_mask(parent ? parent->sink_mask | cLOG_SINK_COMBINED_FILE_CHILD_MASK : default_context.cSINK_MASK),
+    sinks(parent ? parent->sinks : std::vector<std::shared_ptr<sinks::tSink>>()),
     stream_buffer_ready(false)
 {
   assert(name.length() || !parent);
@@ -92,11 +93,6 @@ tConfiguration::tConfiguration(const tDefaultConfigurationContext &default_conte
 //----------------------------------------------------------------------
 tConfiguration::~tConfiguration()
 {
-  if (this->file_stream.is_open())
-  {
-    this->file_stream.close();
-  }
-
   for (auto it = this->children.begin(); it != this->children.end(); ++it)
   {
     delete *it;
@@ -168,14 +164,57 @@ void tConfiguration::SetMaxMessageLevel(tLogLevel level)
 //----------------------------------------------------------------------
 void tConfiguration::SetSinkMask(int sink_mask)
 {
-  this->sink_mask = sink_mask;
-  this->stream_buffer_ready = false;
+  this->ClearSinks();
+  if (sink_mask | eLOG_SINK_STDOUT)
+  {
+    xml::tNode node;
+    node.SetAttribute("id", "stdout");
+    this->AddSink(std::shared_ptr<sinks::tSink>(sinks::tSinkFactory::Instance().Create("stream", node, *this)));
+  }
+  if (sink_mask | eLOG_SINK_STDERR)
+  {
+    xml::tNode node;
+    node.SetAttribute("id", "stderr");
+    this->AddSink(std::shared_ptr<sinks::tSink>(sinks::tSinkFactory::Instance().Create("stream", node, *this)));
+  }
+  if (sink_mask | eLOG_SINK_FILE)
+  {
+    std::cerr << "INFO: The meaning of this sink changed to be the same as combined file. There will be one file for the whole subtree starting at " << this->GetFullQualifiedName() << std::endl;
+    xml::tNode node;
+    this->AddSink(std::shared_ptr<sinks::tSink>(sinks::tSinkFactory::Instance().Create("file", node, *this)));
+  }
+  if (sink_mask | eLOG_SINK_COMBINED_FILE)
+  {
+    xml::tNode node;
+    this->AddSink(std::shared_ptr<sinks::tSink>(sinks::tSinkFactory::Instance().Create("file", node, *this)));
+  }
+}
 
-  sink_mask |= cLOG_SINK_COMBINED_FILE_CHILD_MASK;
+//----------------------------------------------------------------------
+// tConfiguration ClearSinks
+//----------------------------------------------------------------------
+void tConfiguration::ClearSinks()
+{
+  this->sinks.clear();
+  this->stream_buffer_ready = false;
 
   for (auto it = this->children.begin(); it != this->children.end(); ++it)
   {
-    (*it)->SetSinkMask(sink_mask);
+    (*it)->ClearSinks();
+  }
+}
+
+//----------------------------------------------------------------------
+// tConfiguration AddSink
+//----------------------------------------------------------------------
+void tConfiguration::AddSink(std::shared_ptr<sinks::tSink> sink)
+{
+  this->sinks.push_back(sink);
+  this->stream_buffer_ready = false;
+
+  for (auto it = this->children.begin(); it != this->children.end(); ++it)
+  {
+    (*it)->AddSink(sink);
   }
 }
 
@@ -300,67 +339,12 @@ std::list<tConfiguration *>::iterator tConfiguration::FindInsertionPoint(size_t 
 void tConfiguration::PrepareStreamBuffer() const
 {
   this->stream_buffer.Clear();
-  if (this->sink_mask & (1 << eLOG_SINK_STDOUT))
+  for (auto sink = this->sinks.begin(); sink != this->sinks.end(); ++sink)
   {
-    this->stream_buffer.AddStream(std::cout);
-  }
-  if (this->sink_mask & (1 << eLOG_SINK_STDERR))
-  {
-    this->stream_buffer.AddStream(std::cerr);
-  }
-  if (this->sink_mask & (1 << eLOG_SINK_FILE))
-  {
-    this->stream_buffer.AddStream(this->FileStream());
-  }
-  if (this->sink_mask & (1 << eLOG_SINK_COMBINED_FILE))
-  {
-    const tConfiguration *configuration = this;
-    while (configuration->parent && configuration->sink_mask & cLOG_SINK_COMBINED_FILE_CHILD_MASK)
-    {
-      configuration = configuration->parent;
-    }
-    this->stream_buffer.AddStream(configuration->FileStream());
+    this->stream_buffer.AddSink((*sink)->GetStreamBuffer());
   }
 
   this->stream_buffer_ready = true;
-}
-
-//----------------------------------------------------------------------
-// tConfiguration FileStream
-//----------------------------------------------------------------------
-std::ofstream &tConfiguration::FileStream() const
-{
-  if (!this->file_stream.is_open())
-  {
-    this->OpenFileStream();
-  }
-
-  return this->file_stream;
-}
-
-//----------------------------------------------------------------------
-// tConfiguration OpenFileStream
-//----------------------------------------------------------------------
-void tConfiguration::OpenFileStream() const
-{
-  const std::string &file_name_prefix(tDomainRegistry::Instance().LogFilenamePrefix());
-  if (file_name_prefix.length() == 0)
-  {
-    std::stringstream message;
-    message << "RRLib Logging >> Prefix for log filenames not set. Can not use eLOG_SINK_FILE or eLOG_SINK_COMBINED_FILE." << std::endl
-            << "                 Consider calling e.g. rrlib::logging::SetLogFilenamePrefix(basename(argv[0])) from main." << std::endl;
-    throw std::runtime_error(message.str());
-  }
-
-  std::string fqdn = this->GetFullQualifiedName();
-  std::string file_name(file_name_prefix + (fqdn != "." ? fqdn : "") + ".log");
-  this->file_stream.open(file_name.c_str(), std::ios::out | std::ios::trunc);
-  if (!this->file_stream.is_open())
-  {
-    std::stringstream message;
-    message << "RRLib Logging >> Could not open file `" << file_name << "'!" << std::endl;
-    throw std::runtime_error(message.str());
-  }
 }
 
 //----------------------------------------------------------------------

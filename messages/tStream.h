@@ -65,7 +65,6 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "rrlib/logging/messages/tStreamBuffer.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -117,25 +116,13 @@ public:
    *
    * \param stream   The std::ostream that is used via this proxy
    */
-  explicit tStream(tStreamBuffer &stream_buffer);
+  explicit tStream(std::streambuf *stream_buffer);
 
   /*! The ctor of tStream
    *
    * Releases the lock for the output and takes care of flushing and trailing newlines.
    */
   ~tStream();
-
-  /*! Implicit conversion to std::ostream for e.g. std::ostream_iterator
-   *
-   * To use this proxy class together with e.g. std::copy, which needs
-   * a std::ostream_iterator, this method is implemented.
-   *
-   * \returns A reference to the underlying std::ostream
-   */
-  inline operator std::ostream &()
-  {
-    return this->stream;
-  }
 
   /*! Streaming operator (forwarder)
    *

@@ -66,7 +66,7 @@ const tConfiguration &GetConfiguration(const char *filename, const char *domain_
 
 void SendFormattedTimeToStream(tStream &stream);
 void SendFormattedDomainNameToStream(tStream &stream, const std::string &domain_name);
-void SetColor(tStreamBuffer &stream_buffer, tLogLevel level);
+void SetColor(tFormattingBuffer &stream_buffer, tLogLevel level);
 void SendFormattedLevelToStream(tStream &stream, tLogLevel level);
 void SendFormattedLocationToStream(tStream &stream, const char *filename, unsigned int line);
 
@@ -98,7 +98,7 @@ void Print(const tConfiguration &domain_configuration, const TLogDescription &lo
     return;
   }
 
-  tStream stream(domain_configuration.StreamBuffer());
+  tStream stream(&domain_configuration.StreamBuffer());
   domain_configuration.StreamBuffer().InitializeMultiLinePadding();
 
   if (level != tLogLevel::USER)

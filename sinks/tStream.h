@@ -19,34 +19,36 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    rrlib/logging/messages/tStream.cpp
+/*!\file    rrlib/logging/sinks/tStream.h
  *
- * \author  Tobias Foehst
+ * \author  Tobias Föhst
  *
- * \date    2012-01-05
+ * \date    2013-08-07
+ *
+ * \brief   Contains tStream
+ *
+ * \b tStream
  *
  */
 //----------------------------------------------------------------------
-#define __rrlib__logging__include_guard__
-#include "rrlib/logging/messages/tStream.h"
+#ifndef __rrlib__logging__include_guard__
+#error Invalid include directive. Try #include "rrlib/logging/configuration.h" instead.
+#endif
+
+#ifndef __rrlib__logging__sinks__tStream_h__
+#define __rrlib__logging__sinks__tStream_h__
+
+#include "rrlib/logging/sinks/tSink.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
-#include "rrlib/design_patterns/singleton.h"
+#include "rrlib/xml/tNode.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
 #include "rrlib/logging/messages/tFormattingBuffer.h"
-
-//----------------------------------------------------------------------
-// Debugging
-//----------------------------------------------------------------------
-
-//----------------------------------------------------------------------
-// Namespace usage
-//----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
 // Namespace declaration
@@ -55,46 +57,46 @@ namespace rrlib
 {
 namespace logging
 {
+namespace sinks
+{
 
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
-typedef design_patterns::tSingletonHolder<std::mutex> tStreamMutex;
 
 //----------------------------------------------------------------------
-// Const values
+// Class declaration
 //----------------------------------------------------------------------
-
-//----------------------------------------------------------------------
-// Implementation
-//----------------------------------------------------------------------
-
-//----------------------------------------------------------------------
-// tStream constructors
-//----------------------------------------------------------------------
-tStream::tStream(std::streambuf *stream_buffer)
-  : stream(stream_buffer),
-    lock(tStreamMutex::Instance())
-{}
-
-//----------------------------------------------------------------------
-// tStream destructor
-//----------------------------------------------------------------------
-tStream::~tStream()
+//! SHORT_DESCRIPTION
+/*!
+ */
+class tStream : public tSink
 {
-  tFormattingBuffer *buffer = dynamic_cast<tFormattingBuffer *>(this->stream.rdbuf());
-  if (buffer && buffer->EndsWithNewline())
-  {
-    this->stream << std::flush;
-  }
-  else
-  {
-    this->stream << std::endl;
-  }
-}
+
+//----------------------------------------------------------------------
+// Public methods and typedefs
+//----------------------------------------------------------------------
+public:
+
+  tStream(const xml::tNode &node, const tConfiguration &configuration);
+
+  virtual std::streambuf &GetStreamBuffer();
+
+//----------------------------------------------------------------------
+// Private fields and methods
+//----------------------------------------------------------------------
+private:
+
+  tFormattingBuffer stream_buffer;
+
+};
 
 //----------------------------------------------------------------------
 // End of namespace declaration
 //----------------------------------------------------------------------
 }
 }
+}
+
+
+#endif

@@ -40,6 +40,7 @@
 extern "C"
 {
 #include <libgen.h>
+#include <unistd.h>
 }
 
 #include "rrlib/util/join.h"
@@ -150,7 +151,7 @@ int main(int argc, char **argv)
 
   RRLIB_LOG_PRINT(WARNING, "0x", std::setw(20), std::setfill('0'), std::hex, 324);
 
-  RRLIB_LOG_PRINT(ERROR, "Das hier ist ein mehrzeiliger\nFehler.");
+  RRLIB_LOG_PRINT(ERROR, "Das hier ist ein mehrzeiliger\nFehler.\n");
   RRLIB_LOG_PRINT(USER, "Und das hier ein mehrzeiliger\nText fuer den lieben Benutzer.");
 
   const char* texts[] = {"Dies", "ist", "ein", "kleiner", "Text."};
@@ -167,6 +168,11 @@ int main(int argc, char **argv)
   RRLIB_LOG_PRINT(DEBUG, "Bool: ", true, false);
   RRLIB_LOG_PRINT(DEBUG, "Function: ", main);
   RRLIB_LOG_PRINT(DEBUG, "Mal noch einzelne Zeichen: ", 'a', '\0', 'b');
+
+  RRLIB_LOG_PRINT_TO(.speech_log, DEBUG, "This is a speech-log message");
+
+  std::cout << "Waiting 10 seconds for optional speech synthesis" << std::endl;
+  sleep(10);
 
   rrlib::logging::PrintDomainConfigurations();
   return EXIT_SUCCESS;

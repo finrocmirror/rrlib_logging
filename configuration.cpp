@@ -38,6 +38,7 @@
 //----------------------------------------------------------------------
 #define __rrlib__logging__include_guard__
 #include "rrlib/logging/configuration/tDomainRegistry.h"
+#include "rrlib/logging/sinks/tSink.h"
 
 #include "rrlib/logging/messages.h"
 
@@ -241,10 +242,9 @@ bool AddConfigurationFromXMLNode(const xml::tNode &node, const std::string &pare
     configuration.SetMaxMessageLevel(node.GetEnumAttribute<tLogLevel>("max_level"));
   }
 
-  bool sinks_configured = false;
   if (node.HasAttribute("sink"))
   {
-    sinks_configured = true;
+    RRLIB_LOG_PRINT(WARNING, "Use of the sink attribute in xml configuration for rrlib_logging is deprecated. Use sink taggroup instead.");
     configuration.SetSinkMask(1 << node.GetEnumAttribute<tLogSink>("sink"));
   }
 
@@ -253,17 +253,28 @@ bool AddConfigurationFromXMLNode(const xml::tNode &node, const std::string &pare
   {
     if (it->Name() == "sink")
     {
-      if (sinks_configured)
+      if (it->HasAttribute("output"))
       {
-        RRLIB_LOG_PRINT(ERROR, "Sink already configured in domain element!");
-        return false;
+        sink_mask |= 1 << it->GetEnumAttribute<tLogSink>("output");
       }
-      sink_mask |= 1 << it->GetEnumAttribute<tLogSink>("output");
     }
   }
   if (sink_mask != 0)
   {
+    RRLIB_LOG_PRINT(WARNING, "Use of the output attribute in <sink> is deprecated. Use <stream>, <file>, etc. instead.");
     configuration.SetSinkMask(sink_mask);
+  }
+
+  for (xml::tNode::const_iterator it = node.ChildrenBegin(); it != node.ChildrenEnd(); ++it)
+  {
+    if (it->Name() == "sink")
+    {
+      configuration.ClearSinks();
+      for (xml::tNode::const_iterator sink = it->ChildrenBegin(); sink != sink->ChildrenEnd(); ++sink)
+      {
+        configuration.AddSink(std::shared_ptr<sinks::tSink>(sinks::tSinkFactory::Instance().Create(sink->Name(), *sink, configuration)));
+      }
+    }
   }
 
   for (xml::tNode::const_iterator it = node.ChildrenBegin(); it != node.ChildrenEnd(); ++it)

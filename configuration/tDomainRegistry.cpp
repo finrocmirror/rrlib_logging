@@ -42,6 +42,13 @@
 // Internal includes with ""
 //----------------------------------------------------------------------
 
+#include "rrlib/logging/sinks/tStream.h"
+#include "rrlib/logging/sinks/tFile.h"
+
+#ifdef _LIB_RRLIB_LOGGING_SINKS_SPEECH_SYNTHESIS_PRESENT_
+#include "rrlib/logging/sinks/tSpeechSynthesis.h"
+#endif
+
 //----------------------------------------------------------------------
 // Debugging
 //----------------------------------------------------------------------
@@ -103,6 +110,15 @@ tDomainRegistryImplementation::tDomainRegistryImplementation()
   {
     return a.length() > b.length();
   });
+
+
+  sinks::tSinkFactory::Instance().Register<sinks::tStream>("stream");
+  sinks::tSinkFactory::Instance().Register<sinks::tFile>("file");
+
+#ifdef _LIB_RRLIB_LOGGING_SINKS_SPEECH_SYNTHESIS_PRESENT_
+  sinks::tSinkFactory::Instance().Register<sinks::tSpeechSynthesis>("speech_synthesis");
+#endif
+
 }
 
 //----------------------------------------------------------------------

@@ -7,10 +7,29 @@
     <sources>
       configuration/*.cpp
       messages/*.cpp
+      sinks/tFile.cpp
+      sinks/tStream.cpp
       configuration.cpp
-      messages.h
-      log_levels.h
       default_log_description.cpp
+      messages.h
+    </sources>
+  </rrlib>
+
+  <rrlib name="logging_log_levels">
+    <sources>
+      log_levels.h
+    </sources>
+  </rrlib>
+  
+  <rrlib name="logging_sinks">
+    <sources>
+      sinks/tSink.cpp
+    </sources>
+  </rrlib>
+
+  <rrlib name="logging_sinks_speech_synthesis" optional="true">
+    <sources>
+      sinks/tSpeechSynthesis.cpp
     </sources>
   </rrlib>
 

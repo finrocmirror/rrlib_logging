@@ -19,22 +19,27 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    rrlib/logging/messages/implementation.cpp
+/*!\file    rrlib/logging/messages/tFanOutBuffer.cpp
  *
  * \author  Tobias Foehst
  *
- * \date    2011-09-15
+ * \date    2010-06-16
  *
  */
 //----------------------------------------------------------------------
 #define __rrlib__logging__include_guard__
-#include "rrlib/logging/messages/implementation.h"
+#include "rrlib/logging/messages/tFanOutBuffer.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
 #include <cstdio>
-#include <ctime>
+#include <cstring>
+
+extern "C"
+{
+#include <unistd.h>
+}
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -70,117 +75,109 @@ namespace logging
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-// GetConfiguration
+// tFanOutBuffer constructors
 //----------------------------------------------------------------------
-const tConfiguration &GetConfiguration(const char *filename, const char *domain_name, const tDefaultConfigurationContext &default_context)
-{
-  return tDomainRegistry::Instance().GetConfiguration(default_context, filename, domain_name);
-}
+tFanOutBuffer::tFanOutBuffer() :
+  tFormattingBuffer(NULL)
+{}
 
 //----------------------------------------------------------------------
-// SendFormattedTimeToStream
+// tFanOutBuffer SetColor
 //----------------------------------------------------------------------
-void SendFormattedTimeToStream(tStream &stream)
+void tFanOutBuffer::SetColor(tFormattingBufferEffect effect, tFormattingBufferColor color)
 {
-  char time_string_buffer[9];
-  timespec time;
-  clock_gettime(CLOCK_REALTIME, &time);
-  strftime(time_string_buffer, sizeof(time_string_buffer), "%T", localtime(&time.tv_sec));
-  char nsec_string_buffer[11];
-  snprintf(nsec_string_buffer, sizeof(nsec_string_buffer), ".%09ld", time.tv_nsec);
-  stream << "[ " << time_string_buffer << nsec_string_buffer << " ] ";
-}
-
-//----------------------------------------------------------------------
-// SetColor
-//----------------------------------------------------------------------
-void SetColor(tFormattingBuffer &stream_buffer, tLogLevel level)
-{
-  switch (level)
+  for (auto it = this->formatting_buffers.begin(); it != this->formatting_buffers.end(); ++it)
   {
-  case tLogLevel::ERROR:
-    stream_buffer.SetColor(eSBE_BOLD, eSBC_RED);
-    break;
-  case tLogLevel::WARNING:
-    stream_buffer.SetColor(eSBE_BOLD, eSBC_BLUE);
-    break;
-  case tLogLevel::DEBUG_WARNING:
-    stream_buffer.SetColor(eSBE_DARK, eSBC_YELLOW);
-    break;
-  case tLogLevel::DEBUG:
-    stream_buffer.SetColor(eSBE_DARK, eSBC_GREEN);
-    break;
-  case tLogLevel::DEBUG_VERBOSE_1:
-    stream_buffer.SetColor(eSBE_REGULAR, eSBC_CYAN);
-    break;
-  case tLogLevel::DEBUG_VERBOSE_2:
-    stream_buffer.SetColor(eSBE_REGULAR, eSBC_CYAN);
-    break;
-  case tLogLevel::DEBUG_VERBOSE_3:
-    stream_buffer.SetColor(eSBE_REGULAR, eSBC_CYAN);
-    break;
-  default:
-    ;
+    it->SetColor(effect, color);
   }
 }
 
 //----------------------------------------------------------------------
-// SendFormattedDomainNameToStream
+// tFanOutBuffer ResetColor
 //----------------------------------------------------------------------
-void SendFormattedDomainNameToStream(tStream &stream, const std::string &domain_name)
+void tFanOutBuffer::ResetColor()
 {
-  char name_string_buffer[128];
-  snprintf(name_string_buffer, sizeof(name_string_buffer), "%-*s ", static_cast<int>((tDomainRegistry::Instance().GetPadPrefixColumns() ? tDomainRegistry::Instance().MaxDomainNameLength() : 0)), domain_name.c_str());
-  stream << name_string_buffer;
-}
-
-//----------------------------------------------------------------------
-// SendFormattedLevelToStream
-//----------------------------------------------------------------------
-void SendFormattedLevelToStream(tStream &stream, tLogLevel level)
-{
-  const char *level_name = 0;
-  switch (level)
+  for (auto it = this->formatting_buffers.begin(); it != this->formatting_buffers.end(); ++it)
   {
-  case tLogLevel::ERROR:
-    level_name = "[error]";
-    break;
-  case tLogLevel::WARNING:
-    level_name = "[warning]";
-    break;
-  case tLogLevel::DEBUG_WARNING:
-    level_name = "[debug]";
-    break;
-  case tLogLevel::DEBUG:
-    level_name = "[debug]";
-    break;
-  case tLogLevel::DEBUG_VERBOSE_1:
-    level_name = "[verbose]";
-    break;
-  case tLogLevel::DEBUG_VERBOSE_2:
-    level_name = "[verbose]";
-    break;
-  case tLogLevel::DEBUG_VERBOSE_3:
-    level_name = "[verbose]";
-    break;
-  default:
-    level_name = "";
-    break;
+    it->ResetColor();
   }
-  char name_string_buffer[128];
-  snprintf(name_string_buffer, sizeof(name_string_buffer), "%-*s ", (tDomainRegistry::Instance().GetPadPrefixColumns() ? 9 : 0), level_name);
-  stream << name_string_buffer;
 }
 
 //----------------------------------------------------------------------
-// SendFormattedLocationToStream
+// tFanOutBuffer InitializeMultiLinePadding
 //----------------------------------------------------------------------
-void SendFormattedLocationToStream(tStream &stream, const char *filename, unsigned int line)
+void tFanOutBuffer::InitializeMultiLinePadding()
 {
-  char location_string_buffer[128];
-  snprintf(location_string_buffer, sizeof(location_string_buffer), "[%s:%u] ", filename, line);
-  stream << location_string_buffer;
+  for (auto it = this->formatting_buffers.begin(); it != this->formatting_buffers.end(); ++it)
+  {
+    it->InitializeMultiLinePadding();
+  }
 }
+
+//----------------------------------------------------------------------
+// tFanOutBuffer MarkEndOfPrefixForMultiLinePadding
+//----------------------------------------------------------------------
+void tFanOutBuffer::MarkEndOfPrefixForMultiLinePadding()
+{
+  for (auto it = this->formatting_buffers.begin(); it != this->formatting_buffers.end(); ++it)
+  {
+    it->MarkEndOfPrefixForMultiLinePadding();
+  }
+}
+
+//----------------------------------------------------------------------
+// tFanOutBuffer overflow
+//----------------------------------------------------------------------
+tFanOutBuffer::int_type tFanOutBuffer::overflow(int_type c)
+{
+  if (c == traits_type::eof())
+  {
+    return traits_type::eof();
+  }
+
+  this->SetEndsWithNewline(c == '\n');
+
+  int_type result = c;
+  for (auto it = this->formatting_buffers.begin(); it != this->formatting_buffers.end(); ++it)
+  {
+    if (it->sputc(c) == traits_type::eof())
+    {
+      result = traits_type::eof();
+    }
+  }
+  for (auto it = this->buffers.begin(); it != this->buffers.end(); ++it)
+  {
+    if ((*it)->sputc(c) == traits_type::eof())
+    {
+      result = traits_type::eof();
+    }
+  }
+  return result;
+}
+
+//----------------------------------------------------------------------
+// tFanOutBuffer sync
+//----------------------------------------------------------------------
+int tFanOutBuffer::sync()
+{
+  int result = 0;
+  for (auto it = this->formatting_buffers.begin(); it != this->formatting_buffers.end(); ++it)
+  {
+    if (it->pubsync() != 0)
+    {
+      result = -1;
+    }
+  }
+  for (std::vector<std::streambuf *>::iterator it = this->buffers.begin(); it != this->buffers.end(); ++it)
+  {
+    if ((*it)->pubsync() != 0)
+    {
+      result = -1;
+    }
+  }
+  return result;
+}
+
 
 //----------------------------------------------------------------------
 // End of namespace declaration

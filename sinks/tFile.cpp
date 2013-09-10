@@ -19,30 +19,32 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    rrlib/logging/messages/tStream.cpp
+/*!\file    rrlib/logging/sinks/tFile.cpp
  *
- * \author  Tobias Foehst
+ * \author  Tobias Föhst
  *
- * \date    2012-01-05
+ * \date    2013-08-07
  *
  */
 //----------------------------------------------------------------------
 #define __rrlib__logging__include_guard__
-#include "rrlib/logging/messages/tStream.h"
+#include "rrlib/logging/sinks/tFile.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
-#include "rrlib/design_patterns/singleton.h"
+#include <string>
+#include <stdexcept>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "rrlib/logging/messages/tFormattingBuffer.h"
+#include "rrlib/logging/configuration/tDomainRegistry.h"
 
 //----------------------------------------------------------------------
 // Debugging
 //----------------------------------------------------------------------
+#include <cassert>
 
 //----------------------------------------------------------------------
 // Namespace usage
@@ -55,11 +57,12 @@ namespace rrlib
 {
 namespace logging
 {
+namespace sinks
+{
 
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
-typedef design_patterns::tSingletonHolder<std::mutex> tStreamMutex;
 
 //----------------------------------------------------------------------
 // Const values
@@ -70,31 +73,56 @@ typedef design_patterns::tSingletonHolder<std::mutex> tStreamMutex;
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-// tStream constructors
+// tFile constructors
 //----------------------------------------------------------------------
-tStream::tStream(std::streambuf *stream_buffer)
-  : stream(stream_buffer),
-    lock(tStreamMutex::Instance())
+tFile::tFile(const xml::tNode &node, const tConfiguration &configuration) :
+  configuration(configuration)
 {}
 
 //----------------------------------------------------------------------
-// tStream destructor
+// tFile destructors
 //----------------------------------------------------------------------
-tStream::~tStream()
+tFile::~tFile()
 {
-  tFormattingBuffer *buffer = dynamic_cast<tFormattingBuffer *>(this->stream.rdbuf());
-  if (buffer && buffer->EndsWithNewline())
+  if (this->file_stream.is_open())
   {
-    this->stream << std::flush;
+    this->file_stream.close();
   }
-  else
+}
+
+//----------------------------------------------------------------------
+// tFile GetStreamBuffer
+//----------------------------------------------------------------------
+std::streambuf &tFile::GetStreamBuffer()
+{
+  if (!this->file_stream.is_open())
   {
-    this->stream << std::endl;
+    const std::string &file_name_prefix(tDomainRegistry::Instance().LogFilenamePrefix());
+    if (file_name_prefix.length() == 0)
+    {
+      std::stringstream message;
+      message << "RRLib Logging >> Prefix for log filenames not set. Can not use file sink." << std::endl
+              << "                 Consider calling e.g. rrlib::logging::SetLogFilenamePrefix(basename(argv[0])) from main." << std::endl;
+      throw std::runtime_error(message.str());
+    }
+
+    std::string fqdn = this->configuration.GetFullQualifiedName();
+    std::string file_name(file_name_prefix + (fqdn != "." ? fqdn : "") + ".log");
+    this->file_stream.open(file_name.c_str(), std::ios::out | std::ios::trunc);
+    if (!this->file_stream.is_open())
+    {
+      std::stringstream message;
+      message << "RRLib Logging >> Could not open file `" << file_name << "'!" << std::endl;
+      throw std::runtime_error(message.str());
+    }
   }
+
+  return *this->file_stream.rdbuf();
 }
 
 //----------------------------------------------------------------------
 // End of namespace declaration
 //----------------------------------------------------------------------
+}
 }
 }

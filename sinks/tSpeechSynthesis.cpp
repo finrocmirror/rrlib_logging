@@ -19,30 +19,29 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    rrlib/logging/messages/tStream.cpp
+/*!\file    rrlib/logging/sinks/tSpeechSynthesis.cpp
  *
- * \author  Tobias Foehst
+ * \author  Tobias Föhst
  *
- * \date    2012-01-05
+ * \date    2013-08-07
  *
  */
 //----------------------------------------------------------------------
-#define __rrlib__logging__include_guard__
-#include "rrlib/logging/messages/tStream.h"
+#include "rrlib/logging/sinks/tSpeechSynthesis.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
-#include "rrlib/design_patterns/singleton.h"
-
+#include "rrlib/speech_synthesis/voices.h"
+#include <iostream>
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "rrlib/logging/messages/tFormattingBuffer.h"
 
 //----------------------------------------------------------------------
 // Debugging
 //----------------------------------------------------------------------
+#include <cassert>
 
 //----------------------------------------------------------------------
 // Namespace usage
@@ -55,46 +54,62 @@ namespace rrlib
 {
 namespace logging
 {
+namespace sinks
+{
 
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
-typedef design_patterns::tSingletonHolder<std::mutex> tStreamMutex;
 
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
+const std::string cSEPARATOR = "://";
 
 //----------------------------------------------------------------------
 // Implementation
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-// tStream constructors
+// tSpeechSynthesis constructors
 //----------------------------------------------------------------------
-tStream::tStream(std::streambuf *stream_buffer)
-  : stream(stream_buffer),
-    lock(tStreamMutex::Instance())
-{}
+tSpeechSynthesis::tSpeechSynthesis(const xml::tNode &node, const tConfiguration &configuration) :
+  stream_buffer(NULL)
+{
+  if (!node.HasAttribute("voice"))
+  {
+    throw std::runtime_error("Attribute voice is missing for speech_synthesis logging sink!");
+  }
+
+  std::string voice_string = node.GetStringAttribute("voice");
+  size_t separator_position = voice_string.find(cSEPARATOR);
+  if (separator_position != std::string::npos)
+  {
+    std::string synthesis = voice_string.substr(0, separator_position);
+    std::string voice = voice_string.substr(separator_position + cSEPARATOR.length());
+    this->stream_buffer = new speech_synthesis::tStreamBuffer(*speech_synthesis::tVoiceFactory::Instance().Create(synthesis, voice));
+  }
+}
 
 //----------------------------------------------------------------------
-// tStream destructor
+// tSpeechSynthesis destructor
 //----------------------------------------------------------------------
-tStream::~tStream()
+tSpeechSynthesis::~tSpeechSynthesis()
 {
-  tFormattingBuffer *buffer = dynamic_cast<tFormattingBuffer *>(this->stream.rdbuf());
-  if (buffer && buffer->EndsWithNewline())
-  {
-    this->stream << std::flush;
-  }
-  else
-  {
-    this->stream << std::endl;
-  }
+  delete this->stream_buffer;
+}
+
+//----------------------------------------------------------------------
+// tSpeechSynthesis GetStreamBuffer
+//----------------------------------------------------------------------
+std::streambuf &tSpeechSynthesis::GetStreamBuffer()
+{
+  return *this->stream_buffer;
 }
 
 //----------------------------------------------------------------------
 // End of namespace declaration
 //----------------------------------------------------------------------
+}
 }
 }

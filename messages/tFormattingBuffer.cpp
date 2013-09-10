@@ -19,7 +19,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    rrlib/logging/messages/tStreamBuffer.cpp
+/*!\file    rrlib/logging/messages/tFormattingBuffer.cpp
  *
  * \author  Tobias Foehst
  *
@@ -28,7 +28,7 @@
  */
 //----------------------------------------------------------------------
 #define __rrlib__logging__include_guard__
-#include "rrlib/logging/messages/tStreamBuffer.h"
+#include "rrlib/logging/messages/tFormattingBuffer.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -76,131 +76,80 @@ namespace logging
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-// tStreamBuffer constructors
+// tFormattingBuffer constructors
 //----------------------------------------------------------------------
-tStreamBuffer::tStreamBuffer()
-  : ends_with_newline(false),
-    multi_line_pad_width(0),
-    collect_multi_line_pad_width(false),
-    pad_before_next_character(false)
+tFormattingBuffer::tFormattingBuffer(std::streambuf *sink) :
+  sink(sink),
+  ends_with_newline(false),
+  multi_line_pad_width(0),
+  collect_multi_line_pad_width(false),
+  pad_before_next_character(false)
+{}
+
+tFormattingBuffer::tFormattingBuffer(const tFormattingBuffer &other) :
+  sink(other.sink),
+  ends_with_newline(other.ends_with_newline),
+  multi_line_pad_width(other.multi_line_pad_width),
+  collect_multi_line_pad_width(other.collect_multi_line_pad_width),
+  pad_before_next_character(other.pad_before_next_character)
 {}
 
 //----------------------------------------------------------------------
-// tStreamBuffer WriteCharacterToBuffers
+// tFormattingBuffer assignment operator
 //----------------------------------------------------------------------
-int tStreamBuffer::WriteCharacterToBuffers(int c)
+tFormattingBuffer &tFormattingBuffer::operator = (const tFormattingBuffer &other)
 {
-  int result = c;
-  for (std::vector<std::streambuf *>::iterator it = this->buffers.begin(); it != this->buffers.end(); ++it)
+  if (this != &other)
   {
-    if ((*it)->sputc(c) == EOF)
-    {
-      result = EOF;
-    }
+    this->sink = other.sink;
+    this->ends_with_newline = other.ends_with_newline;
+    this->multi_line_pad_width = other.multi_line_pad_width;
+    this->collect_multi_line_pad_width = other.collect_multi_line_pad_width;
+    this->pad_before_next_character = other.pad_before_next_character;
   }
-  return result;
+  return *this;
 }
 
 //----------------------------------------------------------------------
-// tStreamBuffer overflow
+// tFormattingBuffer SetColor
 //----------------------------------------------------------------------
-int tStreamBuffer::overflow(int c)
-{
-  if (c == EOF)
-  {
-    return !EOF;
-  }
-
-  this->ends_with_newline = c == '\n';
-
-  int result = c;
-  if (this->pad_before_next_character)
-  {
-    for (size_t i = 0; i < this->multi_line_pad_width; ++i)
-    {
-      result = this->WriteCharacterToBuffers(' ');
-    }
-    this->pad_before_next_character = false;
-  }
-
-  if (result != EOF)
-  {
-    result = this->WriteCharacterToBuffers(c);
-  }
-
-  if (this->collect_multi_line_pad_width)
-  {
-    this->multi_line_pad_width = this->ends_with_newline ? 0 : this->multi_line_pad_width + 1;
-  }
-  else
-  {
-    this->pad_before_next_character = this->ends_with_newline;
-  }
-
-  return result;
-}
-
-//----------------------------------------------------------------------
-// tStreamBuffer sync
-//----------------------------------------------------------------------
-int tStreamBuffer::sync()
-{
-  int result = 0;
-  for (std::vector<std::streambuf *>::iterator it = this->buffers.begin(); it != this->buffers.end(); ++it)
-  {
-    if ((*it)->pubsync() != 0)
-    {
-      result = -1;
-    }
-  }
-  return result;
-}
-
-//----------------------------------------------------------------------
-// tStreamBuffer SetColor
-//----------------------------------------------------------------------
-void tStreamBuffer::SetColor(tStreamBufferEffect effect, tStreamBufferColor color)
+void tFormattingBuffer::SetColor(tFormattingBufferEffect effect, tFormattingBufferColor color)
 {
   char control_sequence[16];
   snprintf(control_sequence, sizeof(control_sequence), "\033[;%u;3%um", effect, color);
   const size_t length = strlen(control_sequence);
-  for (std::vector<std::streambuf *>::iterator it = this->buffers.begin(); it != this->buffers.end(); ++it)
+
+  int file_descriptor = util::GetFileDescriptor(this->sink);
+  if (file_descriptor > 0 && isatty(file_descriptor))
   {
-    int file_descriptor = util::GetFileDescriptor(*it);
-    if (file_descriptor > 0 && isatty(file_descriptor))
+    for (size_t i = 0; i < length; ++i)
     {
-      for (size_t i = 0; i < length; ++i)
-      {
-        (*it)->sputc(control_sequence[i]);
-      }
+      this->sink->sputc(control_sequence[i]);
     }
   }
 }
 
 //----------------------------------------------------------------------
-// tStreamBuffer ResetColor
+// tFormattingBuffer ResetColor
 //----------------------------------------------------------------------
-void tStreamBuffer::ResetColor()
+void tFormattingBuffer::ResetColor()
 {
   const char *control_sequence = "\033[;0m";
   const size_t length = strlen(control_sequence);
-  for (std::vector<std::streambuf *>::iterator it = this->buffers.begin(); it != this->buffers.end(); ++it)
+  int file_descriptor = util::GetFileDescriptor(this->sink);
+  if (file_descriptor > 0 && isatty(file_descriptor))
   {
-    int file_descriptor = util::GetFileDescriptor(*it);
-    if (file_descriptor > 0 && isatty(file_descriptor))
+    for (size_t i = 0; i < length; ++i)
     {
-      for (size_t i = 0; i < length; ++i)
-      {
-        (*it)->sputc(control_sequence[i]);
-      }
+      this->sink->sputc(control_sequence[i]);
     }
   }
 }
 
 //----------------------------------------------------------------------
-// tStreamBuffer InitializeMultiLinePadding
+// tFormattingBuffer InitializeMultiLinePadding
 //----------------------------------------------------------------------
-void tStreamBuffer::InitializeMultiLinePadding()
+void tFormattingBuffer::InitializeMultiLinePadding()
 {
   if (!tDomainRegistry::Instance().GetPadMultiLineMessages())
   {
@@ -212,11 +161,47 @@ void tStreamBuffer::InitializeMultiLinePadding()
 }
 
 //----------------------------------------------------------------------
-// tStreamBuffer MarkEndOfPrefixForMultiLinePadding
+// tFormattingBuffer MarkEndOfPrefixForMultiLinePadding
 //----------------------------------------------------------------------
-void tStreamBuffer::MarkEndOfPrefixForMultiLinePadding()
+void tFormattingBuffer::MarkEndOfPrefixForMultiLinePadding()
 {
   this->collect_multi_line_pad_width = false;
+}
+
+//----------------------------------------------------------------------
+// tFormattingBuffer overflow
+//----------------------------------------------------------------------
+tFormattingBuffer::int_type tFormattingBuffer::overflow(int_type c)
+{
+  if (c == traits_type::eof())
+  {
+    return traits_type::eof();
+  }
+
+  this->SetEndsWithNewline(c == '\n');
+
+  int result = c;
+  if (this->pad_before_next_character)
+  {
+    for (size_t i = 0; i < this->multi_line_pad_width; ++i)
+    {
+      result = this->sink->sputc(' ');
+    }
+    this->pad_before_next_character = false;
+  }
+
+  result = this->sink->sputc(c);
+
+  if (this->collect_multi_line_pad_width)
+  {
+    this->multi_line_pad_width = this->EndsWithNewline() ? 0 : this->multi_line_pad_width + 1;
+  }
+  else
+  {
+    this->pad_before_next_character = this->EndsWithNewline();
+  }
+
+  return result;
 }
 
 //----------------------------------------------------------------------

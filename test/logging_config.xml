@@ -2,6 +2,18 @@
 <!DOCTYPE rrlib_logging PUBLIC "-//RRLIB//DTD logging 1.0" "http://rrlib.org/xml/1.0/logging.dtd">
 <rrlib_logging>
   <domain name="." prints_time="true" prints_name="true" prints_level="true" max_level="debug_verbose_3">
-    <sink output="stdout" />
+    <sink>
+      <stream id="stdout" />
+<!--
+      <file />
+-->
+    </sink>    
   </domain>
+<!--
+  <domain name=".speech_log" prints_time="false" prints_name="false" prints_level="false" prints_location="false" max_level="debug">
+    <sink>
+      <speech_synthesis voice="festival://kal_diphone" />
+    </sink>
+  </domain>
+-->
 </rrlib_logging>
