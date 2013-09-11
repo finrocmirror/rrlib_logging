@@ -83,7 +83,7 @@ tConfiguration::tConfiguration(const tDefaultConfigurationContext &default_conte
     prints_level(parent ? parent->prints_level : default_context.cPRINTS_LEVEL),
     prints_location(parent ? parent->prints_location : default_context.cPRINTS_LOCATION),
     max_message_level(parent ? parent->max_message_level : default_context.cMAX_LOG_LEVEL),
-    sinks(parent ? parent->sinks : std::vector<std::shared_ptr<sinks::tSink>>()),
+    sinks(parent ? parent->sinks : default_context.cSINKS),
     stream_buffer_ready(false)
 {
   assert(name.length() || !parent);

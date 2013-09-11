@@ -74,6 +74,7 @@
 #include "rrlib/logging/log_levels.h"
 #include "rrlib/logging/messages/tFanOutBuffer.h"
 #include "rrlib/logging/sinks/tSink.h"
+#include "rrlib/logging/sinks/tStream.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -109,16 +110,17 @@ struct tDefaultConfigurationContext
   const bool cPRINTS_LEVEL;
   const bool cPRINTS_LOCATION;
   const tLogLevel cMAX_LOG_LEVEL;
+  const std::vector<std::shared_ptr<sinks::tSink>> cSINKS;
 };
 #ifdef RRLIB_LOGGING_LESS_OUTPUT
 static const tDefaultConfigurationContext cDEFAULT_CONTEXT
 {
-  false, false, false, false, tLogLevel::WARNING
+  false, false, false, false, tLogLevel::WARNING, { std::shared_ptr<sinks::tSink>(new sinks::tStream("stdout")) }
 };
 #else
 static const tDefaultConfigurationContext cDEFAULT_CONTEXT
 {
-  false, false, false, true, tLogLevel::DEBUG
+  false, false, false, true, tLogLevel::DEBUG, { std::shared_ptr<sinks::tSink>(new sinks::tStream("stdout")) }
 };
 #endif
 
