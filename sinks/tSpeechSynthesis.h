@@ -73,6 +73,7 @@ class tSpeechSynthesis : public tSink
 //----------------------------------------------------------------------
 public:
 
+  tSpeechSynthesis(const std::string &voice);
   tSpeechSynthesis(const xml::tNode &node, const tConfiguration &configuration);
 
   ~tSpeechSynthesis();

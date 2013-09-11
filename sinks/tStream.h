@@ -78,6 +78,7 @@ class tStream : public tSink
 //----------------------------------------------------------------------
 public:
 
+  tStream(const std::string &id);
   tStream(const xml::tNode &node, const tConfiguration &configuration);
 
   virtual std::streambuf &GetStreamBuffer();

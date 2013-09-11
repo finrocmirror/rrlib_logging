@@ -70,9 +70,28 @@ const std::string cSEPARATOR = "://";
 // Implementation
 //----------------------------------------------------------------------
 
+namespace
+{
+speech_synthesis::tStreamBuffer *SpeechStreamBufferFromVoiceString(const std::string &voice_string)
+{
+  size_t separator_position = voice_string.find(cSEPARATOR);
+  if (separator_position != std::string::npos)
+  {
+    std::string synthesis = voice_string.substr(0, separator_position);
+    std::string voice = voice_string.substr(separator_position + cSEPARATOR.length());
+    return new speech_synthesis::tStreamBuffer(*speech_synthesis::tVoiceFactory::Instance().Create(synthesis, voice));
+  }
+  return NULL;
+}
+}
+
 //----------------------------------------------------------------------
 // tSpeechSynthesis constructors
 //----------------------------------------------------------------------
+tSpeechSynthesis::tSpeechSynthesis(const std::string &voice) :
+  stream_buffer(SpeechStreamBufferFromVoiceString(voice))
+{}
+
 tSpeechSynthesis::tSpeechSynthesis(const xml::tNode &node, const tConfiguration &configuration) :
   stream_buffer(NULL)
 {
@@ -81,14 +100,7 @@ tSpeechSynthesis::tSpeechSynthesis(const xml::tNode &node, const tConfiguration 
     throw std::runtime_error("Attribute voice is missing for speech_synthesis logging sink!");
   }
 
-  std::string voice_string = node.GetStringAttribute("voice");
-  size_t separator_position = voice_string.find(cSEPARATOR);
-  if (separator_position != std::string::npos)
-  {
-    std::string synthesis = voice_string.substr(0, separator_position);
-    std::string voice = voice_string.substr(separator_position + cSEPARATOR.length());
-    this->stream_buffer = new speech_synthesis::tStreamBuffer(*speech_synthesis::tVoiceFactory::Instance().Create(synthesis, voice));
-  }
+  this->stream_buffer = SpeechStreamBufferFromVoiceString(node.GetStringAttribute("voice"));
 }
 
 //----------------------------------------------------------------------

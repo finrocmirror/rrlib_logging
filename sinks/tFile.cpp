@@ -75,6 +75,10 @@ namespace sinks
 //----------------------------------------------------------------------
 // tFile constructors
 //----------------------------------------------------------------------
+tFile::tFile(const tConfiguration &configuration) :
+  configuration(configuration)
+{}
+
 tFile::tFile(const xml::tNode &node, const tConfiguration &configuration) :
   configuration(configuration)
 {}

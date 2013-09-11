@@ -79,7 +79,9 @@ class tFile : public tSink
 //----------------------------------------------------------------------
 public:
 
+  tFile(const tConfiguration &configuration);
   tFile(const xml::tNode &node, const tConfiguration &configuration);
+
   virtual ~tFile();
 
   virtual std::streambuf &GetStreamBuffer();

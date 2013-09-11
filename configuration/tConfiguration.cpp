@@ -41,6 +41,7 @@
 // Internal includes with ""
 //----------------------------------------------------------------------
 #include "rrlib/logging/configuration/tDomainRegistry.h"
+#include "rrlib/logging/sinks/tFile.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -167,26 +168,20 @@ void tConfiguration::SetSinkMask(int sink_mask)
   this->ClearSinks();
   if (sink_mask | eLOG_SINK_STDOUT)
   {
-    xml::tNode node;
-    node.SetAttribute("id", "stdout");
-    this->AddSink(std::shared_ptr<sinks::tSink>(sinks::tSinkFactory::Instance().Create("stream", node, *this)));
+    this->AddSink(std::shared_ptr<sinks::tSink>(new sinks::tStream("stdout")));
   }
   if (sink_mask | eLOG_SINK_STDERR)
   {
-    xml::tNode node;
-    node.SetAttribute("id", "stderr");
-    this->AddSink(std::shared_ptr<sinks::tSink>(sinks::tSinkFactory::Instance().Create("stream", node, *this)));
+    this->AddSink(std::shared_ptr<sinks::tSink>(new sinks::tStream("stderr")));
   }
   if (sink_mask | eLOG_SINK_FILE)
   {
     std::cerr << "INFO: The meaning of this sink changed to be the same as combined file. There will be one file for the whole subtree starting at " << this->GetFullQualifiedName() << std::endl;
-    xml::tNode node;
-    this->AddSink(std::shared_ptr<sinks::tSink>(sinks::tSinkFactory::Instance().Create("file", node, *this)));
+    this->AddSink(std::shared_ptr<sinks::tSink>(new sinks::tFile(*this)));
   }
   if (sink_mask | eLOG_SINK_COMBINED_FILE)
   {
-    xml::tNode node;
-    this->AddSink(std::shared_ptr<sinks::tSink>(sinks::tSinkFactory::Instance().Create("file", node, *this)));
+    this->AddSink(std::shared_ptr<sinks::tSink>(new sinks::tFile(*this)));
   }
 }
 

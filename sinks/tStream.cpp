@@ -70,9 +70,29 @@ namespace sinks
 // Implementation
 //----------------------------------------------------------------------
 
+namespace
+{
+tFormattingBuffer IdToStreamBuffer(const std::string &id)
+{
+  if (id == "stdout")
+  {
+    return tFormattingBuffer(std::cout.rdbuf());
+  }
+  if (id == "stderr")
+  {
+    return tFormattingBuffer(std::cerr.rdbuf());
+  }
+  throw std::runtime_error("Could not identify and use stream for logging");
+}
+}
+
 //----------------------------------------------------------------------
 // tStream constructors
 //----------------------------------------------------------------------
+tStream::tStream(const std::string &id) :
+  stream_buffer(IdToStreamBuffer(id))
+{}
+
 tStream::tStream(const xml::tNode &node, const tConfiguration &configuration) :
   stream_buffer(NULL)
 {
@@ -81,19 +101,7 @@ tStream::tStream(const xml::tNode &node, const tConfiguration &configuration) :
     throw std::runtime_error("Attribute id is missing for stream logging sink!");
   }
 
-  std::string id = node.GetStringAttribute("id");
-  if (id == "stdout")
-  {
-    this->stream_buffer = tFormattingBuffer(std::cout.rdbuf());
-    return;
-  }
-  if (id == "stderr")
-  {
-    this->stream_buffer = tFormattingBuffer(std::cerr.rdbuf());
-    return;
-  }
-
-  throw std::runtime_error("Could not identify and use stream for logging");
+  this->stream_buffer = IdToStreamBuffer(node.GetStringAttribute("id"));
 }
 
 //----------------------------------------------------------------------
