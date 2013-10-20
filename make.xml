@@ -2,8 +2,7 @@
 <!DOCTYPE targets PUBLIC "-//RRLIB//DTD make 1.0" "http://rrlib.org/xml/1.0/make.dtd">
 <targets>
 
-  <rrlib name="logging"
-        libs="rt">
+  <rrlib libs="rt">
     <sources>
       configuration/*.cpp
       messages/*.cpp
@@ -15,19 +14,19 @@
     </sources>
   </rrlib>
 
-  <rrlib name="logging_log_levels">
+  <rrlib name="log_levels">
     <sources>
       log_levels.h
     </sources>
   </rrlib>
   
-  <rrlib name="logging_sinks">
+  <rrlib name="sinks">
     <sources>
       sinks/tSink.cpp
     </sources>
   </rrlib>
 
-  <rrlib name="logging_sinks_speech_synthesis" optional="true">
+  <rrlib name="sinks_speech_synthesis" optional="true">
     <sources>
       sinks/tSpeechSynthesis.cpp
     </sources>
