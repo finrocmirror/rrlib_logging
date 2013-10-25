@@ -80,8 +80,6 @@ void SetDomainPrintsLocation(const std::string &domain_name, bool value, const t
 
 void SetDomainMaxMessageLevel(const std::string &domain_name, tLogLevel level, const tDefaultConfigurationContext &default_context = cDEFAULT_CONTEXT);
 
-void SetDomainSink(const std::string &domain_name, tLogSink sink_1, tLogSink sink_2 = (tLogSink)0, tLogSink sink_3 = (tLogSink)0, tLogSink sink_4 = (tLogSink)0, const tDefaultConfigurationContext &default_context = cDEFAULT_CONTEXT) __attribute__((deprecated));
-
 void PrintDomainConfigurations();
 
 /*! Read domain configuration from a given XML file

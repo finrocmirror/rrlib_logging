@@ -139,14 +139,6 @@ void SetDomainMaxMessageLevel(const std::string &domain_name, tLogLevel level, c
 }
 
 //----------------------------------------------------------------------
-// SetDomainSink
-//----------------------------------------------------------------------
-void SetDomainSink(const std::string &domain_name, tLogSink sink_1, tLogSink sink_2, tLogSink sink_3, tLogSink sink_4, const tDefaultConfigurationContext &default_context)
-{
-  const_cast<tConfiguration &>(tDomainRegistry::Instance().GetConfiguration(default_context, NULL, domain_name.c_str())).SetSinkMask(sink_1 | sink_2 | sink_3 | sink_4);
-}
-
-//----------------------------------------------------------------------
 // PrintDomainConfigurations
 //----------------------------------------------------------------------
 void PrintDomainConfigurations()
@@ -240,29 +232,6 @@ bool AddConfigurationFromXMLNode(const xml::tNode &node, const std::string &pare
   if (node.HasAttribute("max_level"))
   {
     configuration.SetMaxMessageLevel(node.GetEnumAttribute<tLogLevel>("max_level"));
-  }
-
-  if (node.HasAttribute("sink"))
-  {
-    RRLIB_LOG_PRINT(WARNING, "Use of the sink attribute in xml configuration for rrlib_logging is deprecated. Use sink taggroup instead.");
-    configuration.SetSinkMask(1 << node.GetEnumAttribute<tLogSink>("sink"));
-  }
-
-  int sink_mask = 0;
-  for (xml::tNode::const_iterator it = node.ChildrenBegin(); it != node.ChildrenEnd(); ++it)
-  {
-    if (it->Name() == "sink")
-    {
-      if (it->HasAttribute("output"))
-      {
-        sink_mask |= 1 << it->GetEnumAttribute<tLogSink>("output");
-      }
-    }
-  }
-  if (sink_mask != 0)
-  {
-    RRLIB_LOG_PRINT(WARNING, "Use of the output attribute in <sink> is deprecated. Use <stream>, <file>, etc. instead.");
-    configuration.SetSinkMask(sink_mask);
   }
 
   for (xml::tNode::const_iterator it = node.ChildrenBegin(); it != node.ChildrenEnd(); ++it)

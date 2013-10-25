@@ -91,18 +91,6 @@ namespace logging
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
-
-
-//! Enumeration type that contains the available sinks for message domains
-enum tLogSink
-{
-  eLOG_SINK_STDOUT,          //!< Messages are printed to stdout
-  eLOG_SINK_STDERR,          //!< Messages are printed to stderr
-  eLOG_SINK_FILE,            //!< Messages are printed to single files for each subdomain
-  eLOG_SINK_COMBINED_FILE,   //!< Messages are printed into one combined file
-  eLOG_SINK_DIMENSION        //!< Endmarker and dimension of tLogSink
-} __attribute__((deprecated));
-
 struct tDefaultConfigurationContext
 {
   const bool cPRINTS_NAME;
@@ -162,7 +150,6 @@ public:
   void SetPrintsLevel(bool value);
   void SetPrintsLocation(bool value);
   void SetMaxMessageLevel(tLogLevel level);
-  void SetSinkMask(int sink_mask) __attribute__((deprecated));
   void ClearSinks();
   void AddSink(std::shared_ptr<sinks::tSink> sink);
 

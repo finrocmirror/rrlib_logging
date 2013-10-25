@@ -66,7 +66,6 @@ namespace logging
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
-const int cLOG_SINK_COMBINED_FILE_CHILD_MASK = 1 << eLOG_SINK_DIMENSION;
 
 //----------------------------------------------------------------------
 // Implementation
@@ -157,31 +156,6 @@ void tConfiguration::SetMaxMessageLevel(tLogLevel level)
   for (auto it = this->children.begin(); it != this->children.end(); ++it)
   {
     (*it)->SetMaxMessageLevel(level);
-  }
-}
-
-//----------------------------------------------------------------------
-// tConfiguration SetSinkMask
-//----------------------------------------------------------------------
-void tConfiguration::SetSinkMask(int sink_mask)
-{
-  this->ClearSinks();
-  if (sink_mask | eLOG_SINK_STDOUT)
-  {
-    this->AddSink(std::shared_ptr<sinks::tSink>(new sinks::tStream("stdout")));
-  }
-  if (sink_mask | eLOG_SINK_STDERR)
-  {
-    this->AddSink(std::shared_ptr<sinks::tSink>(new sinks::tStream("stderr")));
-  }
-  if (sink_mask | eLOG_SINK_FILE)
-  {
-    std::cerr << "INFO: The meaning of this sink changed to be the same as combined file. There will be one file for the whole subtree starting at " << this->GetFullQualifiedName() << std::endl;
-    this->AddSink(std::shared_ptr<sinks::tSink>(new sinks::tFile(*this)));
-  }
-  if (sink_mask | eLOG_SINK_COMBINED_FILE)
-  {
-    this->AddSink(std::shared_ptr<sinks::tSink>(new sinks::tFile(*this)));
   }
 }
 
