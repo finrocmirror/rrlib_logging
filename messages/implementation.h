@@ -156,6 +156,9 @@ void Print(const tConfiguration &domain_configuration, const TLogDescription &lo
 }
 
 template <typename TLogDescription>
+void PrintFormatted(const tConfiguration &domain_configuration, const TLogDescription &log_description, const char *function, const char *filename, unsigned int line, tLogLevel level, const char *fmt, ...) __attribute__((format(printf, 7, 8)));
+
+template <typename TLogDescription>
 void PrintFormatted(const tConfiguration &domain_configuration, const TLogDescription &log_description, const char *function, const char *filename, unsigned int line, tLogLevel level, const char *fmt, ...)
 {
   if (level > domain_configuration.MaxMessageLevel())
