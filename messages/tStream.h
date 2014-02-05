@@ -60,6 +60,8 @@
 #include <mutex>
 
 #include <exception>
+#include <cxxabi.h>
+
 #include "rrlib/time/time.h"
 
 //----------------------------------------------------------------------
@@ -150,12 +152,12 @@ public:
    */
   inline tStream &operator << (const std::exception &exception)
   {
-    this->stream << "Exception (" << typeid(exception).name() << "): " << exception.what();
-    return *this;
-  }
-  inline tStream &operator << (std::exception &exception)
-  {
-    this->stream << "Exception (" << typeid(exception).name() << "): " << exception.what();
+    this->stream << "Exception (";
+    int status;
+    char *demangled = abi::__cxa_demangle(typeid(exception).name(), nullptr, nullptr, &status);
+    this->stream << (status == 0 && demangled ? demangled : typeid(exception).name());
+    free(demangled);
+    this->stream << "): " << exception.what();
     return *this;
   }
 
