@@ -63,6 +63,7 @@
 #include <cxxabi.h>
 
 #include "rrlib/time/time.h"
+#include "rrlib/util/demangle.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -152,12 +153,7 @@ public:
    */
   inline tStream &operator << (const std::exception &exception)
   {
-    this->stream << "Exception (";
-    int status;
-    char *demangled = abi::__cxa_demangle(typeid(exception).name(), nullptr, nullptr, &status);
-    this->stream << (status == 0 && demangled ? demangled : typeid(exception).name());
-    free(demangled);
-    this->stream << "): " << exception.what();
+    this->stream << "Exception (" << util::Demangle(typeid(exception).name()) << "): " << exception.what();
     return *this;
   }
 
