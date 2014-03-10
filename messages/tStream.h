@@ -239,13 +239,6 @@ public:
     return *this;
   }
 
-  template <typename T, typename ... Args>
-  inline tStream &operator << (T(*function)(Args...))
-  {
-    *this << reinterpret_cast<void *>(function);
-    return *this;
-  }
-
   /*! Streaming operator for functions (forwarder)
    *
    * This method enables manipulators like std::endl, etc. for
