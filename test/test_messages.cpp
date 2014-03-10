@@ -166,7 +166,6 @@ int main(int argc, char **argv)
   RRLIB_LOG_PRINT(DEBUG, "Pointer: ", a);
   RRLIB_LOG_PRINT(DEBUG, "Const-Pointer: ", b);
   RRLIB_LOG_PRINT(DEBUG, "Bool: ", true, false);
-  RRLIB_LOG_PRINT(DEBUG, "Function: ", main);
   RRLIB_LOG_PRINT(DEBUG, "Mal noch einzelne Zeichen: ", 'a', '\0', 'b');
 
   RRLIB_LOG_PRINT_TO(.speech_log, DEBUG, "This is a speech-log message");
