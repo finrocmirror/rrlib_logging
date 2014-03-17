@@ -60,8 +60,6 @@
 #include <mutex>
 
 #include <exception>
-#include <cxxabi.h>
-
 #include "rrlib/time/time.h"
 #include "rrlib/util/demangle.h"
 
