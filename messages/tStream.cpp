@@ -59,7 +59,7 @@ namespace logging
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
-typedef design_patterns::tSingletonHolder<std::mutex> tStreamMutex;
+typedef design_patterns::tSingletonHolder<std::mutex, design_patterns::singleton::PhoenixSingleton> tStreamMutex;
 
 //----------------------------------------------------------------------
 // Const values

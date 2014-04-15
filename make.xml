@@ -4,8 +4,8 @@
 
   <rrlib libs="rt">
     <sources>
-      configuration/*.cpp
-      messages/*.cpp
+      configuration/*
+      messages/*
       sinks/tFile.cpp
       sinks/tStream.cpp
       configuration.cpp

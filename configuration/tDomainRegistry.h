@@ -52,6 +52,7 @@
 //----------------------------------------------------------------------
 //#include <string>
 #include <vector>
+#include <iostream>
 
 #include "rrlib/design_patterns/singleton.h"
 
@@ -62,6 +63,7 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
+#include "rrlib/logging/configuration/DomainRegistryLifetime.h"
 #include "rrlib/logging/configuration/tConfiguration.h"
 
 //----------------------------------------------------------------------
@@ -80,7 +82,7 @@ namespace logging
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
 class tDomainRegistryImplementation;
-typedef design_patterns::tSingletonHolder<tDomainRegistryImplementation, design_patterns::singleton::Longevity> tDomainRegistry;
+typedef design_patterns::tSingletonHolder<tDomainRegistryImplementation, DomainRegistryLifetime> tDomainRegistry;
 inline unsigned int GetLongevity(tDomainRegistryImplementation *)
 {
   return 0xFFFFFFFF;

@@ -19,34 +19,47 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 //
 //----------------------------------------------------------------------
-/*!\file    rrlib/logging/sinks/tSink.h
+/*!\file    rrlib/logging/configuration/DomainRegistryLifetime.h
  *
  * \author  Tobias Föhst
  *
- * \date    2013-08-07
+ * \date    2014-04-15
  *
- * \brief   Contains tSink
+ * \brief   Contains DomainRegistryLifetime
  *
- * \b tSink
+ * \b DomainRegistryLifetime
  *
+ * This is the lifetime policy for tDomainRegistry.
+ *
+ * In principle tDomainRegistry has a longevity lifetime, set to maximum
+ * to survive until everyone else is destroyed that might want to print
+ * a message. However, objects that do not use the lifetime tracker that
+ * works behind longevity singletons and were created before the registry
+ * might also use the RRLIB_LOG_* macros.
+ *
+ * In this case, the registry is resurrected with default configuration
+ * to avoid an exception that would be thrown on dead reference. Hence,
+ * all further messages are processed with default configuration, unless
+ * one of these objects starts to configure log domain again from its
+ * destructor.
  */
 //----------------------------------------------------------------------
-#ifndef __rrlib__logging__sinks__tSink_h__
-#define __rrlib__logging__sinks__tSink_h__
+#ifndef __rrlib__logging_configuration_DomainRegistryLifetime_h__
+#define __rrlib__logging_configuration_DomainRegistryLifetime_h__
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
-#include <streambuf>
-
-#include "rrlib/design_patterns/factory.h"
-#include "rrlib/design_patterns/singleton.h"
-
-#include "rrlib/xml/tNode.h"
+#include "rrlib/design_patterns/singleton/tLifetimeTracker.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
+
+//----------------------------------------------------------------------
+// Debugging
+//----------------------------------------------------------------------
+#include <cassert>
 
 //----------------------------------------------------------------------
 // Namespace declaration
@@ -59,37 +72,37 @@ namespace logging
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
-class tConfiguration;
-
-//----------------------------------------------------------------------
-// Namespace declaration
-//----------------------------------------------------------------------
-namespace sinks
-{
-
-//----------------------------------------------------------------------
-// Forward declarations / typedefs / enums
-//----------------------------------------------------------------------
-class tSink;
-typedef design_patterns::tSingletonHolder<design_patterns::tFactory<tSink, std::string, std::function<tSink *(const xml::tNode &, const tConfiguration &)>>, design_patterns::singleton::PhoenixSingleton> tSinkFactory;
 
 //----------------------------------------------------------------------
 // Class declaration
 //----------------------------------------------------------------------
-//! SHORT_DESCRIPTION
-/*!
+//!
+/*! Lifetime policy for tDomainRegistry
+ *
+ * In principle tDomainRegistry has a longevity lifetime, set to maximum
+ * to survive until everyone else is destroyed that might want to print
+ * a message. However, objects that do not use the lifetime tracker that
+ * works behind longevity singletons and were created before the registry
+ * might also use the RRLIB_LOG_* macros.
+ *
+ * In this case, the registry is resurrected with default configuration
+ * to avoid an exception that would be thrown on dead reference. Hence,
+ * all further messages are processed with default configuration, unless
+ * one of these objects starts to configure log domain again from its
+ * destructor.
  */
-class tSink
+template <typename T>
+struct DomainRegistryLifetime
 {
-
-//----------------------------------------------------------------------
-// Public methods and typedefs
-//----------------------------------------------------------------------
-public:
-
-  virtual ~tSink() = 0;
-
-  virtual std::streambuf &GetStreamBuffer() = 0;
+  static void ScheduleDestruction(T *object, void (*function)())
+  {
+    design_patterns::singleton::SetLongevity(GetLongevity(object), function);
+  }
+  static void OnDeadReference()
+  {
+    std::cout << "INFO: Resurrecting log domain registry (probably during termination)." << std::endl;
+    std::cout << "      The following messages will all be processed with default configuration!" << std::endl;
+  }
 };
 
 //----------------------------------------------------------------------
@@ -97,7 +110,5 @@ public:
 //----------------------------------------------------------------------
 }
 }
-}
-
 
 #endif
