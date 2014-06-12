@@ -74,6 +74,7 @@ namespace
 {
 tFormattingBuffer IdToStreamBuffer(const std::string &id)
 {
+  static std::ios_base::Init initialize_std_ios;
   if (id == "stdout")
   {
     return tFormattingBuffer(std::cout.rdbuf());
