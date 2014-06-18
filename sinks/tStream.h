@@ -43,7 +43,9 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
+#ifdef _LIB_RRLIB_XML_PRESENT_
 #include "rrlib/xml/tNode.h"
+#endif
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -79,7 +81,9 @@ class tStream : public tSink
 public:
 
   tStream(const std::string &id);
+#ifdef _LIB_RRLIB_XML_PRESENT_
   tStream(const xml::tNode &node, const tConfiguration &configuration);
+#endif
 
   virtual std::streambuf &GetStreamBuffer();
 

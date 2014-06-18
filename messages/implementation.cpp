@@ -82,6 +82,7 @@ const tConfiguration &GetConfiguration(const char *filename, const char *domain_
 //----------------------------------------------------------------------
 void SendFormattedTimeToStream(tStream &stream)
 {
+#if __linux__
   char time_string_buffer[9];
   timespec time;
   clock_gettime(CLOCK_REALTIME, &time);
@@ -89,6 +90,7 @@ void SendFormattedTimeToStream(tStream &stream)
   char nsec_string_buffer[11];
   snprintf(nsec_string_buffer, sizeof(nsec_string_buffer), ".%09ld", time.tv_nsec);
   stream << "[ " << time_string_buffer << nsec_string_buffer << " ] ";
+#endif
 }
 
 //----------------------------------------------------------------------

@@ -171,7 +171,7 @@ bool ConfigureFromFile(const std::string &file_name)
 
 #endif
 
-  RRLIB_LOG_PRINT(ERROR, "XML support not available due to missing rrlib_mca2_wrapper.");
+  RRLIB_LOG_PRINT(ERROR, "XML support not available due to missing rrlib_xml.");
   return false;
 }
 

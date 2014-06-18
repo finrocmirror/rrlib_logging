@@ -35,6 +35,7 @@
 //----------------------------------------------------------------------
 #include <string>
 #include <stdexcept>
+#include <sstream>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -79,9 +80,11 @@ tFile::tFile(const tConfiguration &configuration) :
   configuration(configuration)
 {}
 
+#ifdef _LIB_RRLIB_XML_PRESENT_
 tFile::tFile(const xml::tNode &node, const tConfiguration &configuration) :
   configuration(configuration)
 {}
+#endif
 
 //----------------------------------------------------------------------
 // tFile destructors

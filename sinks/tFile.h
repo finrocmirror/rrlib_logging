@@ -45,7 +45,9 @@
 //----------------------------------------------------------------------
 #include <fstream>
 
+#ifdef _LIB_RRLIB_XML_PRESENT_
 #include "rrlib/xml/tNode.h"
+#endif
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -80,7 +82,9 @@ class tFile : public tSink
 public:
 
   tFile(const tConfiguration &configuration);
+#ifdef _LIB_RRLIB_XML_PRESENT_
   tFile(const xml::tNode &node, const tConfiguration &configuration);
+#endif
 
   virtual ~tFile();
 

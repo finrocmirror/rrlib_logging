@@ -201,7 +201,11 @@ public:
    */
   inline tStream &operator << (const rrlib::time::tTimestamp& value)
   {
+#if __linux__
     this->stream << rrlib::time::ToIsoString(value);
+#else
+    this->stream << value.time_since_epoch().count();
+#endif
     return *this;
   }
 

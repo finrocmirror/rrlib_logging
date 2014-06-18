@@ -74,7 +74,9 @@ class tSpeechSynthesis : public tSink
 public:
 
   tSpeechSynthesis(const std::string &voice);
+#ifdef _LIB_RRLIB_XML_PRESENT_
   tSpeechSynthesis(const xml::tNode &node, const tConfiguration &configuration);
+#endif
 
   ~tSpeechSynthesis();
 

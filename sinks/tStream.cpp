@@ -94,6 +94,7 @@ tStream::tStream(const std::string &id) :
   stream_buffer(IdToStreamBuffer(id))
 {}
 
+#ifdef _LIB_RRLIB_XML_PRESENT_
 tStream::tStream(const xml::tNode &node, const tConfiguration &configuration) :
   stream_buffer(NULL)
 {
@@ -104,6 +105,7 @@ tStream::tStream(const xml::tNode &node, const tConfiguration &configuration) :
 
   this->stream_buffer = IdToStreamBuffer(node.GetStringAttribute("id"));
 }
+#endif
 
 //----------------------------------------------------------------------
 // tStream GetStreamBuffer

@@ -92,6 +92,7 @@ tSpeechSynthesis::tSpeechSynthesis(const std::string &voice) :
   stream_buffer(SpeechStreamBufferFromVoiceString(voice))
 {}
 
+#ifdef _LIB_RRLIB_XML_PRESENT_
 tSpeechSynthesis::tSpeechSynthesis(const xml::tNode &node, const tConfiguration &configuration) :
   stream_buffer(NULL)
 {
@@ -102,6 +103,7 @@ tSpeechSynthesis::tSpeechSynthesis(const xml::tNode &node, const tConfiguration 
 
   this->stream_buffer = SpeechStreamBufferFromVoiceString(node.GetStringAttribute("voice"));
 }
+#endif
 
 //----------------------------------------------------------------------
 // tSpeechSynthesis destructor

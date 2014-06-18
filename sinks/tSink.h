@@ -42,7 +42,9 @@
 #include "rrlib/design_patterns/factory.h"
 #include "rrlib/design_patterns/singleton.h"
 
+#ifdef _LIB_RRLIB_XML_PRESENT_
 #include "rrlib/xml/tNode.h"
+#endif
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -71,7 +73,10 @@ namespace sinks
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
 class tSink;
+
+#ifdef _LIB_RRLIB_XML_PRESENT_
 typedef design_patterns::tSingletonHolder<design_patterns::tFactory<tSink, std::string, std::function<tSink *(const xml::tNode &, const tConfiguration &)>>, design_patterns::singleton::PhoenixSingleton> tSinkFactory;
+#endif
 
 //----------------------------------------------------------------------
 // Class declaration

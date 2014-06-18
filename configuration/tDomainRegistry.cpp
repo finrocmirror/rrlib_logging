@@ -111,12 +111,13 @@ tDomainRegistryImplementation::tDomainRegistryImplementation()
     return a.length() > b.length();
   });
 
-
+#ifdef _LIB_RRLIB_XML_PRESENT_
   sinks::tSinkFactory::Instance().Register<sinks::tStream>("stream");
   sinks::tSinkFactory::Instance().Register<sinks::tFile>("file");
 
 #ifdef _LIB_RRLIB_LOGGING_SINKS_SPEECH_SYNTHESIS_PRESENT_
   sinks::tSinkFactory::Instance().Register<sinks::tSpeechSynthesis>("speech_synthesis");
+#endif
 #endif
 
 }
