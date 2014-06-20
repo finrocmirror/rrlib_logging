@@ -90,7 +90,7 @@ tDomainRegistryImplementation::tDomainRegistryImplementation()
   const char *rrlib_logging_path = std::getenv("RRLIB_LOGGING_PATH");
   if (rrlib_logging_path == NULL)
   {
-    rrlib_logging_path = "/usr/include";
+    rrlib_logging_path = "/usr/include:/usr/include/finroc:sources/cpp";
   }
 
   // Fill a list of pointers to the components of our immutable rrlib_logging_path (no zero termination)
