@@ -84,7 +84,9 @@ tFormattingBuffer::tFormattingBuffer(std::streambuf *sink) :
   multi_line_pad_width(0),
   collect_multi_line_pad_width(false),
   pad_before_next_character(false)
-{}
+{
+  this->is_a_tty = isatty(util::GetFileDescriptor(this->sink));
+}
 
 tFormattingBuffer::tFormattingBuffer(const tFormattingBuffer &other) :
   sink(other.sink),
@@ -92,7 +94,9 @@ tFormattingBuffer::tFormattingBuffer(const tFormattingBuffer &other) :
   multi_line_pad_width(other.multi_line_pad_width),
   collect_multi_line_pad_width(other.collect_multi_line_pad_width),
   pad_before_next_character(other.pad_before_next_character)
-{}
+{
+  this->is_a_tty = isatty(util::GetFileDescriptor(this->sink));
+}
 
 //----------------------------------------------------------------------
 // tFormattingBuffer assignment operator
@@ -106,6 +110,7 @@ tFormattingBuffer &tFormattingBuffer::operator = (const tFormattingBuffer &other
     this->multi_line_pad_width = other.multi_line_pad_width;
     this->collect_multi_line_pad_width = other.collect_multi_line_pad_width;
     this->pad_before_next_character = other.pad_before_next_character;
+    this->is_a_tty = isatty(util::GetFileDescriptor(this->sink));
   }
   return *this;
 }
@@ -118,14 +123,9 @@ void tFormattingBuffer::SetColor(tFormattingBufferEffect effect, tFormattingBuff
   char control_sequence[16];
   snprintf(control_sequence, sizeof(control_sequence), "\033[;%u;3%um", effect, color);
   const size_t length = strlen(control_sequence);
-
-  int file_descriptor = util::GetFileDescriptor(this->sink);
-  if (file_descriptor > 0 && isatty(file_descriptor))
+  if (is_a_tty)
   {
-    for (size_t i = 0; i < length; ++i)
-    {
-      this->sink->sputc(control_sequence[i]);
-    }
+    this->sink->sputn(control_sequence, length);
   }
 }
 
@@ -136,13 +136,9 @@ void tFormattingBuffer::ResetColor()
 {
   const char *control_sequence = "\033[;0m";
   const size_t length = strlen(control_sequence);
-  int file_descriptor = util::GetFileDescriptor(this->sink);
-  if (file_descriptor > 0 && isatty(file_descriptor))
+  if (is_a_tty)
   {
-    for (size_t i = 0; i < length; ++i)
-    {
-      this->sink->sputc(control_sequence[i]);
-    }
+    this->sink->sputn(control_sequence, length);
   }
 }
 

@@ -145,6 +145,7 @@ protected:
 private:
 
   std::streambuf *sink;
+  bool is_a_tty;
 
   bool ends_with_newline;
 
