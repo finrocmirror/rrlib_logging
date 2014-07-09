@@ -199,9 +199,9 @@ public:
    *
    * \returns A reference to the altered stream (in this case the proxy)
    */
-  inline tStream &operator << (const rrlib::time::tTimestamp& value)
+  inline tStream &operator << (const time::tTimestamp& value)
   {
-    this->stream << rrlib::time::ToIsoString(value);
+    this->stream << time::ToIsoString(value);
     return *this;
   }
 

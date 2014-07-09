@@ -19,7 +19,7 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 //
 //----------------------------------------------------------------------
-/*!\file    rrlib/logging/test/test_messages.cpp
+/*!\file    rrlib/logging/examples/example.cpp
  *
  * \author  Tobias Foehst
  *
@@ -32,18 +32,10 @@
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
 #include <cstdlib>
-#include <iostream>
 #include <stdexcept>
-#include <iterator>
 #include <iomanip>
 
-extern "C"
-{
 #include <libgen.h>
-#include <unistd.h>
-}
-
-#include "rrlib/util/join.h"
 
 #include "rrlib/logging/configuration.h"
 #include "rrlib/logging/messages.h"
@@ -51,8 +43,8 @@ extern "C"
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "rrlib/logging/test/libA/libA.h"
-#include "rrlib/logging/test/libB/libB.h"
+#include "rrlib/logging/examples/lib/A.h"
+#include "rrlib/logging/examples/lib/B.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -81,13 +73,13 @@ struct Test
 {
   static void function()
   {
-    RRLIB_LOG_PRINT_TO(my_domain, DEBUG_WARNING, "this ", "is a ", "local class test");
+    RRLIB_LOG_PRINT_TO(.custom_domain, DEBUG_WARNING, "this ", "is a ", "concatenated debug warning message from local::Test::function() to custom domain");
 
-    RRLIB_LOG_PRINT(WARNING, "foo");
-    RRLIB_LOG_PRINT_TO(my_domain, ERROR, "foo2");
+    RRLIB_LOG_PRINT(WARNING, "Warning message from local::Test::function()");
+    RRLIB_LOG_PRINT_TO(.custom_domain, ERROR, "Warning message from local::Test::function() to custom domain");
     if (true)
     {
-      RRLIB_LOG_PRINTF_TO(my_domain, DEBUG, "%s\n", "FOO");
+      RRLIB_LOG_PRINTF_TO(.custom_domain, DEBUG, "%s\n", "Debug message using printf syntax");
     }
   }
 };
@@ -103,59 +95,80 @@ struct TestStatic
 
   static void StaticMethod()
   {
-    RRLIB_LOG_PRINT_STATIC(USER, "From static method");
+    RRLIB_LOG_PRINT_STATIC(DEBUG, "Debug message from static context");
   }
 
   void NonStaticMethod()
   {
-    RRLIB_LOG_PRINT(USER, "From non-static method");
+    RRLIB_LOG_PRINT(DEBUG, "Debug message from non-static context");
   }
 };
 
 
 int main(int argc, char **argv)
 {
+  /*** Setup some needed basic strings ***/
   rrlib::logging::default_log_description = basename(argv[0]);
   rrlib::logging::SetLogFilenamePrefix(basename(argv[0]));
 
+  bool domains_configured = false;
+
+  /*** Add configuring from file if xml support is available ***/
 #ifdef _LIB_RRLIB_XML_PRESENT_
-  if (!rrlib::logging::ConfigureFromFile("logging_config.xml"))
+  if (argc > 2)
   {
-    RRLIB_LOG_PRINT(ERROR, "Loading configuration failed!");
+    RRLIB_LOG_PRINTF(ERROR, "Usage: %s [logging_config.xml]", argv[0]);
     return EXIT_FAILURE;
   }
-
-  rrlib::logging::PrintDomainConfigurations();
+  if (argc == 2)
+  {
+    try
+    {
+      domains_configured = rrlib::logging::ConfigureFromFile(argv[1]);
+    }
+    catch (const rrlib::xml::tException &exception)
+    {
+      RRLIB_LOG_PRINT(ERROR, "Loading configuration failed: ", exception.what());
+      return EXIT_FAILURE;
+    }
+  }
+#else
+  if (argc != 1)
+  {
+    RRLIB_LOG_PRINTF(ERROR, "Usage: %s", argv[0]);
+    return EXIT_FAILURE;
+  }
 #endif
 
-//  rrlib::logging::SetDomainPrintsName(".", true);
-//  rrlib::logging::SetDomainPrintsTime(".", true);
-//  rrlib::logging::SetDomainPrintsLevel(".", true);
-//  rrlib::logging::SetDomainPrintsLocation(".", true);
-//  rrlib::logging::SetDomainMaxMessageLevel(".", DEBUG_VERBOSE_3);
-//  rrlib::logging::SetDomainSink(".", rrlib::logging::eLOG_SINK_FILE);
+  if (!domains_configured)
+  {
+    /*** Our custom domain gets a custom configuration if not configured from file ***/
+    RRLIB_LOG_PRINT(USER, "Using exemplary configuration for custom domain");
+    rrlib::logging::SetDomainPrintsName(".custom_domain", true);
+    rrlib::logging::SetDomainPrintsTime(".custom_domain", true);
+    rrlib::logging::SetDomainPrintsLevel(".custom_domain", true);
+    rrlib::logging::SetDomainPrintsLocation(".custom_domain", true);
+    rrlib::logging::SetDomainMaxMessageLevel(".custom_domain", rrlib::logging::tLogLevel::DEBUG_VERBOSE_3);
+  }
 
-  rrlib::logging::SetDomainMaxMessageLevel(".example", rrlib::logging::tLogLevel::DEBUG_VERBOSE_3);
-//  rrlib::logging::SetDomainSink(".example", rrlib::logging::eLOG_SINK_STDOUT, rrlib::logging::eLOG_SINK_COMBINED_FILE);
+  /*** Have a look on the configured domains ***/
+  RRLIB_LOG_PRINT(USER, "These are the configured log domains:");
+  rrlib::logging::PrintDomainConfigurations();
 
-  RRLIB_LOG_PRINT(WARNING, "foo");
+  /*** Generate some messages from different contexts and of different type ***/
+  RRLIB_LOG_PRINT(WARNING, "Warning message from main()");
 
-  libA::Test();
-  libB::Test();
+  A::Test();
+  B::Test();
 
   local::Test::function();
 
-  std::runtime_error exception("runtime_error");
-  std::exception &e(exception);
-  RRLIB_LOG_PRINT(ERROR, e);
+  RRLIB_LOG_PRINT(ERROR, std::runtime_error("Forwarding a std::runtime_error directly as error messsage"));
 
-  RRLIB_LOG_PRINT(WARNING, "0x", std::setw(20), std::setfill('0'), std::hex, 324);
+  RRLIB_LOG_PRINT(WARNING, "Warning message using std::iomanip: 0x", std::setw(20), std::setfill('0'), std::hex, 324);
 
-  RRLIB_LOG_PRINT(ERROR, "Das hier ist ein mehrzeiliger\nFehler.\n");
-  RRLIB_LOG_PRINT(USER, "Und das hier ein mehrzeiliger\nText fuer den lieben Benutzer.");
-
-  const char* texts[] = {"Dies", "ist", "ein", "kleiner", "Text."};
-  RRLIB_LOG_PRINT(DEBUG, rrlib::util::Join(texts, texts + 5, " "));
+  RRLIB_LOG_PRINT(ERROR, "Multiline error message with\npadding and handling of trailing newline.\n");
+  RRLIB_LOG_PRINT(USER, "Multiline user message\nthat should behave accordingly.\n");
 
   TestStatic test_static;
   test_static.StaticMethod();
@@ -163,16 +176,15 @@ int main(int argc, char **argv)
 
   int *a = 0;
   const int *b = 0;
-  RRLIB_LOG_PRINT(DEBUG, "Pointer: ", a);
-  RRLIB_LOG_PRINT(DEBUG, "Const-Pointer: ", b);
-  RRLIB_LOG_PRINT(DEBUG, "Bool: ", true, false);
-  RRLIB_LOG_PRINT(DEBUG, "Mal noch einzelne Zeichen: ", 'a', '\0', 'b');
+  RRLIB_LOG_PRINT(DEBUG, "Handling of some special data types:\n"
+                  "- Pointer:\t\t\t", a, "\n",
+                  "- Const-Pointer:\t\t", b, "\n",
+                  "- Bool:\t\t\t", true, false, "\n",
+                  "- Single characters:\t", 'a', '\0', 'b', "\n");
 
-  RRLIB_LOG_PRINT_TO(.speech_log, DEBUG, "This is a speech-log message");
-
-  std::cout << "Waiting 10 seconds for optional speech synthesis" << std::endl;
-  sleep(10);
-
+  /*** In the end, get a list of domains that were configured or used by this program ***/
+  RRLIB_LOG_PRINT(USER, "These are the used and configured log domains:");
   rrlib::logging::PrintDomainConfigurations();
+
   return EXIT_SUCCESS;
 }
