@@ -121,8 +121,7 @@ tFormattingBuffer &tFormattingBuffer::operator = (const tFormattingBuffer &other
 void tFormattingBuffer::SetColor(tFormattingBufferEffect effect, tFormattingBufferColor color)
 {
   char control_sequence[16];
-  snprintf(control_sequence, sizeof(control_sequence), "\033[;%u;3%um", effect, color);
-  const size_t length = strlen(control_sequence);
+  const size_t length = snprintf(control_sequence, sizeof(control_sequence), "\033[;%u;3%um", effect, color);
   if (is_a_tty)
   {
     this->sink->sputn(control_sequence, length);
